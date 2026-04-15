@@ -283,9 +283,17 @@ async function submitSvc(){
   const fn=v('tf-fn'),em=v('tf-em'),co=v('tf-co'),tr=v('tf-tr'),pn=v('tf-pn'),st=v('tf-st');
   const dr=document.getElementById('tf-dr');
   const err=document.getElementById('svc-err');
-  const hasFile = dr && dr.files.length > 0;
+  const selectedFiles = (window._selectedFiles && window._selectedFiles.length) ? window._selectedFiles : (dr ? [...dr.files] : []);
+  const hasFile = selectedFiles.length > 0;
   const hasLink = v('tf-cloud').length > 0;
-  if(!fn||!em||!co||!tr||!pn||!st||(!hasFile && !hasLink)){err.style.display='block';return;}
+  if(!fn||!em||!co||!tr||!pn||!st){
+    err.textContent='Please fill in all required fields.';
+    err.style.display='block';return;
+  }
+  if(!hasFile && !hasLink){
+    err.textContent='Please upload a file or provide a cloud link.';
+    err.style.display='block';return;
+  }
   if(!isEmail(em)){err.textContent='Please enter a valid email.';err.style.display='block';return;}
   const ck=[...document.querySelectorAll('#div-opts-wrap input:checked')].map(c=>c.value).join(', ')||'All Divisions';
 
@@ -306,22 +314,67 @@ async function submitSvc(){
   [...dr.files].forEach(f => fd.append('files', f));
 
   let sent = false;
+  let errorMsg = '';
   try {
     const res = await fetch('/api/send-with-files', { method:'POST', body:fd });
-    const json = await res.json();
+    const json = await res.json().catch(()=>({}));
+    if(json.tooLarge){
+      err.innerHTML = '📎 Files are too large. Please remove the attachment above, paste a Google Drive / Dropbox link instead, and resubmit.';
+      err.style.display='block';
+      if(btn){btn.disabled=false;btn.innerHTML='<svg width="14" height="14"><use href="#ic-send"/></svg> Submit Takeoff Request';}
+      return;
+    }
+    if(!res.ok){
+      errorMsg = json.error || `Server error ${res.status}`;
+    }
     sent = json.success === true;
-  } catch(e){ sent = false; }
+  } catch(e){
+    errorMsg = e.message;
+    sent = false;
+  }
 
   if(sent){
     document.getElementById('svc-form-body').style.display='none';
     document.getElementById('svc-ok').style.display='block';
   } else {
-    err.textContent='Submission failed. Please email barkha@bidcoreai.com directly.';
+    err.innerHTML = `Submission failed${errorMsg ? ': <em>'+errorMsg+'</em>' : ''}. Remove attachment and use a cloud link, or email <a href="mailto:barkha@bidcoreai.com" style="color:var(--blue)">barkha@bidcoreai.com</a> directly.`;
     err.style.display='block';
   }
   if(btn){btn.disabled=false;btn.innerHTML='<svg width="14" height="14"><use href="#ic-send"/></svg> Submit Takeoff Request';}
 }
 
+/* ─── FILE LIST WITH REMOVE BUTTON ─── */
+function showFileList(){
+  const dr = document.getElementById('tf-dr');
+  const list = document.getElementById('tf-file-list');
+  if(!list) return;
+  // store files in a custom array since FileList is read-only
+  if(!window._selectedFiles) window._selectedFiles = [];
+  window._selectedFiles = [...dr.files];
+  renderFileList();
+}
+function renderFileList(){
+  const list = document.getElementById('tf-file-list');
+  if(!list) return;
+  const files = window._selectedFiles || [];
+  list.innerHTML = files.map((f,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;background:var(--g50);border:1px solid var(--g200);border-radius:7px;padding:6px 10px;font-size:12px;color:var(--navy)">
+      <svg width="13" height="13" style="color:var(--blue);flex-shrink:0"><use href="#ic-file"/></svg>
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${f.name}</span>
+      <span style="color:var(--g400);font-size:11px;white-space:nowrap">${(f.size/1024/1024).toFixed(1)}MB</span>
+      <button onclick="removeFile(${i})" style="background:none;border:none;cursor:pointer;color:#dc2626;font-size:14px;line-height:1;padding:0 2px" title="Remove">✕</button>
+    </div>
+  `).join('');
+}
+function removeFile(i){
+  if(!window._selectedFiles) return;
+  window._selectedFiles.splice(i,1);
+  // reset the actual input if all removed
+  if(window._selectedFiles.length === 0){
+    document.getElementById('tf-dr').value = '';
+  }
+  renderFileList();
+}
 /* ─── FEEDBACK FORM ─── */
 function submitFeedback(){
   const em=v('fb-email'),area=v('fb-area'),msg=v('fb-msg');
