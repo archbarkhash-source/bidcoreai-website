@@ -101,12 +101,54 @@ button{font-family:var(--fb)}
 .hs-l{font-size:11px;color:rgba(255,255,255,.38);margin-top:4px}
 
 /* hero screenshot */
-.hero-ss{border-radius:14px;overflow:hidden;box-shadow:var(--s3);border:1px solid rgba(255,255,255,.09);animation:risein .72s ease both}
-@keyframes risein{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
-.ss-chrome{background:rgba(11,60,93,.85);padding:9px 14px;display:flex;align-items:center;gap:6px;border-bottom:1px solid rgba(255,255,255,.06)}
-.ssdot{width:9px;height:9px;border-radius:50%}
-.ss-chrome-ttl{font-family:var(--fh);font-size:9.5px;color:rgba(255,255,255,.35);margin-left:auto;letter-spacing:.04em}
-.hero-ss img{width:100%;display:block}
+.hero-ss{
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:var(--s3);
+  border:1px solid rgba(255,255,255,.09);
+  animation:risein .72s ease both;
+
+  /* only image visibility improvement */
+  width:100%;
+  max-width:760px;   /* increase size */
+  margin-left:auto;
+  transform:scale(1.08); /* enlarge slightly */
+  transform-origin:center;
+}
+
+@keyframes risein{
+  from{opacity:0;transform:translateY(22px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.ss-chrome{
+  background:rgba(11,60,93,.85);
+  padding:9px 14px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  border-bottom:1px solid rgba(255,255,255,.06)
+}
+
+.ssdot{
+  width:9px;
+  height:9px;
+  border-radius:50%
+}
+
+.ss-chrome-ttl{
+  font-family:var(--fh);
+  font-size:9.5px;
+  color:rgba(255,255,255,.35);
+  margin-left:auto;
+  letter-spacing:.04em
+}
+
+.hero-ss img{
+  width:100%;
+  height:auto;
+  display:block;
+}
 
 /* ───── PULSE ───── */
 .pulse-bar{background:linear-gradient(90deg,rgba(0,123,255,.08),rgba(0,201,177,.08));border-bottom:1px solid rgba(0,123,255,.14);padding:11px 24px}
