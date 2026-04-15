@@ -150,8 +150,10 @@ const DIVS = [
   {c:'46',n:'Water & Wastewater'},{c:'48',n:'Electrical Power Generation'},
   {c:'50',n:'Reserved – Special'}
 ];
-const MEP=['22','23','25','26','27','28'];
+const ARCH=['04','06','07','08','09','10','12'];
 const STRUCT=['03','04','05'];
+const MEP=['22','23','25','26','27','28'];
+
 function renderDivs(sel){
   const wrap=document.getElementById('div-opts-wrap');
   if(!wrap)return;
@@ -179,8 +181,11 @@ function divTab(type,btn){
   document.querySelectorAll('.div-tabs .dtab').forEach(t=>t.classList.remove('on'));
   btn.classList.add('on');
   if(type==='all') renderDivs(DIVS.map(d=>d.c));
-  else if(type==='mep') renderDivs(MEP);
+  else if(type==='arch') renderDivs(ARCH);
   else if(type==='struct') renderDivs(STRUCT);
+  else if(type==='mep') renderDivs(MEP);
+  
+  
   else renderDivs([]);
 }
 renderDivs(DIVS.map(d=>d.c));
@@ -268,21 +273,45 @@ function submitModal(){
 }
 
 /* ─── TAKEOFF SERVICE FORM ─── */
-function submitSvc(){
+async function submitSvc(){
   const fn=v('tf-fn'),em=v('tf-em'),co=v('tf-co'),tr=v('tf-tr'),pn=v('tf-pn'),st=v('tf-st');
   const dr=document.getElementById('tf-dr');
   const err=document.getElementById('svc-err');
   if(!fn||!em||!co||!tr||!pn||!st||!dr||!dr.files.length){err.style.display='block';return;}
   if(!isEmail(em)){err.textContent='Please enter a valid email.';err.style.display='block';return;}
   const ck=[...document.querySelectorAll('#div-opts-wrap input:checked')].map(c=>c.value).join(', ')||'All Divisions';
-  const drList=[...dr.files].map(f=>f.name).join(', ');
-  sendEmail({
+
+  const btn=document.getElementById('svc-btn');
+  if(btn){btn.disabled=true;btn.innerHTML='<svg width="14" height="14" style="animation:spin 1s linear infinite;display:inline-block"><use href="#ic-refresh"/></svg> Sending…';}
+  err.style.display='none';
+
+  // Build FormData so files are sent as real attachments
+  const fd = new FormData();
+  const meta = {
     subject:`Takeoff Service Request — ${pn} (${co})`,
     name:`${fn} ${v('tf-ln')}`, email:em, company:co, trade:tr, state:st,
     project_name:pn, project_type:v('tf-pt'), est_value:v('tf-pv'),
     drawing_sheets:v('tf-ps'), bid_due:v('tf-dd'), scope:v('tf-sc'),
-    drawings:drList, divisions:ck, notes:v('tf-nt'), source:'Takeoff Service Form'
-  },'svc-btn','svc-err','svc-form-body','svc-ok');
+    divisions:ck, notes:v('tf-nt'), source:'Takeoff Service Form'
+  };
+  fd.append('meta', JSON.stringify(meta));
+  [...dr.files].forEach(f => fd.append('files', f));
+
+  let sent = false;
+  try {
+    const res = await fetch('/api/send-with-files', { method:'POST', body:fd });
+    const json = await res.json();
+    sent = json.success === true;
+  } catch(e){ sent = false; }
+
+  if(sent){
+    document.getElementById('svc-form-body').style.display='none';
+    document.getElementById('svc-ok').style.display='block';
+  } else {
+    err.textContent='Submission failed. Please email barkha@bidcoreai.com directly.';
+    err.style.display='block';
+  }
+  if(btn){btn.disabled=false;btn.innerHTML='<svg width="14" height="14"><use href="#ic-send"/></svg> Submit Takeoff Request';}
 }
 
 /* ─── FEEDBACK FORM ─── */

@@ -92,6 +92,57 @@ function buildHtml(payload){
 </body></html>`;
 }
 
+const multer = require('multer');
+const upload = multer({ storage: multer.memoryStorage(), limits:{ fileSize: 25*1024*1024 } });
+
+app.post('/api/send-with-files', upload.array('files', 20), async (req, res) => {
+  try {
+    const meta = JSON.parse(req.body.meta || '{}');
+    const subject = meta.subject || 'Takeoff Service Request';
+    const html = buildHtml(meta);
+
+    // Build attachments array for nodemailer
+    const attachments = (req.files || []).map(f => ({
+      filename: f.originalname,
+      content: f.buffer,
+      contentType: f.mimetype
+    }));
+
+    if(process.env.RESEND_API_KEY){
+      // Resend supports attachments
+      const apiKey = process.env.RESEND_API_KEY;
+      const from = process.env.RESEND_FROM_EMAIL || 'noreply@bidcoreai.com';
+      const resendAttachments = (req.files || []).map(f => ({
+        filename: f.originalname,
+        content: f.buffer.toString('base64')
+      }));
+      const r = await fetch('https://api.resend.com/emails', {
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':`Bearer ${apiKey}`},
+        body: JSON.stringify({ from, to:[TO_EMAIL], subject, html, attachments: resendAttachments })
+      });
+      const j = await r.json();
+      if(!r.ok) throw new Error(j.message);
+    } else {
+      const nodemailer = require('nodemailer');
+      const transport = nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: parseInt(process.env.SMTP_PORT||'465'),
+        secure: parseInt(process.env.SMTP_PORT||'465')===465,
+        auth:{ user:process.env.SMTP_USER, pass:process.env.SMTP_PASSWORD }
+      });
+      await transport.sendMail({
+        from:`"${process.env.SMTP_FROM_NAME||'BidcoreAI'}" <${process.env.SMTP_USER}>`,
+        to: TO_EMAIL, subject, html, attachments
+      });
+    }
+    res.json({ success:true });
+  } catch(e){
+    console.error('[BidcoreAI] File send error:', e.message);
+    res.status(500).json({ success:false, error:e.message });
+  }
+});
+
 /* ── POST /api/send ── */
 app.post('/api/send', async (req, res)=>{
   const payload = req.body || {};
