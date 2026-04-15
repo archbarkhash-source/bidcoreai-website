@@ -283,7 +283,9 @@ async function submitSvc(){
   const fn=v('tf-fn'),em=v('tf-em'),co=v('tf-co'),tr=v('tf-tr'),pn=v('tf-pn'),st=v('tf-st');
   const dr=document.getElementById('tf-dr');
   const err=document.getElementById('svc-err');
-  if(!fn||!em||!co||!tr||!pn||!st||!dr||!dr.files.length){err.style.display='block';return;}
+  const hasFile = dr && dr.files.length > 0;
+  const hasLink = v('tf-cloud').length > 0;
+  if(!fn||!em||!co||!tr||!pn||!st||(!hasFile && !hasLink)){err.style.display='block';return;}
   if(!isEmail(em)){err.textContent='Please enter a valid email.';err.style.display='block';return;}
   const ck=[...document.querySelectorAll('#div-opts-wrap input:checked')].map(c=>c.value).join(', ')||'All Divisions';
 
@@ -298,7 +300,7 @@ async function submitSvc(){
     name:`${fn} ${v('tf-ln')}`, email:em, company:co, trade:tr, state:st,
     project_name:pn, project_type:v('tf-pt'), est_value:v('tf-pv'),
     drawing_sheets:v('tf-ps'), bid_due:v('tf-dd'), scope:v('tf-sc'),
-    divisions:ck, notes:v('tf-nt'), source:'Takeoff Service Form'
+    cloud_link:v('tf-cloud'), divisions:ck, notes:v('tf-nt'), source:'Takeoff Service Form'
   };
   fd.append('meta', JSON.stringify(meta));
   [...dr.files].forEach(f => fd.append('files', f));

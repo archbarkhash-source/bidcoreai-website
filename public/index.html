@@ -784,8 +784,12 @@
           <div class="fg">
             <label>Upload Drawings (PDF, DWG) *</label>
             <input type="file" id="tf-dr" multiple accept=".pdf,.dwg,.dxf,.xls,.xlsx,.jpg,.jpeg,.png,.tif,.tiff,.zip,.rvt,.ifc,.csv,.doc,.docx"/>
-            <div style="font-size:11px;color:var(--g400);margin-top:4px">Accepted: PDF, DWG, DXF, XLS/XLSX, JPG, PNG, TIF, ZIP, RVT, DOC. Multiple files accepted. For large projects, we'll provide a secure upload link.</div>
-          </div>
+            <div style="font-size:11px;color:var(--g400);margin-top:4px">Accepted: PDF, DWG, DXF, XLS/XLSX, JPG, PNG, TIF, ZIP, RVT, DOC. Multiple files accepted.</div>
+            <div style="margin-top:10px">
+              <label style="font-size:11.5px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.07em">Or share a cloud link (Google Drive, Dropbox, WeTransfer, OneDrive)</label>
+              <input type="text" id="tf-cloud" placeholder="https://drive.google.com/... or dropbox.com/... or wetransfer.com/..."/>
+              <div style="font-size:11px;color:var(--g400);margin-top:4px">For files larger than 100MB — paste a shared link with view/download access.</div>
+            </div>
           <div class="fg">
             <label>CSI Divisions Required</label>
             <div class="div-wrap">

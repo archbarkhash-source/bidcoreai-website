@@ -22,7 +22,8 @@ const express = require('express');
 const path    = require('path');
 const app     = express();
 
-app.use(express.json({ limit: '2mb' }));
+app.use(express.json({ limit: '200mb' }));
+app.use(express.urlencoded({ extended: true, limit: '200mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 const TO_EMAIL = process.env.TO_EMAIL || 'barkha@bidcoreai.com';
@@ -93,7 +94,7 @@ function buildHtml(payload){
 }
 
 const multer = require('multer');
-const upload = multer({ storage: multer.memoryStorage(), limits:{ fileSize: 25*1024*1024 } });
+const upload = multer({ storage: multer.memoryStorage(), limits:{ fileSize: 100*1024*1024 } });
 
 app.post('/api/send-with-files', upload.array('files', 20), async (req, res) => {
   try {
@@ -101,9 +102,9 @@ app.post('/api/send-with-files', upload.array('files', 20), async (req, res) => 
     const subject = meta.subject || 'Takeoff Service Request';
     const html = buildHtml(meta);
 
-    // Block if total file size exceeds 20MB
+    // Block if total file size exceeds 100MB
     const totalBytes = (req.files || []).reduce((sum, f) => sum + f.size, 0);
-    if(totalBytes > 20 * 1024 * 1024){
+    if(totalBytes > 100 * 1024 * 1024){
       return res.status(413).json({ success:false, tooLarge:true });
     }
 
