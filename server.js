@@ -97,19 +97,32 @@ const upload = multer({ storage: multer.memoryStorage(), limits:{ fileSize: 25*1
 
 app.post('/api/send-with-files', upload.array('files', 20), async (req, res) => {
   try {
-    const meta = JSON.parse(req.body.meta || '{}');
-    const subject = meta.subject || 'Takeoff Service Request';
-    const html = buildHtml(meta);
+     try {
+      const meta = JSON.parse(req.body.meta || '{}');
+      const subject = meta.subject || 'Takeoff Service Request';
+      const html = buildHtml(meta);
 
-    // Build attachments array for nodemailer
-    const attachments = (req.files || []).map(f => ({
-      filename: f.originalname,
-      content: f.buffer,
-      contentType: f.mimetype
-    }));
+      // Block if total file size exceeds 20MB
+      const totalBytes = (req.files || []).reduce((sum, f) => sum + f.size, 0);
+      if(totalBytes > 20 * 1024 * 1024){
+        return res.status(413).json({ success:false, tooLarge:true });
+      }
 
-    if(process.env.RESEND_API_KEY){
-      // Resend supports attachments
+    if(process.env.SMTP_HOST && process.env.SMTP_USER){
+      // SMTP SSL — first priority
+      const nodemailer = require('nodemailer');
+      const transport = nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: parseInt(process.env.SMTP_PORT||'465'),
+        secure: parseInt(process.env.SMTP_PORT||'465')===465,
+        auth:{ user:process.env.SMTP_USER, pass:process.env.SMTP_PASSWORD }
+      });
+      await transport.sendMail({
+        from:`"${process.env.SMTP_FROM_NAME||'BidcoreAI'}" <${process.env.SMTP_USER}>`,
+        to: TO_EMAIL, subject, html, attachments
+      });
+    } else if(process.env.RESEND_API_KEY){
+      // Resend — second priority fallback
       const apiKey = process.env.RESEND_API_KEY;
       const from = process.env.RESEND_FROM_EMAIL || 'noreply@bidcoreai.com';
       const resendAttachments = (req.files || []).map(f => ({
@@ -123,18 +136,6 @@ app.post('/api/send-with-files', upload.array('files', 20), async (req, res) => 
       });
       const j = await r.json();
       if(!r.ok) throw new Error(j.message);
-    } else {
-      const nodemailer = require('nodemailer');
-      const transport = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: parseInt(process.env.SMTP_PORT||'465'),
-        secure: parseInt(process.env.SMTP_PORT||'465')===465,
-        auth:{ user:process.env.SMTP_USER, pass:process.env.SMTP_PASSWORD }
-      });
-      await transport.sendMail({
-        from:`"${process.env.SMTP_FROM_NAME||'BidcoreAI'}" <${process.env.SMTP_USER}>`,
-        to: TO_EMAIL, subject, html, attachments
-      });
     }
     res.json({ success:true });
   } catch(e){

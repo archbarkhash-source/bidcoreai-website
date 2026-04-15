@@ -227,6 +227,12 @@ async function sendEmail(payload, btnId, errId, bodyId, okId){
       body: JSON.stringify(payload)
     });
     const json = await res.json();
+    if(json.tooLarge){
+      err.innerHTML = 'Files are too large to attach. Please email your drawings directly to <a href="mailto:barkha@bidcoreai.com" style="color:var(--blue)">barkha@bidcoreai.com</a> with subject: <strong>Takeoff Request</strong>';
+      err.style.display='block';
+      if(btn){btn.disabled=false;btn.innerHTML='<svg width="14" height="14"><use href="#ic-send"/></svg> Submit Takeoff Request';}
+      return;
+    }
     sent = json.success === true;
   } catch(e){ sent = false; }
 
