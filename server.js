@@ -97,16 +97,22 @@ const upload = multer({ storage: multer.memoryStorage(), limits:{ fileSize: 25*1
 
 app.post('/api/send-with-files', upload.array('files', 20), async (req, res) => {
   try {
-     try {
-      const meta = JSON.parse(req.body.meta || '{}');
-      const subject = meta.subject || 'Takeoff Service Request';
-      const html = buildHtml(meta);
+    const meta = JSON.parse(req.body.meta || '{}');
+    const subject = meta.subject || 'Takeoff Service Request';
+    const html = buildHtml(meta);
 
-      // Block if total file size exceeds 20MB
-      const totalBytes = (req.files || []).reduce((sum, f) => sum + f.size, 0);
-      if(totalBytes > 20 * 1024 * 1024){
-        return res.status(413).json({ success:false, tooLarge:true });
-      }
+    // Block if total file size exceeds 20MB
+    const totalBytes = (req.files || []).reduce((sum, f) => sum + f.size, 0);
+    if(totalBytes > 20 * 1024 * 1024){
+      return res.status(413).json({ success:false, tooLarge:true });
+    }
+
+    // Build attachments array for nodemailer
+    const attachments = (req.files || []).map(f => ({
+      filename: f.originalname,
+      content: f.buffer,
+      contentType: f.mimetype
+    }));
 
     if(process.env.SMTP_HOST && process.env.SMTP_USER){
       // SMTP SSL — first priority
