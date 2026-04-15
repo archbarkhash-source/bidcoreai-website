@@ -346,7 +346,7 @@ async function submitSvc(){
     err.style.display='block';
   }
   if(btn){btn.disabled=false;btn.innerHTML='<svg width="14" height="14"><use href="#ic-send"/></svg> Submit Takeoff Request';}
-}g
+}
 
 /* ─── FILE LIST WITH REMOVE BUTTON ─── */
 function showFileList(){
