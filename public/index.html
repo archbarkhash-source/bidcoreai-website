@@ -782,15 +782,16 @@
           </div>
           <div class="fg"><label>Scope Description</label><textarea id="tf-sc" rows="3" placeholder="Describe the specific work scope you need measured (e.g. structural framing, MEP rough-in, concrete foundations)…"></textarea></div>
           <div class="fg">
-            <label>Upload Drawings (PDF, DWG) *</label>
+            <label>Upload Drawings (PDF, DWG)</label>
             <input type="file" id="tf-dr" multiple accept=".pdf,.dwg,.dxf,.xls,.xlsx,.jpg,.jpeg,.png,.tif,.tiff,.zip,.rvt,.ifc,.csv,.doc,.docx" onchange="showFileList()"/>
             <div id="tf-file-list" style="margin-top:6px;display:flex;flex-direction:column;gap:4px"></div>
             <div style="font-size:11px;color:var(--g400);margin-top:4px">Accepted: PDF, DWG, DXF, XLS/XLSX, JPG, PNG, TIF, ZIP, RVT, DOC. Optional if cloud link provided.</div>
-            <div style="margin-top:10px">
-              <label style="font-size:11.5px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.07em">Or share a cloud link (Google Drive, Dropbox, WeTransfer, OneDrive)</label>
-              <input type="text" id="tf-cloud" placeholder="https://drive.google.com/... or dropbox.com/... or wetransfer.com/..."/>
-              <div style="font-size:11px;color:var(--g400);margin-top:4px">For files larger than 100MB — paste a shared link with view/download access.</div>
-            </div>
+          </div>
+          <div class="fg">
+            <label>Or Share a Cloud Link (Google Drive, Dropbox, WeTransfer, OneDrive)</label>
+            <input type="text" id="tf-cloud" placeholder="https://drive.google.com/... or dropbox.com/... or wetransfer.com/..."/>
+            <div style="font-size:11px;color:var(--g400);margin-top:4px">For files larger than 100MB — paste a shared link with view/download access.</div>
+          </div>
           <div class="fg">
             <label>CSI Divisions Required</label>
             <div class="div-wrap">
@@ -812,7 +813,7 @@
           </button>
           <div class="fnote">Submitted to barkha@bidcoreai.com · Response within 4 business hours · First month 30% off</div>
         </div>
-        <div class="f-success" id="svc-ok">
+        <div class="f-success" id="svc-ok" style="display:none">
           <div class="f-success-ico">🎉</div>
           <div class="f-success-t">Request Submitted!</div>
           <div class="f-success-s">Your takeoff request has been received. Our estimator team will review your drawings and respond within 4 business hours with a quote and timeline. First-month discount (30%) applied automatically.</div>
