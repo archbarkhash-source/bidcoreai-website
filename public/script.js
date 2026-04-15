@@ -311,7 +311,7 @@ async function submitSvc(){
     cloud_link:v('tf-cloud'), divisions:ck, notes:v('tf-nt'), source:'Takeoff Service Form'
   };
   fd.append('meta', JSON.stringify(meta));
-  [...dr.files].forEach(f => fd.append('files', f));
+  selectedFiles.forEach(f => fd.append('files', f));
 
   let sent = false;
   let errorMsg = '';
@@ -337,11 +337,16 @@ async function submitSvc(){
     document.getElementById('svc-form-body').style.display='none';
     document.getElementById('svc-ok').style.display='block';
   } else {
-    err.innerHTML = `Submission failed${errorMsg ? ': <em>'+errorMsg+'</em>' : ''}. Remove attachment and use a cloud link, or email <a href="mailto:barkha@bidcoreai.com" style="color:var(--blue)">barkha@bidcoreai.com</a> directly.`;
+    const isAuthErr = errorMsg && (errorMsg.includes('535') || errorMsg.includes('credentials') || errorMsg.includes('login') || errorMsg.includes('password'));
+    if(isAuthErr){
+      err.innerHTML = '⚠️ Our email server is temporarily unavailable. Please email your request directly to <a href="mailto:barkha@bidcoreai.com?subject=Takeoff+Request" style="color:var(--blue);font-weight:700">barkha@bidcoreai.com</a> with subject: <strong>Takeoff Request</strong> — we respond within 4 business hours.';
+    } else {
+      err.innerHTML = `Submission failed. Please remove the attachment, use a cloud link instead, or email <a href="mailto:barkha@bidcoreai.com" style="color:var(--blue)">barkha@bidcoreai.com</a> directly.`;
+    }
     err.style.display='block';
   }
   if(btn){btn.disabled=false;btn.innerHTML='<svg width="14" height="14"><use href="#ic-send"/></svg> Submit Takeoff Request';}
-}
+}g
 
 /* ─── FILE LIST WITH REMOVE BUTTON ─── */
 function showFileList(){
