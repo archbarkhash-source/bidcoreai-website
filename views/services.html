@@ -4,8 +4,8 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Construction Takeoff Services & Estimating – $15/hr | BidcoreAI</title>
-<meta name="description" content="Professional construction takeoff services and outsourced estimating support for US contractors. Expert estimators handle drywall, flooring, framing, MEP, doors & windows takeoffs. $15/hr, 24–72hr turnaround, results fed directly into BidcoreAI."/>
-<meta name="keywords" content="construction takeoff services, quantity takeoff service, outsource estimating, how much do takeoff services cost, construction estimating services, drywall takeoff, flooring takeoff, doors windows takeoff, AI takeoff software, best takeoff software for contractors, how to win more bids construction, quantity takeoff checklist, outsourced estimating support"/>
+<meta name="description" content="Professional construction takeoff services and professional estimating support for US contractors. Our expert estimators follow US CSI MasterFormat standards to deliver accurate quantity takeoffs across drywall, flooring, framing, MEP, doors & windows, and more using the BidcoreAI AI-powered takeoff tool. Reduce manual measuring, accelerate bid turnaround, expand estimating capacity, and keep your team focused on winning projects."/>
+<meta name="keywords" content="construction takeoff services, quantity takeoff service, outsource estimating, how much do takeoff services cost, construction estimating services, drywall takeoff, flooring takeoff, doors windows takeoff, AI takeoff software, best takeoff software for contractors, how to win more bids construction, quantity takeoff checklist, professional estimating support"/>
 <meta name="description" content="Professional construction takeoff services for US contractors. Drywall, flooring, framing, MEP, doors &amp; windows. $15/hr, expert US estimators, results direct to BidcoreAI."/>
 <link rel="canonical" href="https://bidcoreai.com/takeoff-services"/>
 <!-- Open Graph -->
@@ -22,6 +22,59 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="../public/style.css"/>
+<style>
+/* ── Mobile fixes for services.html ── */
+
+/* 1. Hero: reduce massive top padding on mobile */
+@media(max-width:768px){
+  .sol-hero{padding:40px 16px 36px !important}
+  .sol-hero-in{padding:0}
+
+  /* 2. svc-layout: stack price card + steps vertically */
+  .svc-layout{grid-template-columns:1fr !important;gap:24px !important;margin-top:28px !important}
+
+  /* 3. svc-steps: full width */
+  .svc-steps{margin-top:0}
+
+  /* 4. Hero text: tighten up */
+  .sol-hero .h1{font-size:clamp(26px,7vw,38px) !important;line-height:1.15}
+  .sol-hero p{font-size:14px !important;margin-top:10px}
+
+  /* 5. Pills: wrap tightly */
+  .sol-hero .pill{font-size:9.5px;padding:4px 10px}
+
+  /* 6. Trade cards grid: 1 column on mobile */
+  .trade-cards-grid{grid-template-columns:1fr !important}
+
+  /* 7. Section padding: reduce on mobile */
+  section[style*="padding:80px"]{padding:48px 16px !important}
+  section[style*="padding:56px"]{padding:40px 16px !important}
+  section[style*="padding:88px"]{padding:56px 16px !important}
+  section[style*="padding:72px"]{padding:48px 16px !important}
+
+  /* 8. FAQ section padding */
+  #faq{padding:48px 16px !important}
+
+  /* 9. Takeoff form section */
+  .rform-wrap{padding:20px 16px !important;margin-top:24px}
+  .fg2{grid-template-columns:1fr !important}
+  .fg3{grid-template-columns:1fr !important}
+
+  /* 10. Related services navy section */
+  section[style*="background:var(--navy)"]{padding:40px 16px !important}
+}
+
+@media(max-width:480px){
+  .sol-hero{padding:32px 14px 28px !important}
+  .svc-price-v{font-size:38px !important}
+}
+</style>
+<style>
+/* Safety: ensure content is always visible (rv animation should not block content) */
+.rv{opacity:1 !important;transform:none !important}
+.rv.will-animate{opacity:0 !important;transform:translateY(18px) !important}
+.rv.will-animate.vis{opacity:1 !important;transform:none !important}
+</style>
 </head>
 <body>
 
@@ -129,7 +182,7 @@
           <svg width="11" height="11"><use href="#ic-scan"/></svg> Optional Add-On Service
         </div>
         <h1 class="h1" style="font-size:clamp(28px,3.8vw,52px)">Construction Takeoff<br><span style="color:var(--orange)">& Estimating Services</span></h1>
-        <p style="font-size:16px;color:rgba(255,255,255,.6);max-width:560px;line-height:1.74;margin-top:12px">Professional construction takeoff services and outsourced estimating support for US contractors. Our expert estimators follow US CSI MasterFormat standards to deliver accurate quantity takeoffs across drywall, flooring, framing, MEP, doors & windows, and more using the BidcoreAI AI-powered takeoff tool. Reduce manual measuring, accelerate bid turnaround, and keep your team focused on winning projects.</p>
+        <p style="font-size:16px;color:rgba(255,255,255,.6);max-width:560px;line-height:1.74;margin-top:12px">Professional construction takeoff services for US contractors. Our expert estimators follow US CSI MasterFormat standards to deliver accurate quantity takeoffs across drywall, flooring, framing, MEP, doors &amp; windows, and more using the BidcoreAI AI-powered takeoff tool. Augment your estimating capacity, scale operations, pursue more bids, accelerate bid turnaround, and keep your team focused on winning projects.</p>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:18px">
           <span class="pill pill-o"><svg width="10" height="10"><use href="#ic-scan"/></svg> Professional Takeoff</span>
           <span class="pill pill-t"><svg width="10" height="10"><use href="#ic-check"/></svg> Expert US Estimators</span>
@@ -144,8 +197,8 @@
             <div class="svc-price-u">/hour · professional estimator rate</div>
           </div>
           <div class="svc-dels">
-            <div class="svc-del"><svg width="13" height="13" style="color:var(--teal)"><use href="#ic-check"/></svg> Measured by experienced US standards estimators</div>
-            <div class="svc-del"><svg width="13" height="13" style="color:var(--teal)"><use href="#ic-check"/></svg> AI-powered BidcoreAI takeoff tool</div>
+            <div class="svc-del"><svg width="13" height="13" style="color:var(--teal)"><use href="#ic-check"/></svg> Measured by estimators experienced in US construction standards.</div>
+            <div class="svc-del"><svg width="13" height="13" style="color:var(--teal)"><use href="#ic-check"/></svg> AI-Powered BidcoreAI Takeoff Tool</div>
             <div class="svc-del"><svg width="13" height="13" style="color:var(--teal)"><use href="#ic-check"/></svg> Results exported directly to BidcoreAI</div>
             <div class="svc-del"><svg width="13" height="13" style="color:var(--teal)"><use href="#ic-check"/></svg> Turnaround: 24–72 hours typical</div>
             <div class="svc-del"><svg width="13" height="13" style="color:var(--teal)"><use href="#ic-check"/></svg> Any trade · Any CSI division</div>
@@ -159,8 +212,8 @@
           <h3 class="h3" style="margin-bottom:14px">How the Takeoff Service Works</h3>
           <div class="svc-steps">
             <div class="svc-step"><div class="svc-n">1</div><div><div class="svc-t">Upload Drawings via Request Form</div><div class="svc-s">Submit your drawings, project details, and desired CSI divisions via the form below</div></div></div>
-            <div class="svc-step"><div class="svc-n">2</div><div><div class="svc-t">Expert Estimator Assigned</div><div class="svc-s">A professional experienced on US standards estimator reviews your drawings and confirms scope within 4 business hours</div></div></div>
-            <div class="svc-step"><div class="svc-n">3</div><div><div class="svc-t">Quantities Measured & Organized</div><div class="svc-s">Full quantity takeoff performed using the BidcoreAI AI-powered takeoff workflow, organized in accordance with US CSI MasterFormat divisions.</div></div></div>
+            <div class="svc-step"><div class="svc-n">2</div><div><div class="svc-t">Expert Estimator Assigned</div><div class="svc-s">A professional estimator experienced in US construction standards reviews your drawings and confirms the project scope within 4 business hours.</div></div></div>
+            <div class="svc-step"><div class="svc-n">3</div><div><div class="svc-t">Quantities Measured & Organized</div><div class="svc-s">Full takeoff performed using the AI-powered BidcoreAI takeoff tool, organized by CSI division</div></div></div>
             <div class="svc-step"><div class="svc-n">4</div><div><div class="svc-t">Delivered to BidcoreAI</div><div class="svc-s">Completed quantities exported directly to your BidcoreAI project — ready for cost estimation</div></div></div>
           </div>
         </div>
@@ -265,7 +318,7 @@
       <h2 class="h2">Every Trade. Every CSI Division.</h2>
       <p class="lead" style="margin:12px auto 0">Our estimators are experienced across all construction trades. Whether you need a drywall takeoff, flooring quantities, or a full MEP scope — we measure it and deliver it directly into your BidcoreAI project.</p>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px" class="rv">
+    <div class="rv trade-cards-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px">
 
       <!-- Drywall -->
       <div style="background:var(--g50);border:1px solid var(--g200);border-radius:16px;padding:24px 20px">
@@ -340,7 +393,7 @@
       <div style="background:linear-gradient(135deg,var(--dk),var(--navy));border-radius:16px;padding:24px 20px;border:1px solid rgba(255,255,255,.08)">
         <div style="width:42px;height:42px;border-radius:11px;background:rgba(255,107,0,.18);display:flex;align-items:center;justify-content:center;margin-bottom:14px;color:var(--org2)"><svg width="20" height="20"><use href="#ic-calc"/></svg></div>
         <h3 style="font-family:var(--fh);font-size:15px;font-weight:700;color:#fff;margin-bottom:8px">Construction Estimating Services</h3>
-        <p style="font-size:12.5px;color:rgba(255,255,255,.6);line-height:1.68;margin-bottom:14px">Need more than quantities? Our estimators can deliver a full priced estimate — materials, labor, and equipment — using your BidcoreAI cost database or national benchmark pricing. Complete outsourced estimating support.</p>
+        <p style="font-size:12.5px;color:rgba(255,255,255,.6);line-height:1.68;margin-bottom:14px">Need more than quantities? Our estimators can deliver a full priced estimate — materials, labor, and equipment — using your BidcoreAI cost database or national benchmark pricing. Complete estimating support.</p>
         <ul style="list-style:none;display:flex;flex-direction:column;gap:5px">
           <li style="display:flex;align-items:center;gap:7px;font-size:12px;color:rgba(255,255,255,.8)"><span style="color:#4ade80"><svg width="12" height="12"><use href="#ic-check"/></svg></span> Full priced estimate</li>
           <li style="display:flex;align-items:center;gap:7px;font-size:12px;color:rgba(255,255,255,.8)"><span style="color:#4ade80"><svg width="12" height="12"><use href="#ic-check"/></svg></span> Your cost library or benchmark</li>

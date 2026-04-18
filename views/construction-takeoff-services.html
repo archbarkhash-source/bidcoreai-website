@@ -19,6 +19,31 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="../public/style.css"/>
+<style>
+/* ── Mobile fixes for takeoff sub-pages ── */
+@media(max-width:768px){
+  .sol-hero{padding:40px 16px 36px !important}
+  .sol-hero .h1{font-size:clamp(26px,7vw,38px) !important;line-height:1.15}
+  .sol-hero p{font-size:14px !important;margin-top:10px}
+  .sol-hero .pill{font-size:9.5px;padding:4px 10px}
+  .sol-hero [style*="display:flex;gap:10px"]{flex-direction:column;align-items:flex-start}
+  .svc-layout{grid-template-columns:1fr !important;gap:24px !important;margin-top:28px !important}
+  .trade-cards-grid{grid-template-columns:1fr !important}
+  section{padding-left:16px !important;padding-right:16px !important}
+  .rform-wrap{padding:20px 16px !important}
+  .fg2{grid-template-columns:1fr !important}
+  .fg3{grid-template-columns:1fr !important}
+  #faq{padding:48px 16px !important}
+}
+@media(max-width:480px){
+  .sol-hero{padding:32px 14px 28px !important}
+  .svc-price-v{font-size:38px !important}
+}
+/* Safety: ensure reveal animation never hides content */
+.rv{opacity:1 !important;transform:none !important}
+.rv.will-animate{opacity:0 !important;transform:translateY(18px) !important}
+.rv.will-animate.vis{opacity:1 !important;transform:none !important}
+</style>
 </head>
 <body>
 
@@ -66,8 +91,8 @@
 </svg>
 
 <!-- ══════════ MOBILE MENU OVERLAY ══════════ -->
-<div class="mob-overlay" id="mob-overlay" onclick="closeMob()" style="display:none"></div>
-<nav class="mob-nav" id="mob-nav" style="transform:translateX(-100%)">
+<div class="mob-overlay" id="mob-overlay" onclick="closeMob()"></div>
+<nav class="mob-nav" id="mob-nav">
   <div class="mob-nav-head">
     <a class="logo-wrap" href="/">
       <img class="logo-img" src="https://bidcoreai-assets.vercel.app/logo.png" alt="BidcoreAI"
@@ -133,7 +158,7 @@
         <span class="pill pill-g"><svg width="10" height="10"><use href="#ic-percent"/></svg> First Month 30% Off</span>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:24px">
-        <a href="/takeoff-services#svc-form-section" class="btn btn-p btn-lg">
+        <a href="services.html#svc-form-section" class="btn btn-p btn-lg">
           <svg width="16" height="16"><use href="#ic-scan"/></svg> Request This Takeoff
         </a>
         <a href="/takeoff-services" class="btn btn-gh btn-lg">
@@ -150,8 +175,8 @@
           <div class="svc-price-u">/hour · professional estimator rate</div>
         </div>
         <div class="svc-dels">
-          <div class="svc-del"><svg width="13" height="13" style="color:var(--teal)"><use href="#ic-check"/></svg> Experienced US standards estimators</div>
-          <div class="svc-del"><svg width="13" height="13" style="color:var(--teal)"><use href="#ic-check"/></svg> AI-powered BidcoreAI takeoff tool</div>
+          <div class="svc-del"><svg width="13" height="13" style="color:var(--teal)"><use href="#ic-check"/></svg> Licensed US estimators</div>
+          <div class="svc-del"><svg width="13" height="13" style="color:var(--teal)"><use href="#ic-check"/></svg> Bluebeam &amp; PlanSwift</div>
           <div class="svc-del"><svg width="13" height="13" style="color:var(--teal)"><use href="#ic-check"/></svg> Results exported to BidcoreAI</div>
           <div class="svc-del"><svg width="13" height="13" style="color:var(--teal)"><use href="#ic-check"/></svg> 24–72 hour turnaround</div>
         </div>
@@ -287,5 +312,24 @@
 </div>
 
 <script src="../public/script.js"></script>
+
+<script>
+/* Local preview helper — rewrites clean URLs to .html when opened via file:// */
+if(window.location.protocol === 'file:'){
+  document.querySelectorAll('a[href]').forEach(function(a){
+    var h = a.getAttribute('href');
+    var map = {'/':' index.html','/solutions':'solutions.html','/pricing':'pricing.html',
+      '/takeoff-services':'services.html','/feedback':'feedback.html','/contact':'contact.html',
+      '/drywall-takeoff-services':'drywall-takeoff-services.html',
+      '/flooring-takeoff-services':'flooring-takeoff-services.html',
+      '/doors-windows-takeoff-services':'doors-windows-takeoff-services.html',
+      '/construction-takeoff-services':'construction-takeoff-services.html',
+      '/construction-estimating-services':'construction-estimating-services.html'
+    };
+    if(map[h]) a.setAttribute('href', map[h]);
+  });
+}
+</script>
+
 </body>
 </html>
