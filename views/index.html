@@ -386,7 +386,7 @@
       <p class="lead" style="margin:12px auto 0">BidcoreAI combines professional construction takeoff services with AI-powered estimating automation — so you spend less time measuring drawings and more time winning work.</p>
     </div>
 
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px" class="rv">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px" class="rv seo-cards-grid">
 
       <div style="background:var(--white);border:1px solid var(--g200);border-radius:14px;padding:24px">
         <div style="font-family:var(--fh);font-size:14px;font-weight:700;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;gap:8px">
@@ -550,5 +550,18 @@ if(window.location.protocol === 'file:'){
 }
 </script>
 
+
+<style>
+/* ── Home page: SEO keyword cards — stack on mobile ── */
+@media(max-width:768px){
+  .seo-cards-grid{
+    grid-template-columns:1fr !important;
+    gap:16px !important;
+  }
+  /* Prevent any section from overflowing viewport width */
+  section{max-width:100vw;overflow-x:hidden}
+  .con{padding-left:16px !important;padding-right:16px !important}
+}
+</style>
 </body>
 </html>
