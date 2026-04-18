@@ -340,6 +340,8 @@ button{font-family:var(--fb)}
 .ft-links{list-style:none;display:flex;flex-direction:column;gap:7px}
 .ft-links li{font-size:12px;color:rgba(255,255,255,.4);cursor:pointer;transition:color .14s}
 .ft-links li:hover{color:#fff}
+.ft-links li a{display:block;font-size:12px;color:rgba(255,255,255,.4);text-decoration:none;cursor:pointer;transition:color .14s}
+.ft-links li a:hover{color:#fff}
 .ft-bot{border-top:1px solid rgba(255,255,255,.05);padding-top:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
 .ft-copy{font-size:11px;color:rgba(255,255,255,.22)}
 .ft-flag{font-size:11px;color:rgba(255,255,255,.3);display:flex;align-items:center;gap:5px}
