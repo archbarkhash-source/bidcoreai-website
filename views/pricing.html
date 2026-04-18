@@ -67,10 +67,10 @@
 </svg>
 
 <!-- ══════════ MOBILE MENU OVERLAY ══════════ -->
-<div class="mob-overlay" id="mob-overlay" onclick="closeMob()" style="display:none"></div>
-<nav class="mob-nav" id="mob-nav" style="transform:translateX(-100%)">
+<div class="mob-overlay" id="mob-overlay" onclick="closeMob()"></div>
+<nav class="mob-nav" id="mob-nav">
   <div class="mob-nav-head">
-    <a class="logo-wrap" href="index.html">
+    <a class="logo-wrap" href="/">
       <img class="logo-img" src="https://bidcoreai-assets.vercel.app/logo.png" alt="BidcoreAI"
         onerror="this.style.display='none';this.nextElementSibling.style.display='block'"/>
       <span class="logo-txt" style="display:none">BidcoreAI</span>
@@ -80,12 +80,12 @@
     </button>
   </div>
   <div class="mob-links">
-    <a class="mob-nl" href="index.html"><svg width="14" height="14"><use href="#ic-home"/></svg> Home</a>
-    <a class="mob-nl" href="solutions.html"><svg width="14" height="14"><use href="#ic-layout"/></svg> Solutions</a>
-    <a class="mob-nl" href="pricing.html"><svg width="14" height="14"><use href="#ic-tag"/></svg> Pricing</a>
-    <a class="mob-nl hl" href="services.html"><svg width="14" height="14"><use href="#ic-scan"/></svg> Takeoff Services</a>
-    <a class="mob-nl" href="feedback.html"><svg width="14" height="14"><use href="#ic-star"/></svg> Feedback</a>
-    <a class="mob-nl" href="contact.html"><svg width="14" height="14"><use href="#ic-mail"/></svg> Contact</a>
+    <a class="mob-nl" href="/"><svg width="14" height="14"><use href="#ic-home"/></svg> Home</a>
+    <a class="mob-nl" href="/solutions"><svg width="14" height="14"><use href="#ic-layout"/></svg> Solutions</a>
+    <a class="mob-nl" href="/pricing"><svg width="14" height="14"><use href="#ic-tag"/></svg> Pricing</a>
+    <a class="mob-nl hl" href="/takeoff-services"><svg width="14" height="14"><use href="#ic-scan"/></svg> Takeoff Services</a>
+    <a class="mob-nl" href="/feedback"><svg width="14" height="14"><use href="#ic-star"/></svg> Feedback</a>
+    <a class="mob-nl" href="/contact"><svg width="14" height="14"><use href="#ic-mail"/></svg> Contact</a>
   </div>
   <div class="mob-cta">
     <button class="btn btn-p" style="width:100%;justify-content:center" onclick="openModal()">
@@ -100,18 +100,18 @@
     <button class="mob-toggle" onclick="openMob()" aria-label="Menu">
       <svg width="20" height="20"><use href="#ic-menu"/></svg>
     </button>
-    <a class="logo-wrap" href="index.html">
+    <a class="logo-wrap" href="/">
       <img class="logo-img" src="https://bidcoreai-assets.vercel.app/logo.png" alt="BidcoreAI"
         onerror="this.style.display='none';this.nextElementSibling.style.display='block'"/>
       <span class="logo-txt" style="display:none">BidcoreAI</span>
     </a>
     <div class="nav-links" id="nav-links">
-      <a class="nl" id="nl-home" href="index.html"><svg width="13" height="13"><use href="#ic-home"/></svg> Home</a>
-      <a class="nl" id="nl-solutions" href="solutions.html">Solutions</a>
-      <a class="nl on" id="nl-pricing" href="pricing.html">Pricing</a>
-      <a class="nl hl" id="nl-services" href="services.html"><svg width="13" height="13"><use href="#ic-scan"/></svg> Takeoff Services</a>
-      <a class="nl" id="nl-feedback" href="feedback.html">Feedback</a>
-      <a class="nl" id="nl-contact" href="contact.html">Contact</a>
+      <a class="nl" id="nl-home" href="/"><svg width="13" height="13"><use href="#ic-home"/></svg> Home</a>
+      <a class="nl" id="nl-solutions" href="/solutions">Solutions</a>
+      <a class="nl on" id="nl-pricing" href="/pricing">Pricing</a>
+      <a class="nl hl" id="nl-services" href="/takeoff-services"><svg width="13" height="13"><use href="#ic-scan"/></svg> Takeoff Services</a>
+      <a class="nl" id="nl-feedback" href="/feedback">Feedback</a>
+      <a class="nl" id="nl-contact" href="/contact">Contact</a>
     </div>
     <div class="nav-cta">
       <button class="btn btn-gh btn-sm nav-demo" onclick="openModal()">Live Demo</button>
@@ -203,7 +203,7 @@
           </div>
           <div style="font-size:13px;color:rgba(255,255,255,.55);line-height:1.6;max-width:540px">Expert US estimators measure your drawings and deliver quantities directly into BidcoreAI. Available as add-on for Starter. Included for Pro (1 project/month up to 16 hrs). First month 30% off (up to 2 projects), then 20% ongoing discount for Pro subscribers.</div>
         </div>
-        <button class="btn btn-p" href="services.html">
+        <button class="btn btn-p" href="/takeoff-services">
           <svg width="13" height="13"><use href="#ic-scan"/></svg> Learn More
         </button>
       </div>
@@ -227,27 +227,27 @@
       <div>
         <div class="ft-col-t">Platform</div>
         <ul class="ft-links">
-          <li href="index.html">Home</li>
-          <li href="solutions.html">Solutions</li>
-          <li href="pricing.html">Pricing</li>
-          <li href="services.html">Takeoff Services</li>
+          <li href="/">Home</li>
+          <li href="/solutions">Solutions</li>
+          <li href="/pricing">Pricing</li>
+          <li href="/takeoff-services">Takeoff Services</li>
         </ul>
       </div>
       <div>
         <div class="ft-col-t">For You</div>
         <ul class="ft-links">
-          <li href="solutions.html">Federal GCs</li>
-          <li href="solutions.html">Subcontractors</li>
-          <li href="solutions.html">Prime Contractors</li>
-          <li href="solutions.html">Multifamily Builders</li>
-          <li href="solutions.html">Freelance Estimators</li>
+          <li href="/solutions">Federal GCs</li>
+          <li href="/solutions">Subcontractors</li>
+          <li href="/solutions">Prime Contractors</li>
+          <li href="/solutions">Multifamily Builders</li>
+          <li href="/solutions">Freelance Estimators</li>
         </ul>
       </div>
       <div>
         <div class="ft-col-t">Company</div>
         <ul class="ft-links">
-          <li href="feedback.html">Feedback</li>
-          <li href="contact.html">Contact</li>
+          <li href="/feedback">Feedback</li>
+          <li href="/contact">Contact</li>
           <li onclick="openModal()">Book Demo</li>
           <li onclick="openModal()">Free Trial</li>
         </ul>
@@ -310,5 +310,24 @@
 </div>
 
 <script src="../public/script.js"></script>
+
+<script>
+/* Local preview helper — rewrites clean URLs to .html when opened via file:// */
+if(window.location.protocol === 'file:'){
+  document.querySelectorAll('a[href]').forEach(function(a){
+    var h = a.getAttribute('href');
+    var map = {'/':' index.html','/solutions':'solutions.html','/pricing':'pricing.html',
+      '/takeoff-services':'services.html','/feedback':'feedback.html','/contact':'contact.html',
+      '/drywall-takeoff-services':'drywall-takeoff-services.html',
+      '/flooring-takeoff-services':'flooring-takeoff-services.html',
+      '/doors-windows-takeoff-services':'doors-windows-takeoff-services.html',
+      '/construction-takeoff-services':'construction-takeoff-services.html',
+      '/construction-estimating-services':'construction-estimating-services.html'
+    };
+    if(map[h]) a.setAttribute('href', map[h]);
+  });
+}
+</script>
+
 </body>
 </html>

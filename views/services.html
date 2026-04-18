@@ -69,10 +69,10 @@
 </svg>
 
 <!-- ══════════ MOBILE MENU OVERLAY ══════════ -->
-<div class="mob-overlay" id="mob-overlay" onclick="closeMob()" style="display:none"></div>
-<nav class="mob-nav" id="mob-nav" style="transform:translateX(-100%)">
+<div class="mob-overlay" id="mob-overlay" onclick="closeMob()"></div>
+<nav class="mob-nav" id="mob-nav">
   <div class="mob-nav-head">
-    <a class="logo-wrap" href="index.html">
+    <a class="logo-wrap" href="/">
       <img class="logo-img" src="https://bidcoreai-assets.vercel.app/logo.png" alt="BidcoreAI"
         onerror="this.style.display='none';this.nextElementSibling.style.display='block'"/>
       <span class="logo-txt" style="display:none">BidcoreAI</span>
@@ -82,12 +82,12 @@
     </button>
   </div>
   <div class="mob-links">
-    <a class="mob-nl" href="index.html"><svg width="14" height="14"><use href="#ic-home"/></svg> Home</a>
-    <a class="mob-nl" href="solutions.html"><svg width="14" height="14"><use href="#ic-layout"/></svg> Solutions</a>
-    <a class="mob-nl" href="pricing.html"><svg width="14" height="14"><use href="#ic-tag"/></svg> Pricing</a>
-    <a class="mob-nl hl" href="services.html"><svg width="14" height="14"><use href="#ic-scan"/></svg> Takeoff Services</a>
-    <a class="mob-nl" href="feedback.html"><svg width="14" height="14"><use href="#ic-star"/></svg> Feedback</a>
-    <a class="mob-nl" href="contact.html"><svg width="14" height="14"><use href="#ic-mail"/></svg> Contact</a>
+    <a class="mob-nl" href="/"><svg width="14" height="14"><use href="#ic-home"/></svg> Home</a>
+    <a class="mob-nl" href="/solutions"><svg width="14" height="14"><use href="#ic-layout"/></svg> Solutions</a>
+    <a class="mob-nl" href="/pricing"><svg width="14" height="14"><use href="#ic-tag"/></svg> Pricing</a>
+    <a class="mob-nl hl" href="/takeoff-services"><svg width="14" height="14"><use href="#ic-scan"/></svg> Takeoff Services</a>
+    <a class="mob-nl" href="/feedback"><svg width="14" height="14"><use href="#ic-star"/></svg> Feedback</a>
+    <a class="mob-nl" href="/contact"><svg width="14" height="14"><use href="#ic-mail"/></svg> Contact</a>
   </div>
   <div class="mob-cta">
     <button class="btn btn-p" style="width:100%;justify-content:center" onclick="openModal()">
@@ -102,18 +102,18 @@
     <button class="mob-toggle" onclick="openMob()" aria-label="Menu">
       <svg width="20" height="20"><use href="#ic-menu"/></svg>
     </button>
-    <a class="logo-wrap" href="index.html">
+    <a class="logo-wrap" href="/">
       <img class="logo-img" src="https://bidcoreai-assets.vercel.app/logo.png" alt="BidcoreAI"
         onerror="this.style.display='none';this.nextElementSibling.style.display='block'"/>
       <span class="logo-txt" style="display:none">BidcoreAI</span>
     </a>
     <div class="nav-links" id="nav-links">
-      <a class="nl" id="nl-home" href="index.html"><svg width="13" height="13"><use href="#ic-home"/></svg> Home</a>
-      <a class="nl" id="nl-solutions" href="solutions.html">Solutions</a>
-      <a class="nl" id="nl-pricing" href="pricing.html">Pricing</a>
-      <a class="nl on hl" id="nl-services" href="services.html"><svg width="13" height="13"><use href="#ic-scan"/></svg> Takeoff Services</a>
-      <a class="nl" id="nl-feedback" href="feedback.html">Feedback</a>
-      <a class="nl" id="nl-contact" href="contact.html">Contact</a>
+      <a class="nl" id="nl-home" href="/"><svg width="13" height="13"><use href="#ic-home"/></svg> Home</a>
+      <a class="nl" id="nl-solutions" href="/solutions">Solutions</a>
+      <a class="nl" id="nl-pricing" href="/pricing">Pricing</a>
+      <a class="nl on hl" id="nl-services" href="/takeoff-services"><svg width="13" height="13"><use href="#ic-scan"/></svg> Takeoff Services</a>
+      <a class="nl" id="nl-feedback" href="/feedback">Feedback</a>
+      <a class="nl" id="nl-contact" href="/contact">Contact</a>
     </div>
     <div class="nav-cta">
       <button class="btn btn-gh btn-sm nav-demo" onclick="openModal()">Live Demo</button>
@@ -248,7 +248,7 @@
           <div class="f-success-ico">🎉</div>
           <div class="f-success-t">Request Submitted!</div>
           <div class="f-success-s">Your takeoff request has been received. Our estimator team will review your drawings and respond within 4 business hours with a quote and timeline. First-month discount (30%) applied automatically.</div>
-          <button class="btn btn-n" style="margin-top:18px" href="index.html">Back to Home</button>
+          <button class="btn btn-n" style="margin-top:18px" href="/">Back to Home</button>
         </div>
       </div>
     </div>
@@ -278,7 +278,7 @@
           <li style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text)"><span style="color:#22c55e"><svg width="12" height="12"><use href="#ic-check"/></svg></span> Insulation, tape, compound</li>
           <li style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text)"><span style="color:#22c55e"><svg width="12" height="12"><use href="#ic-check"/></svg></span> CSI Div 09 organized output</li>
         </ul>
-        <a href="drywall-takeoff-services.html" style="display:inline-flex;align-items:center;gap:5px;margin-top:16px;font-size:12px;font-weight:700;color:var(--blue);text-decoration:none">Learn more about Drywall Takeoffs →</a>
+        <a href="/drywall-takeoff-services" style="display:inline-flex;align-items:center;gap:5px;margin-top:16px;font-size:12px;font-weight:700;color:var(--blue);text-decoration:none">Learn more about Drywall Takeoffs →</a>
       </div>
 
       <!-- Flooring -->
@@ -292,7 +292,7 @@
           <li style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text)"><span style="color:#22c55e"><svg width="12" height="12"><use href="#ic-check"/></svg></span> Substrate prep quantities</li>
           <li style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text)"><span style="color:#22c55e"><svg width="12" height="12"><use href="#ic-check"/></svg></span> By room or finish schedule</li>
         </ul>
-        <a href="flooring-takeoff-services.html" style="display:inline-flex;align-items:center;gap:5px;margin-top:16px;font-size:12px;font-weight:700;color:var(--blue);text-decoration:none">Learn more about Flooring Takeoffs →</a>
+        <a href="/flooring-takeoff-services" style="display:inline-flex;align-items:center;gap:5px;margin-top:16px;font-size:12px;font-weight:700;color:var(--blue);text-decoration:none">Learn more about Flooring Takeoffs →</a>
       </div>
 
       <!-- Doors & Windows -->
@@ -306,7 +306,7 @@
           <li style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text)"><span style="color:#22c55e"><svg width="12" height="12"><use href="#ic-check"/></svg></span> Hardware sets &amp; frame types</li>
           <li style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text)"><span style="color:#22c55e"><svg width="12" height="12"><use href="#ic-check"/></svg></span> CSI Div 08 organized output</li>
         </ul>
-        <a href="doors-windows-takeoff-services.html" style="display:inline-flex;align-items:center;gap:5px;margin-top:16px;font-size:12px;font-weight:700;color:var(--blue);text-decoration:none">Learn more about Doors &amp; Windows Takeoffs →</a>
+        <a href="/doors-windows-takeoff-services" style="display:inline-flex;align-items:center;gap:5px;margin-top:16px;font-size:12px;font-weight:700;color:var(--blue);text-decoration:none">Learn more about Doors &amp; Windows Takeoffs →</a>
       </div>
 
       <!-- General Construction -->
@@ -320,7 +320,7 @@
           <li style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text)"><span style="color:#22c55e"><svg width="12" height="12"><use href="#ic-check"/></svg></span> Earthwork cut/fill</li>
           <li style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text)"><span style="color:#22c55e"><svg width="12" height="12"><use href="#ic-check"/></svg></span> All 50 CSI divisions</li>
         </ul>
-        <a href="construction-takeoff-services.html" style="display:inline-flex;align-items:center;gap:5px;margin-top:16px;font-size:12px;font-weight:700;color:var(--blue);text-decoration:none">Learn more about Construction Takeoffs →</a>
+        <a href="/construction-takeoff-services" style="display:inline-flex;align-items:center;gap:5px;margin-top:16px;font-size:12px;font-weight:700;color:var(--blue);text-decoration:none">Learn more about Construction Takeoffs →</a>
       </div>
 
       <!-- MEP -->
@@ -347,7 +347,7 @@
           <li style="display:flex;align-items:center;gap:7px;font-size:12px;color:rgba(255,255,255,.8)"><span style="color:#4ade80"><svg width="12" height="12"><use href="#ic-check"/></svg></span> Markup &amp; overhead applied</li>
           <li style="display:flex;align-items:center;gap:7px;font-size:12px;color:rgba(255,255,255,.8)"><span style="color:#4ade80"><svg width="12" height="12"><use href="#ic-check"/></svg></span> Bid-ready output</li>
         </ul>
-        <a href="construction-estimating-services.html" style="display:inline-flex;align-items:center;gap:5px;margin-top:16px;font-size:12px;font-weight:700;color:var(--org2);text-decoration:none">Learn more about Estimating Services →</a>
+        <a href="/construction-estimating-services" style="display:inline-flex;align-items:center;gap:5px;margin-top:16px;font-size:12px;font-weight:700;color:var(--org2);text-decoration:none">Learn more about Estimating Services →</a>
       </div>
 
     </div>
@@ -368,7 +368,7 @@
       <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span>What are takeoff services in construction?</span><svg class="faq-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-a">Takeoff services involve reviewing construction drawings, plans, and specifications to measure quantities of materials, labor, and scope items required for a project. These quantities form the foundation of accurate estimates, faster bids, and better project planning. Without a solid takeoff, bids are guesswork — with one, every line item is grounded in real measurements.</div></div>
       <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span>Why are takeoff services important?</span><svg class="faq-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-a">Accurate takeoffs help contractors reduce costly mistakes, avoid underbidding, improve material planning, control risk, and submit bids faster with greater confidence. Underbidding a job because of a missed quantity is one of the most common and avoidable ways contractors lose money. A proper takeoff eliminates that risk.</div></div>
       <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span>Who uses takeoff services?</span><svg class="faq-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-a">Takeoff services are used across the construction industry by General Contractors, Subcontractors, Builders, Developers, Estimators, Project Managers, Renovation Companies, and Preconstruction Teams. Whether you are bidding one project a month or twenty, professional takeoffs help you scale capacity without scaling headcount.</div></div>
-      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span>What trades do you cover?</span><svg class="faq-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-a">BidcoreAI supports takeoffs across multiple trades including All 50 CSI Divisons, Drywall &amp; Framing, Lumber, Roofing &amp; Siding, Concrete, Flooring, Doors &amp; Windows, Mechanical / Electrical / Plumbing (MEP), Painting, Insulation, and Sitework. If it appears on a set of construction drawings, we can measure it.</div></div>
+      <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span>What trades do you cover?</span><svg class="faq-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-a">BidcoreAI supports takeoffs across multiple trades including Drywall &amp; Framing, Lumber, Roofing &amp; Siding, Concrete, Flooring, Doors &amp; Windows, Mechanical / Electrical / Plumbing (MEP), Painting, Insulation, and Sitework. If it appears on a set of construction drawings, we can measure it.</div></div>
       <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span>What software do you use for takeoffs?</span><svg class="faq-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-a">Our primary workflow uses the <strong>BidcoreAI AI-Intelligent Takeoff Tool</strong>, built to improve speed, consistency, and estimating efficiency. For clients who need external file compatibility or prefer a familiar review environment, we can also deliver outputs in PlanSwift format — making it easy to hand off, continue, or verify quantities in a tool you already know.</div></div>
       <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span>What files do I need to send?</span><svg class="faq-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-a">You can send PDF plans, bid sets, construction drawings, specifications, scope sheets, addendums, or tender documents. PDF is the most common and preferred format. If your drawings are in Google Drive, Dropbox, or WeTransfer, simply share a link in the request form — no need to upload large files directly.</div></div>
       <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)"><span>What deliverables will I receive?</span><svg class="faq-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-a">Depending on your request, deliverables may include Marked-Up Image Files, PDF Takeoff Reports, Excel Quantity Sheets, Material Summaries, and Scope Breakdowns. For BidcoreAI platform users, quantities are delivered directly into your project for immediate cost estimation. If requested in advance, we can also provide PlanSwift Takeoff Files for clients who need editable source files.</div></div>
@@ -414,11 +414,11 @@ function toggleFaq(btn){
       <h2 class="h2 h2w" style="font-size:clamp(20px,2.4vw,32px)">Find Your Trade-Specific Service</h2>
     </div>
     <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center" class="rv">
-      <a href="construction-takeoff-services.html" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:9px 16px;font-size:12.5px;font-weight:600;color:rgba(255,255,255,.8);text-decoration:none;transition:all .16s" onmouseover="this.style.background='rgba(255,255,255,.13)'" onmouseout="this.style.background='rgba(255,255,255,.07)'"><svg width="12" height="12"><use href="#ic-building"/></svg> Construction Takeoff Services</a>
-      <a href="drywall-takeoff-services.html" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:9px 16px;font-size:12.5px;font-weight:600;color:rgba(255,255,255,.8);text-decoration:none;transition:all .16s" onmouseover="this.style.background='rgba(255,255,255,.13)'" onmouseout="this.style.background='rgba(255,255,255,.07)'"><svg width="12" height="12"><use href="#ic-layers"/></svg> Drywall Takeoff Services</a>
-      <a href="flooring-takeoff-services.html" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:9px 16px;font-size:12.5px;font-weight:600;color:rgba(255,255,255,.8);text-decoration:none;transition:all .16s" onmouseover="this.style.background='rgba(255,255,255,.13)'" onmouseout="this.style.background='rgba(255,255,255,.07)'"><svg width="12" height="12"><use href="#ic-layout"/></svg> Flooring Takeoff Services</a>
-      <a href="doors-windows-takeoff-services.html" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:9px 16px;font-size:12.5px;font-weight:600;color:rgba(255,255,255,.8);text-decoration:none;transition:all .16s" onmouseover="this.style.background='rgba(255,255,255,.13)'" onmouseout="this.style.background='rgba(255,255,255,.07)'"><svg width="12" height="12"><use href="#ic-file"/></svg> Doors &amp; Windows Takeoff</a>
-      <a href="construction-estimating-services.html" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,107,0,.18);border:1px solid rgba(255,107,0,.3);border-radius:8px;padding:9px 16px;font-size:12.5px;font-weight:600;color:var(--org2);text-decoration:none;transition:all .16s" onmouseover="this.style.background='rgba(255,107,0,.28)'" onmouseout="this.style.background='rgba(255,107,0,.18)'"><svg width="12" height="12"><use href="#ic-calc"/></svg> Construction Estimating Services</a>
+      <a href="/construction-takeoff-services" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:9px 16px;font-size:12.5px;font-weight:600;color:rgba(255,255,255,.8);text-decoration:none;transition:all .16s" onmouseover="this.style.background='rgba(255,255,255,.13)'" onmouseout="this.style.background='rgba(255,255,255,.07)'"><svg width="12" height="12"><use href="#ic-building"/></svg> Construction Takeoff Services</a>
+      <a href="/drywall-takeoff-services" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:9px 16px;font-size:12.5px;font-weight:600;color:rgba(255,255,255,.8);text-decoration:none;transition:all .16s" onmouseover="this.style.background='rgba(255,255,255,.13)'" onmouseout="this.style.background='rgba(255,255,255,.07)'"><svg width="12" height="12"><use href="#ic-layers"/></svg> Drywall Takeoff Services</a>
+      <a href="/flooring-takeoff-services" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:9px 16px;font-size:12.5px;font-weight:600;color:rgba(255,255,255,.8);text-decoration:none;transition:all .16s" onmouseover="this.style.background='rgba(255,255,255,.13)'" onmouseout="this.style.background='rgba(255,255,255,.07)'"><svg width="12" height="12"><use href="#ic-layout"/></svg> Flooring Takeoff Services</a>
+      <a href="/doors-windows-takeoff-services" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:9px 16px;font-size:12.5px;font-weight:600;color:rgba(255,255,255,.8);text-decoration:none;transition:all .16s" onmouseover="this.style.background='rgba(255,255,255,.13)'" onmouseout="this.style.background='rgba(255,255,255,.07)'"><svg width="12" height="12"><use href="#ic-file"/></svg> Doors &amp; Windows Takeoff</a>
+      <a href="/construction-estimating-services" style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,107,0,.18);border:1px solid rgba(255,107,0,.3);border-radius:8px;padding:9px 16px;font-size:12.5px;font-weight:600;color:var(--org2);text-decoration:none;transition:all .16s" onmouseover="this.style.background='rgba(255,107,0,.28)'" onmouseout="this.style.background='rgba(255,107,0,.18)'"><svg width="12" height="12"><use href="#ic-calc"/></svg> Construction Estimating Services</a>
     </div>
   </div>
 </section>
@@ -439,7 +439,7 @@ function toggleFaq(btn){
       <div>
         <div class="ft-col-t">Takeoff Services</div>
         <ul class="ft-links">
-          <li onclick="location.href='services.html'">All Takeoff Services</li>
+          <li onclick="location.href='/takeoff-services'">All Takeoff Services</li>
           <li onclick="location.href='/construction-takeoff-services'">Construction Takeoffs</li>
           <li onclick="location.href='/drywall-takeoff-services'">Drywall Takeoffs</li>
           <li onclick="location.href='/flooring-takeoff-services'">Flooring Takeoffs</li>
@@ -450,18 +450,18 @@ function toggleFaq(btn){
       <div>
         <div class="ft-col-t">For You</div>
         <ul class="ft-links">
-          <li href="solutions.html">Federal GCs</li>
-          <li href="solutions.html">Subcontractors</li>
-          <li href="solutions.html">Prime Contractors</li>
-          <li href="solutions.html">Multifamily Builders</li>
-          <li href="solutions.html">Freelance Estimators</li>
+          <li href="/solutions">Federal GCs</li>
+          <li href="/solutions">Subcontractors</li>
+          <li href="/solutions">Prime Contractors</li>
+          <li href="/solutions">Multifamily Builders</li>
+          <li href="/solutions">Freelance Estimators</li>
         </ul>
       </div>
       <div>
         <div class="ft-col-t">Company</div>
         <ul class="ft-links">
-          <li href="feedback.html">Feedback</li>
-          <li href="contact.html">Contact</li>
+          <li href="/feedback">Feedback</li>
+          <li href="/contact">Contact</li>
           <li onclick="openModal()">Book Demo</li>
           <li onclick="openModal()">Free Trial</li>
         </ul>
@@ -524,5 +524,24 @@ function toggleFaq(btn){
 </div>
 
 <script src="../public/script.js"></script>
+
+<script>
+/* Local preview helper — rewrites clean URLs to .html when opened via file:// */
+if(window.location.protocol === 'file:'){
+  document.querySelectorAll('a[href]').forEach(function(a){
+    var h = a.getAttribute('href');
+    var map = {'/':' index.html','/solutions':'solutions.html','/pricing':'pricing.html',
+      '/takeoff-services':'services.html','/feedback':'feedback.html','/contact':'contact.html',
+      '/drywall-takeoff-services':'drywall-takeoff-services.html',
+      '/flooring-takeoff-services':'flooring-takeoff-services.html',
+      '/doors-windows-takeoff-services':'doors-windows-takeoff-services.html',
+      '/construction-takeoff-services':'construction-takeoff-services.html',
+      '/construction-estimating-services':'construction-estimating-services.html'
+    };
+    if(map[h]) a.setAttribute('href', map[h]);
+  });
+}
+</script>
+
 </body>
 </html>

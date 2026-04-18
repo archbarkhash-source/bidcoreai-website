@@ -1,7 +1,6 @@
 /* ─────────────────────────────────────────
    BidcoreAI · script.js  (multi-page version)
-   Each page is a real HTML file served by the
-   server — no SPA routing needed here.
+   Real separate HTML pages — no SPA routing.
    Handles: mobile menu, modal, slides,
    how-it-works, CSI divisions, star rating,
    form submissions, billing toggle, reveal anim.
@@ -9,28 +8,49 @@
 
 /* ─── MOBILE MENU ─── */
 function openMob(){
-  document.getElementById('mob-nav').classList.add('on');
-  document.getElementById('mob-overlay').classList.add('on');
+  const nav = document.getElementById('mob-nav');
+  const overlay = document.getElementById('mob-overlay');
+  if(!nav || !overlay) return;
+  // Remove any leftover inline styles that could block CSS classes
+  nav.style.removeProperty('transform');
+  overlay.style.removeProperty('display');
+  nav.classList.add('on');
+  overlay.classList.add('on');
   document.body.style.overflow = 'hidden';
 }
 function closeMob(){
-  document.getElementById('mob-nav').classList.remove('on');
-  document.getElementById('mob-overlay').classList.remove('on');
+  const nav = document.getElementById('mob-nav');
+  const overlay = document.getElementById('mob-overlay');
+  if(!nav || !overlay) return;
+  nav.classList.remove('on');
+  overlay.classList.remove('on');
   document.body.style.overflow = '';
 }
 
 /* ─── MODAL ─── */
 function openModal(){
-  document.getElementById('modal').classList.add('on');
+  const modal = document.getElementById('modal');
+  if(!modal) return;
+  modal.classList.add('on');
   document.body.style.overflow = 'hidden';
 }
 function closeModal(){
-  document.getElementById('modal').classList.remove('on');
+  const modal = document.getElementById('modal');
+  if(!modal) return;
+  modal.classList.remove('on');
   document.body.style.overflow = '';
 }
+
 document.addEventListener('DOMContentLoaded', function(){
+  // Modal close on backdrop click
   const modal = document.getElementById('modal');
   if(modal) modal.addEventListener('click', function(e){ if(e.target===this) closeModal(); });
+
+  // Strip any leftover inline styles from mobile nav elements (safety net)
+  const mobNav = document.getElementById('mob-nav');
+  const mobOverlay = document.getElementById('mob-overlay');
+  if(mobNav) { mobNav.style.removeProperty('transform'); mobNav.style.removeProperty('display'); }
+  if(mobOverlay) { mobOverlay.style.removeProperty('display'); }
 });
 
 /* ─── SCREENSHOT SLIDES ─── */
@@ -160,11 +180,11 @@ function updateDivLbl(){
 function divTab(type,btn){
   document.querySelectorAll('.div-tabs .dtab').forEach(t=>t.classList.remove('on'));
   btn.classList.add('on');
-  if(type==='all')    renderDivs(DIVS.map(d=>d.c));
+  if(type==='all')         renderDivs(DIVS.map(d=>d.c));
   else if(type==='arch')   renderDivs(ARCH);
   else if(type==='struct') renderDivs(STRUCT);
   else if(type==='mep')    renderDivs(MEP);
-  else renderDivs([]);
+  else                     renderDivs([]);
 }
 renderDivs(DIVS.map(d=>d.c));
 
@@ -231,8 +251,7 @@ async function submitSvc(){
   const dr=document.getElementById('tf-dr');
   const err=document.getElementById('svc-err');
   const selectedFiles=(window._selectedFiles&&window._selectedFiles.length)?window._selectedFiles:(dr?[...dr.files]:[]);
-  const hasFile=selectedFiles.length>0;
-  const hasLink=v('tf-cloud').length>0;
+  const hasFile=selectedFiles.length>0, hasLink=v('tf-cloud').length>0;
   if(!fn||!em||!co||!tr||!pn||!st){err.textContent='Please fill in all required fields.';err.style.display='block';return;}
   if(!hasFile&&!hasLink){err.textContent='Please upload a file or provide a cloud link.';err.style.display='block';return;}
   if(!isEmail(em)){err.textContent='Please enter a valid email.';err.style.display='block';return;}
@@ -241,38 +260,19 @@ async function submitSvc(){
   if(btn){btn.disabled=true;btn.innerHTML='<svg width="14" height="14" style="animation:spin 1s linear infinite;display:inline-block"><use href="#ic-refresh"/></svg> Sending…';}
   err.style.display='none';
   const fd=new FormData();
-  const meta={
-    subject:`Takeoff Service Request — ${pn} (${co})`,
-    name:`${fn} ${v('tf-ln')}`,email:em,company:co,trade:tr,state:st,
-    project_name:pn,project_type:v('tf-pt'),est_value:v('tf-pv'),
-    drawing_sheets:v('tf-ps'),bid_due:v('tf-dd'),scope:v('tf-sc'),
-    cloud_link:v('tf-cloud'),divisions:ck,notes:v('tf-nt'),source:'Takeoff Service Form'
-  };
+  const meta={subject:`Takeoff Service Request — ${pn} (${co})`,name:`${fn} ${v('tf-ln')}`,email:em,company:co,trade:tr,state:st,project_name:pn,project_type:v('tf-pt'),est_value:v('tf-pv'),drawing_sheets:v('tf-ps'),bid_due:v('tf-dd'),scope:v('tf-sc'),cloud_link:v('tf-cloud'),divisions:ck,notes:v('tf-nt'),source:'Takeoff Service Form'};
   fd.append('meta',JSON.stringify(meta));
   selectedFiles.forEach(f=>fd.append('files',f));
   let sent=false,errorMsg='';
   try{
     const res=await fetch('/api/send-with-files',{method:'POST',body:fd});
     const json=await res.json().catch(()=>({}));
-    if(json.tooLarge){
-      err.innerHTML='📎 Files too large. Paste a Google Drive / Dropbox link instead and resubmit.';
-      err.style.display='block';
-      if(btn){btn.disabled=false;btn.innerHTML='<svg width="14" height="14"><use href="#ic-send"/></svg> Submit Takeoff Request';}
-      return;
-    }
+    if(json.tooLarge){err.innerHTML='📎 Files too large. Paste a Google Drive / Dropbox link instead.';err.style.display='block';if(btn){btn.disabled=false;btn.innerHTML='<svg width="14" height="14"><use href="#ic-send"/></svg> Submit Takeoff Request';}return;}
     if(!res.ok){errorMsg=json.error||`Server error ${res.status}`;}
     sent=json.success===true;
   }catch(e){errorMsg=e.message;sent=false;}
-  if(sent){
-    document.getElementById('svc-form-body').style.display='none';
-    document.getElementById('svc-ok').style.display='block';
-  }else{
-    const isAuthErr=errorMsg&&(errorMsg.includes('535')||errorMsg.includes('credentials')||errorMsg.includes('login'));
-    err.innerHTML=isAuthErr
-      ?'⚠️ Email server temporarily unavailable. Please email <a href="mailto:barkha@bidcoreai.com?subject=Takeoff+Request" style="color:var(--blue);font-weight:700">barkha@bidcoreai.com</a> directly.'
-      :`Submission failed. Please email <a href="mailto:barkha@bidcoreai.com" style="color:var(--blue)">barkha@bidcoreai.com</a> directly.`;
-    err.style.display='block';
-  }
+  if(sent){document.getElementById('svc-form-body').style.display='none';document.getElementById('svc-ok').style.display='block';}
+  else{const isAuthErr=errorMsg&&(errorMsg.includes('535')||errorMsg.includes('credentials')||errorMsg.includes('login'));err.innerHTML=isAuthErr?'⚠️ Email server unavailable. Please email <a href="mailto:barkha@bidcoreai.com?subject=Takeoff+Request" style="color:var(--blue);font-weight:700">barkha@bidcoreai.com</a> directly.':`Submission failed. Please email <a href="mailto:barkha@bidcoreai.com" style="color:var(--blue)">barkha@bidcoreai.com</a> directly.`;err.style.display='block';}
   if(btn){btn.disabled=false;btn.innerHTML='<svg width="14" height="14"><use href="#ic-send"/></svg> Submit Takeoff Request';}
 }
 
@@ -286,13 +286,7 @@ function showFileList(){
 function renderFileList(){
   const list=document.getElementById('tf-file-list');
   if(!list) return;
-  list.innerHTML=(window._selectedFiles||[]).map((f,i)=>`
-    <div style="display:flex;align-items:center;gap:8px;background:var(--g50);border:1px solid var(--g200);border-radius:7px;padding:6px 10px;font-size:12px;color:var(--navy)">
-      <svg width="13" height="13" style="color:var(--blue);flex-shrink:0"><use href="#ic-file"/></svg>
-      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${f.name}</span>
-      <span style="color:var(--g400);font-size:11px">${(f.size/1024/1024).toFixed(1)}MB</span>
-      <button onclick="removeFile(${i})" style="background:none;border:none;cursor:pointer;color:#dc2626;font-size:14px;padding:0 2px">✕</button>
-    </div>`).join('');
+  list.innerHTML=(window._selectedFiles||[]).map((f,i)=>`<div style="display:flex;align-items:center;gap:8px;background:var(--g50);border:1px solid var(--g200);border-radius:7px;padding:6px 10px;font-size:12px;color:var(--navy)"><svg width="13" height="13" style="color:var(--blue);flex-shrink:0"><use href="#ic-file"/></svg><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${f.name}</span><span style="color:var(--g400);font-size:11px">${(f.size/1024/1024).toFixed(1)}MB</span><button onclick="removeFile(${i})" style="background:none;border:none;cursor:pointer;color:#dc2626;font-size:14px;padding:0 2px">✕</button></div>`).join('');
 }
 function removeFile(i){
   if(!window._selectedFiles) return;
@@ -306,12 +300,7 @@ function submitFeedback(){
   const area=v('fb-area'),msg=v('fb-msg');
   const err=document.getElementById('fb-err');
   if(!area||!msg||starVal===0){err.textContent='Please rate the platform, select an area, and fill in your feedback.';err.style.display='block';return;}
-  sendEmail({
-    subject:`BidcoreAI Feedback — ${area} (${starVal}/5 stars)`,
-    name:v('fb-name'),email:v('fb-email'),role:v('fb-role'),
-    rating:`${starVal}/5`,area,feedback:msg,
-    feature_request:v('fb-feat'),source:'Feedback Form'
-  },'fb-btn','fb-err','fb-form-body','fb-ok');
+  sendEmail({subject:`BidcoreAI Feedback — ${area} (${starVal}/5 stars)`,name:v('fb-name'),email:v('fb-email'),role:v('fb-role'),rating:`${starVal}/5`,area,feedback:msg,feature_request:v('fb-feat'),source:'Feedback Form'},'fb-btn','fb-err','fb-form-body','fb-ok');
 }
 
 /* ─── CONTACT FORM ─── */
@@ -320,10 +309,16 @@ function submitContact(){
   const err=document.getElementById('ct-err');
   if(!name||!em||!subj||!msg){err.style.display='block';return;}
   if(!isEmail(em)){err.textContent='Please enter a valid email.';err.style.display='block';return;}
-  sendEmail({
-    subject:`BidcoreAI Contact — ${subj}`,
-    name,email:em,company:v('ct-co'),subject_area:subj,message:msg,source:'Contact Form'
-  },'ct-btn','ct-err','ct-form-body','ct-ok');
+  sendEmail({subject:`BidcoreAI Contact — ${subj}`,name,email:em,company:v('ct-co'),subject_area:subj,message:msg,source:'Contact Form'},'ct-btn','ct-err','ct-form-body','ct-ok');
+}
+
+/* ─── FAQ ACCORDION ─── */
+function toggleFaq(btn){
+  const item=btn.parentElement;
+  const ans=item.querySelector('.faq-a');
+  const isOpen=btn.classList.contains('open');
+  document.querySelectorAll('.faq-q.open').forEach(b=>{b.classList.remove('open');b.parentElement.querySelector('.faq-a').classList.remove('open');});
+  if(!isOpen){btn.classList.add('open');ans.classList.add('open');}
 }
 
 /* ─── REVEAL ON SCROLL ─── */
@@ -336,5 +331,5 @@ function initReveal(){
 }
 document.addEventListener('DOMContentLoaded', initReveal);
 
-/* ─── SPIN KEYFRAME (for loading states) ─── */
-// defined in CSS already via @keyframes spin
+/* ─── SPIN KEYFRAME ─── */
+// @keyframes spin defined in style.css
