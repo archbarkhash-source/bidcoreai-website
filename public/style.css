@@ -7,7 +7,7 @@
   --green:#22c55e; --g50:#F7FAFD; --g100:#EDF2F8;
   --g200:#D5E3EE; --g300:#AFC8DC; --g400:#7A9BB5; --g600:#3E6480;
   --text:#162E42; --white:#fff;
-  --fh:'Syne',sans-serif; --fb:'Plus Jakarta Sans',sans-serif;
+  --fh:'Bricolage Grotesque',sans-serif; --fb:'DM Sans',sans-serif;
   --r:10px; --r2:18px;
   --s1:0 2px 20px rgba(11,60,93,.08);
   --s2:0 10px 48px rgba(11,60,93,.14);
@@ -22,7 +22,7 @@ button{font-family:var(--fb)}
 /* ───── UTIL ───── */
 .con{max-width:1160px;margin:0 auto;padding:0 24px}
 .fh{font-family:var(--fh)}
-.h1{font-family:var(--fh);font-size:clamp(36px,4.6vw,62px);font-weight:800;line-height:1.06;color:var(--white)}
+.h1{font-family:var(--fh);font-size:clamp(32px,4.2vw,56px);font-weight:800;line-height:1.1;color:var(--white)}
 .h2{font-family:var(--fh);font-size:clamp(24px,3vw,42px);font-weight:800;line-height:1.12;color:var(--navy)}
 .h2w{color:var(--white)}
 .h3{font-family:var(--fh);font-size:18px;font-weight:700;color:var(--navy)}
@@ -67,7 +67,7 @@ button{font-family:var(--fb)}
 /* Mobile toggle */
 .mob-toggle{display:none;background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;padding:6px;border-radius:7px;margin-right:2px;flex-shrink:0}
 .mob-toggle:hover{color:#fff;background:rgba(255,255,255,.08)}
-.nav-demo{} /* shown on desktop */
+.nav-demo{}
 
 /* ───── MOBILE NAV ───── */
 .mob-overlay{display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.5);backdrop-filter:blur(4px)}
@@ -101,54 +101,12 @@ button{font-family:var(--fb)}
 .hs-l{font-size:11px;color:rgba(255,255,255,.38);margin-top:4px}
 
 /* hero screenshot */
-.hero-ss{
-  border-radius:14px;
-  overflow:hidden;
-  box-shadow:var(--s3);
-  border:1px solid rgba(255,255,255,.09);
-  animation:risein .72s ease both;
-
-  /* only image visibility improvement */
-  width:100%;
-  max-width:760px;   /* increase size */
-  margin-left:auto;
-  transform:scale(1.08); /* enlarge slightly */
-  transform-origin:center;
-}
-
-@keyframes risein{
-  from{opacity:0;transform:translateY(22px)}
-  to{opacity:1;transform:translateY(0)}
-}
-
-.ss-chrome{
-  background:rgba(11,60,93,.85);
-  padding:9px 14px;
-  display:flex;
-  align-items:center;
-  gap:6px;
-  border-bottom:1px solid rgba(255,255,255,.06)
-}
-
-.ssdot{
-  width:9px;
-  height:9px;
-  border-radius:50%
-}
-
-.ss-chrome-ttl{
-  font-family:var(--fh);
-  font-size:9.5px;
-  color:rgba(255,255,255,.35);
-  margin-left:auto;
-  letter-spacing:.04em
-}
-
-.hero-ss img{
-  width:100%;
-  height:auto;
-  display:block;
-}
+.hero-ss{border-radius:14px;overflow:hidden;box-shadow:var(--s3);border:1px solid rgba(255,255,255,.09);animation:risein .72s ease both;width:100%;max-width:760px;margin-left:auto;transform:scale(1.08);transform-origin:center}
+@keyframes risein{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+.ss-chrome{background:rgba(11,60,93,.85);padding:9px 14px;display:flex;align-items:center;gap:6px;border-bottom:1px solid rgba(255,255,255,.06)}
+.ssdot{width:9px;height:9px;border-radius:50%}
+.ss-chrome-ttl{font-family:var(--fh);font-size:9.5px;color:rgba(255,255,255,.35);margin-left:auto;letter-spacing:.04em}
+.hero-ss img{width:100%;height:auto;display:block}
 
 /* ───── PULSE ───── */
 .pulse-bar{background:linear-gradient(90deg,rgba(0,123,255,.08),rgba(0,201,177,.08));border-bottom:1px solid rgba(0,123,255,.14);padding:11px 24px}
@@ -301,10 +259,10 @@ button{font-family:var(--fb)}
 .compare{background:var(--navy);padding:80px 24px}
 .cmp-in{max-width:920px;margin:0 auto}
 .cmp-t{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:14px;overflow:hidden;margin-top:44px}
-.cmp-thead{display:grid;grid-template-columns:1.8fr 1fr 1fr 1fr;background:rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.09)}
+.cmp-thead{display:grid;grid-template-columns:1.8fr 1fr 1fr;background:rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.09)}
 .cth{padding:12px 16px;font-size:12px;font-weight:700;color:rgba(255,255,255,.7);text-align:center}
 .cth:first-child{text-align:left}.cth.hi{background:rgba(255,107,0,.13);color:var(--orange)}
-.cmp-row{display:grid;grid-template-columns:1.8fr 1fr 1fr 1fr;border-bottom:1px solid rgba(255,255,255,.05)}
+.cmp-row{display:grid;grid-template-columns:1.8fr 1fr 1fr;border-bottom:1px solid rgba(255,255,255,.05)}
 .cmp-row:last-child{border-bottom:none}
 .ctd{padding:11px 16px;font-size:12px;color:rgba(255,255,255,.54);text-align:center;display:flex;align-items:center;justify-content:center;gap:4px}
 .ctd:first-child{text-align:left;justify-content:flex-start;font-weight:600;color:rgba(255,255,255,.8)}.ctd.hi{background:rgba(255,107,0,.05)}
@@ -312,7 +270,7 @@ button{font-family:var(--fb)}
 
 /* ───── PRICING ───── */
 .pricing{background:var(--g50);padding:80px 24px}
-.price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px}
+.price-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:44px;max-width:820px;margin-left:auto;margin-right:auto}
 .pc2{background:var(--white);border:2px solid var(--g200);border-radius:18px;padding:28px 24px;position:relative;transition:all .2s}
 .pc2:hover{box-shadow:var(--s2);transform:translateY(-4px)}
 .pc2.pop{border-color:var(--blue);box-shadow:0 0 0 4px rgba(0,123,255,.08)}
@@ -386,9 +344,10 @@ button{font-family:var(--fb)}
 .ft-copy{font-size:11px;color:rgba(255,255,255,.22)}
 .ft-flag{font-size:11px;color:rgba(255,255,255,.3);display:flex;align-items:center;gap:5px}
 
-/* ───── REVEAL ANIM ───── */
-.rv{opacity:0;transform:translateY(18px);transition:opacity .54s ease,transform .54s ease}
-.rv.vis{opacity:1;transform:translateY(0)}
+/* ───── REVEAL ANIM — fixed to always show, animate only when JS fires ───── */
+.rv{opacity:1;transform:none;transition:opacity .54s ease,transform .54s ease}
+.rv.will-animate{opacity:0;transform:translateY(18px)}
+.rv.will-animate.vis{opacity:1;transform:translateY(0)}
 .rv.d1{transition-delay:.07s}.rv.d2{transition-delay:.13s}.rv.d3{transition-delay:.19s}.rv.d4{transition-delay:.25s}
 
 /* ───── RESPONSIVE ───── */
@@ -405,7 +364,6 @@ button{font-family:var(--fb)}
   .ov-pillars{grid-template-columns:1fr}
   .fg2,.fg3{grid-template-columns:1fr}
   .cmp-thead,.cmp-row{grid-template-columns:1.4fr 1fr 1fr}
-  .cmp-thead .cth:last-child,.cmp-row .ctd:last-child{display:none}
 }
 
 @media(max-width:768px){
@@ -444,3 +402,5 @@ button{font-family:var(--fb)}
 
 /* ─── SPIN FOR LOADING STATE ─── */
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+/* ─── CASE STUDY ─── */
+.case-study{background:var(--white);border:1px solid var(--g200);border-radius:18px;padding:28px 28px 24px}

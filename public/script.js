@@ -1,47 +1,36 @@
 /* ─────────────────────────────────────────
-   BidcoreAI · script.js
-   Handles: navigation, slides, how-it-works,
-   CSI divisions, star rating, form submissions
-   (SMTP via server-side /api/send endpoint),
-   billing toggle, mobile menu, reveal animations
+   BidcoreAI · script.js  (multi-page version)
+   Each page is a real HTML file served by the
+   server — no SPA routing needed here.
+   Handles: mobile menu, modal, slides,
+   how-it-works, CSI divisions, star rating,
+   form submissions, billing toggle, reveal anim.
 ───────────────────────────────────────── */
-
-/* ─── PAGE ROUTING ─── */
-const PAGES = ['home','solutions','pricing','services','feedback','contact'];
-function goPage(id){
-  PAGES.forEach(p=>{
-    const el = document.getElementById('pg-'+p);
-    const nl = document.getElementById('nl-'+p);
-    if(el) el.classList.toggle('on', p===id);
-    if(nl) nl.classList.toggle('on', p===id);
-  });
-  window.scrollTo({top:0,behavior:'instant'});
-  initReveal();
-}
 
 /* ─── MOBILE MENU ─── */
 function openMob(){
   document.getElementById('mob-nav').classList.add('on');
   document.getElementById('mob-overlay').classList.add('on');
-  document.body.style.overflow='hidden';
+  document.body.style.overflow = 'hidden';
 }
 function closeMob(){
   document.getElementById('mob-nav').classList.remove('on');
   document.getElementById('mob-overlay').classList.remove('on');
-  document.body.style.overflow='';
+  document.body.style.overflow = '';
 }
 
 /* ─── MODAL ─── */
 function openModal(){
   document.getElementById('modal').classList.add('on');
-  document.body.style.overflow='hidden';
+  document.body.style.overflow = 'hidden';
 }
 function closeModal(){
   document.getElementById('modal').classList.remove('on');
-  document.body.style.overflow='';
+  document.body.style.overflow = '';
 }
-document.getElementById('modal').addEventListener('click',function(e){
-  if(e.target===this) closeModal();
+document.addEventListener('DOMContentLoaded', function(){
+  const modal = document.getElementById('modal');
+  if(modal) modal.addEventListener('click', function(e){ if(e.target===this) closeModal(); });
 });
 
 /* ─── SCREENSHOT SLIDES ─── */
@@ -106,27 +95,18 @@ function renderPanel(i){
     <div class="hp-cta"><button class="btn btn-p btn-sm" onclick="openModal()"><svg width="13" height="13"><use href="#ic-zap"/></svg> Try It Free</button></div>
   `;
 }
-// Initialize first step
 setTimeout(()=>renderPanel(0), 50);
 
-/* ─── BILLING TOGGLE ─── */
+/* ─── BILLING TOGGLE — Starter only, Pro is Ask for Pricing ─── */
 let isYearly = false;
 function toggleBilling(){
   isYearly = !isYearly;
   const btn = document.getElementById('billing-toggle');
   if(btn) btn.classList.toggle('on', isYearly);
-  // Solo Estimator: $89/mo or $999/yr
   const soloPrice = document.getElementById('solo-price');
-  const soloYearly = document.getElementById('solo-yearly');
+  const soloPer   = soloPrice && soloPrice.closest('.pamt') && soloPrice.closest('.pamt').querySelector('.pper');
   if(soloPrice) soloPrice.textContent = isYearly ? '999' : '89';
-  const soloPer = soloPrice && soloPrice.closest('.pamt')?.querySelector('.pper');
-  if(soloPer) soloPer.textContent = isYearly ? '/year' : '/month';
-  if(soloYearly) soloYearly.style.display = isYearly ? 'none' : 'none'; // yearly note shown via pamt
-  // Growing Team: $249/mo or $2,799/yr
-  const teamPrice = document.getElementById('team-price');
-  if(teamPrice) teamPrice.textContent = isYearly ? '2,799' : '249';
-  const teamPer = teamPrice && teamPrice.closest('.pamt')?.querySelector('.pper');
-  if(teamPer) teamPer.textContent = isYearly ? '/year' : '/month';
+  if(soloPer)   soloPer.textContent   = isYearly ? '/year' : '/month';
 }
 
 /* ─── CSI DIVISIONS ─── */
@@ -155,109 +135,77 @@ const STRUCT=['03','04','05'];
 const MEP=['22','23','25','26','27','28'];
 
 function renderDivs(sel){
-  const wrap=document.getElementById('div-opts-wrap');
-  if(!wrap)return;
-  wrap.innerHTML=DIVS.map(d=>{
-    const ck=sel.includes(d.c);
-    return`<label class="dopt${ck?' ck':''}" onclick="toggleDiv('${d.c}',this)">
+  const wrap = document.getElementById('div-opts-wrap');
+  if(!wrap) return;
+  wrap.innerHTML = DIVS.map(d=>{
+    const ck = sel.includes(d.c);
+    return `<label class="dopt${ck?' ck':''}" onclick="toggleDiv('${d.c}',this)">
       <input type="checkbox" value="${d.c}"${ck?' checked':''}> Div ${d.c} — ${d.n}
     </label>`;
   }).join('');
   updateDivLbl();
 }
 function toggleDiv(code,el){
-  const cb=el.querySelector('input');
-  cb.checked=!cb.checked;
-  el.classList.toggle('ck',cb.checked);
+  const cb = el.querySelector('input');
+  cb.checked = !cb.checked;
+  el.classList.toggle('ck', cb.checked);
   updateDivLbl();
 }
 function updateDivLbl(){
-  const lbl=document.getElementById('div-sel-lbl');
-  if(!lbl)return;
-  const ck=[...document.querySelectorAll('#div-opts-wrap input:checked')].map(c=>c.value);
-  lbl.textContent=ck.length===DIVS.length?'All divisions selected':ck.length===0?'No divisions selected':`Selected: Div ${ck.join(', ')}`;
+  const lbl = document.getElementById('div-sel-lbl');
+  if(!lbl) return;
+  const ck = [...document.querySelectorAll('#div-opts-wrap input:checked')].map(c=>c.value);
+  lbl.textContent = ck.length===DIVS.length ? 'All divisions selected' : ck.length===0 ? 'No divisions selected' : `Selected: Div ${ck.join(', ')}`;
 }
 function divTab(type,btn){
   document.querySelectorAll('.div-tabs .dtab').forEach(t=>t.classList.remove('on'));
   btn.classList.add('on');
-  if(type==='all') renderDivs(DIVS.map(d=>d.c));
-  else if(type==='arch') renderDivs(ARCH);
+  if(type==='all')    renderDivs(DIVS.map(d=>d.c));
+  else if(type==='arch')   renderDivs(ARCH);
   else if(type==='struct') renderDivs(STRUCT);
-  else if(type==='mep') renderDivs(MEP);
-  
-  
+  else if(type==='mep')    renderDivs(MEP);
   else renderDivs([]);
 }
 renderDivs(DIVS.map(d=>d.c));
 
 /* ─── STAR RATING ─── */
-let starVal=0;
+let starVal = 0;
 function setRating(v){
-  starVal=v;
+  starVal = v;
   document.querySelectorAll('#star-rating .star').forEach((s,i)=>s.classList.toggle('lit',i<v));
-  const lbls=['','Poor','Fair','Good','Very Good','Excellent'];
-  const lbl=document.getElementById('rating-lbl');
-  if(lbl)lbl.textContent=lbls[v]||'';
+  const lbls = ['','Poor','Fair','Good','Very Good','Excellent'];
+  const lbl = document.getElementById('rating-lbl');
+  if(lbl) lbl.textContent = lbls[v] || '';
 }
 
 /* ─── EMAIL VIA SERVER API ─── */
-/*
-  To enable real email sending, deploy server.js (Node.js + Express) alongside this site.
-  The server reads SMTP/Resend credentials from environment variables:
-    SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD, SMTP_FROM_NAME
-    or RESEND_API_KEY + RESEND_FROM_EMAIL
-  and exposes POST /api/send
-
-  For static hosting (Render static site), you need a separate backend service.
-  See server.js for full implementation.
-*/
 async function sendEmail(payload, btnId, errId, bodyId, okId){
   const btn = document.getElementById(btnId);
   const err = document.getElementById(errId);
   if(btn){ btn.disabled=true; btn.innerHTML='<svg width="14" height="14" style="animation:spin 1s linear infinite;display:inline-block"><use href="#ic-refresh"/></svg> Sending…'; }
   if(err) err.style.display='none';
-
   let sent = false;
-
-  // Try the /api/send endpoint (works when server.js is running)
   try {
     const res = await fetch('/api/send', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify(payload)
+      method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)
     });
     const json = await res.json();
-    if(json.tooLarge){
-      err.innerHTML = 'Files are too large to attach. Please email your drawings directly to <a href="mailto:barkha@bidcoreai.com" style="color:var(--blue)">barkha@bidcoreai.com</a> with subject: <strong>Takeoff Request</strong>';
-      err.style.display='block';
-      if(btn){btn.disabled=false;btn.innerHTML='<svg width="14" height="14"><use href="#ic-send"/></svg> Submit Takeoff Request';}
-      return;
-    }
     sent = json.success === true;
   } catch(e){ sent = false; }
-
   if(sent){
     const bd = document.getElementById(bodyId);
     const ok = document.getElementById(okId);
     if(bd) bd.style.display='none';
     if(ok) ok.style.display='block';
   } else {
-    // Fallback: open email client
-    const subj = encodeURIComponent(payload.subject || 'BidcoreAI Inquiry');
-    const body = encodeURIComponent(
-      Object.entries(payload)
-        .filter(([k])=>k!=='subject')
-        .map(([k,vl])=>`${k}: ${vl}`)
-        .join('\n')
-    );
-    window.open(`mailto:barkha@bidcoreai.com?subject=${subj}&body=${body}`, '_blank');
-    // Show success anyway since mailto opened
+    const subj = encodeURIComponent(payload.subject||'BidcoreAI Inquiry');
+    const body = encodeURIComponent(Object.entries(payload).filter(([k])=>k!=='subject').map(([k,vl])=>`${k}: ${vl}`).join('\n'));
+    window.open(`mailto:barkha@bidcoreai.com?subject=${subj}&body=${body}`,'_blank');
     const bd = document.getElementById(bodyId);
     const ok = document.getElementById(okId);
     if(bd) bd.style.display='none';
     if(ok) ok.style.display='block';
   }
-
   if(btn){ btn.disabled=false; btn.innerHTML='<svg width="14" height="14"><use href="#ic-send"/></svg> Submit'; }
 }
 
@@ -272,8 +220,7 @@ function submitModal(){
   if(!isEmail(em)){err.textContent='Please enter a valid email.';err.style.display='block';return;}
   sendEmail({
     subject:`BidcoreAI Request — ${fn} (${co})`,
-    name:`${fn} ${v('m-ln')}`,
-    email:em, company:co, trade:tr,
+    name:`${fn} ${v('m-ln')}`, email:em, company:co, trade:tr,
     interest:v('m-int'), challenge:v('m-ch'), source:'Demo Modal'
   },'m-btn','m-err','mod-form','mod-ok');
 }
@@ -283,113 +230,87 @@ async function submitSvc(){
   const fn=v('tf-fn'),em=v('tf-em'),co=v('tf-co'),tr=v('tf-tr'),pn=v('tf-pn'),st=v('tf-st');
   const dr=document.getElementById('tf-dr');
   const err=document.getElementById('svc-err');
-  const selectedFiles = (window._selectedFiles && window._selectedFiles.length) ? window._selectedFiles : (dr ? [...dr.files] : []);
-  const hasFile = selectedFiles.length > 0;
-  const hasLink = v('tf-cloud').length > 0;
-  if(!fn||!em||!co||!tr||!pn||!st){
-    err.textContent='Please fill in all required fields.';
-    err.style.display='block';return;
-  }
-  if(!hasFile && !hasLink){
-    err.textContent='Please upload a file or provide a cloud link.';
-    err.style.display='block';return;
-  }
+  const selectedFiles=(window._selectedFiles&&window._selectedFiles.length)?window._selectedFiles:(dr?[...dr.files]:[]);
+  const hasFile=selectedFiles.length>0;
+  const hasLink=v('tf-cloud').length>0;
+  if(!fn||!em||!co||!tr||!pn||!st){err.textContent='Please fill in all required fields.';err.style.display='block';return;}
+  if(!hasFile&&!hasLink){err.textContent='Please upload a file or provide a cloud link.';err.style.display='block';return;}
   if(!isEmail(em)){err.textContent='Please enter a valid email.';err.style.display='block';return;}
   const ck=[...document.querySelectorAll('#div-opts-wrap input:checked')].map(c=>c.value).join(', ')||'All Divisions';
-
   const btn=document.getElementById('svc-btn');
   if(btn){btn.disabled=true;btn.innerHTML='<svg width="14" height="14" style="animation:spin 1s linear infinite;display:inline-block"><use href="#ic-refresh"/></svg> Sending…';}
   err.style.display='none';
-
-  // Build FormData so files are sent as real attachments
-  const fd = new FormData();
-  const meta = {
+  const fd=new FormData();
+  const meta={
     subject:`Takeoff Service Request — ${pn} (${co})`,
-    name:`${fn} ${v('tf-ln')}`, email:em, company:co, trade:tr, state:st,
-    project_name:pn, project_type:v('tf-pt'), est_value:v('tf-pv'),
-    drawing_sheets:v('tf-ps'), bid_due:v('tf-dd'), scope:v('tf-sc'),
-    cloud_link:v('tf-cloud'), divisions:ck, notes:v('tf-nt'), source:'Takeoff Service Form'
+    name:`${fn} ${v('tf-ln')}`,email:em,company:co,trade:tr,state:st,
+    project_name:pn,project_type:v('tf-pt'),est_value:v('tf-pv'),
+    drawing_sheets:v('tf-ps'),bid_due:v('tf-dd'),scope:v('tf-sc'),
+    cloud_link:v('tf-cloud'),divisions:ck,notes:v('tf-nt'),source:'Takeoff Service Form'
   };
-  fd.append('meta', JSON.stringify(meta));
-  selectedFiles.forEach(f => fd.append('files', f));
-
-  let sent = false;
-  let errorMsg = '';
-  try {
-    const res = await fetch('/api/send-with-files', { method:'POST', body:fd });
-    const json = await res.json().catch(()=>({}));
+  fd.append('meta',JSON.stringify(meta));
+  selectedFiles.forEach(f=>fd.append('files',f));
+  let sent=false,errorMsg='';
+  try{
+    const res=await fetch('/api/send-with-files',{method:'POST',body:fd});
+    const json=await res.json().catch(()=>({}));
     if(json.tooLarge){
-      err.innerHTML = '📎 Files are too large. Please remove the attachment above, paste a Google Drive / Dropbox link instead, and resubmit.';
+      err.innerHTML='📎 Files too large. Paste a Google Drive / Dropbox link instead and resubmit.';
       err.style.display='block';
       if(btn){btn.disabled=false;btn.innerHTML='<svg width="14" height="14"><use href="#ic-send"/></svg> Submit Takeoff Request';}
       return;
     }
-    if(!res.ok){
-      errorMsg = json.error || `Server error ${res.status}`;
-    }
-    sent = json.success === true;
-  } catch(e){
-    errorMsg = e.message;
-    sent = false;
-  }
-
+    if(!res.ok){errorMsg=json.error||`Server error ${res.status}`;}
+    sent=json.success===true;
+  }catch(e){errorMsg=e.message;sent=false;}
   if(sent){
     document.getElementById('svc-form-body').style.display='none';
     document.getElementById('svc-ok').style.display='block';
-  } else {
-    const isAuthErr = errorMsg && (errorMsg.includes('535') || errorMsg.includes('credentials') || errorMsg.includes('login') || errorMsg.includes('password'));
-    if(isAuthErr){
-      err.innerHTML = '⚠️ Our email server is temporarily unavailable. Please email your request directly to <a href="mailto:barkha@bidcoreai.com?subject=Takeoff+Request" style="color:var(--blue);font-weight:700">barkha@bidcoreai.com</a> with subject: <strong>Takeoff Request</strong> — we respond within 4 business hours.';
-    } else {
-      err.innerHTML = `Submission failed. Please remove the attachment, use a cloud link instead, or email <a href="mailto:barkha@bidcoreai.com" style="color:var(--blue)">barkha@bidcoreai.com</a> directly.`;
-    }
+  }else{
+    const isAuthErr=errorMsg&&(errorMsg.includes('535')||errorMsg.includes('credentials')||errorMsg.includes('login'));
+    err.innerHTML=isAuthErr
+      ?'⚠️ Email server temporarily unavailable. Please email <a href="mailto:barkha@bidcoreai.com?subject=Takeoff+Request" style="color:var(--blue);font-weight:700">barkha@bidcoreai.com</a> directly.'
+      :`Submission failed. Please email <a href="mailto:barkha@bidcoreai.com" style="color:var(--blue)">barkha@bidcoreai.com</a> directly.`;
     err.style.display='block';
   }
   if(btn){btn.disabled=false;btn.innerHTML='<svg width="14" height="14"><use href="#ic-send"/></svg> Submit Takeoff Request';}
 }
 
-/* ─── FILE LIST WITH REMOVE BUTTON ─── */
+/* ─── FILE LIST ─── */
 function showFileList(){
-  const dr = document.getElementById('tf-dr');
-  const list = document.getElementById('tf-file-list');
-  if(!list) return;
-  // store files in a custom array since FileList is read-only
-  if(!window._selectedFiles) window._selectedFiles = [];
-  window._selectedFiles = [...dr.files];
+  const dr=document.getElementById('tf-dr');
+  if(!window._selectedFiles) window._selectedFiles=[];
+  window._selectedFiles=[...dr.files];
   renderFileList();
 }
 function renderFileList(){
-  const list = document.getElementById('tf-file-list');
+  const list=document.getElementById('tf-file-list');
   if(!list) return;
-  const files = window._selectedFiles || [];
-  list.innerHTML = files.map((f,i)=>`
+  list.innerHTML=(window._selectedFiles||[]).map((f,i)=>`
     <div style="display:flex;align-items:center;gap:8px;background:var(--g50);border:1px solid var(--g200);border-radius:7px;padding:6px 10px;font-size:12px;color:var(--navy)">
       <svg width="13" height="13" style="color:var(--blue);flex-shrink:0"><use href="#ic-file"/></svg>
       <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${f.name}</span>
-      <span style="color:var(--g400);font-size:11px;white-space:nowrap">${(f.size/1024/1024).toFixed(1)}MB</span>
-      <button onclick="removeFile(${i})" style="background:none;border:none;cursor:pointer;color:#dc2626;font-size:14px;line-height:1;padding:0 2px" title="Remove">✕</button>
-    </div>
-  `).join('');
+      <span style="color:var(--g400);font-size:11px">${(f.size/1024/1024).toFixed(1)}MB</span>
+      <button onclick="removeFile(${i})" style="background:none;border:none;cursor:pointer;color:#dc2626;font-size:14px;padding:0 2px">✕</button>
+    </div>`).join('');
 }
 function removeFile(i){
   if(!window._selectedFiles) return;
   window._selectedFiles.splice(i,1);
-  // reset the actual input if all removed
-  if(window._selectedFiles.length === 0){
-    document.getElementById('tf-dr').value = '';
-  }
+  if(window._selectedFiles.length===0) document.getElementById('tf-dr').value='';
   renderFileList();
 }
+
 /* ─── FEEDBACK FORM ─── */
 function submitFeedback(){
-  const em=v('fb-email'),area=v('fb-area'),msg=v('fb-msg');
+  const area=v('fb-area'),msg=v('fb-msg');
   const err=document.getElementById('fb-err');
   if(!area||!msg||starVal===0){err.textContent='Please rate the platform, select an area, and fill in your feedback.';err.style.display='block';return;}
   sendEmail({
     subject:`BidcoreAI Feedback — ${area} (${starVal}/5 stars)`,
-    name:v('fb-name'), email:em, role:v('fb-role'),
-    rating:`${starVal}/5`, area, feedback:msg,
-    feature_request:v('fb-feat'), source:'Feedback Form'
+    name:v('fb-name'),email:v('fb-email'),role:v('fb-role'),
+    rating:`${starVal}/5`,area,feedback:msg,
+    feature_request:v('fb-feat'),source:'Feedback Form'
   },'fb-btn','fb-err','fb-form-body','fb-ok');
 }
 
@@ -401,18 +322,19 @@ function submitContact(){
   if(!isEmail(em)){err.textContent='Please enter a valid email.';err.style.display='block';return;}
   sendEmail({
     subject:`BidcoreAI Contact — ${subj}`,
-    name, email:em, company:v('ct-co'),
-    subject_area:subj, message:msg, source:'Contact Form'
+    name,email:em,company:v('ct-co'),subject_area:subj,message:msg,source:'Contact Form'
   },'ct-btn','ct-err','ct-form-body','ct-ok');
 }
 
 /* ─── REVEAL ON SCROLL ─── */
 function initReveal(){
-  setTimeout(()=>{
-    const obs = new IntersectionObserver(entries=>{
-      entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('vis'); });
-    },{threshold:0.08});
-    document.querySelectorAll('.rv:not(.vis)').forEach(el=>obs.observe(el));
-  },50);
+  document.querySelectorAll('.rv:not(.will-animate):not(.vis)').forEach(el=>el.classList.add('will-animate'));
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('vis'); });
+  },{threshold:0.05,rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.rv.will-animate:not(.vis)').forEach(el=>obs.observe(el));
 }
-initReveal();
+document.addEventListener('DOMContentLoaded', initReveal);
+
+/* ─── SPIN KEYFRAME (for loading states) ─── */
+// defined in CSS already via @keyframes spin

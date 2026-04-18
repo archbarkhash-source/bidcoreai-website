@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Solutions – AI Bidding Platform for US Contractors | BidcoreAI</title>
+<meta name="description" content="BidcoreAI solutions for Federal GCs, Specialty Subcontractors, Prime Contractors, Multifamily Builders, and Freelance Estimators. End-to-end preconstruction automation."/>
+<link rel="canonical" href="https://bidcoreai.com/solutions"/>
+<!-- Open Graph -->
+<meta property="og:title" content="Solutions – AI Bidding Platform for US Contractors | BidcoreAI"/>
+<meta property="og:description" content="BidcoreAI solutions for Federal GCs, Specialty Subcontractors, Prime Contractors, Multifamily Builders, and Freelance Estimators. End-to-end preconstruction automation."/>
+<meta property="og:url" content="https://bidcoreai.com/solutions"/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="BidcoreAI"/>
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="Solutions – AI Bidding Platform for US Contractors | BidcoreAI"/>
+<meta name="twitter:description" content="BidcoreAI solutions for Federal GCs, Specialty Subcontractors, Prime Contractors, Multifamily Builders, and Freelance Estimators. End-to-end preconstruction automation."/>
+<link rel="icon" type="image/png" href="https://bidcoreai-assets.vercel.app/favicon.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../public/style.css"/>
+</head>
+<body>
+
+<!-- ══ INLINE SVG SYMBOLS ══ -->
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="ic-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+  <symbol id="ic-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></symbol>
+  <symbol id="ic-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></symbol>
+  <symbol id="ic-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+  <symbol id="ic-minus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+  <symbol id="ic-db" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></symbol>
+  <symbol id="ic-layout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></symbol>
+  <symbol id="ic-brain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0112 4.5v15a2.5 2.5 0 01-4.96-.46 2.5 2.5 0 01-1.07-4.69 3 3 0 01.34-5.58 2.5 2.5 0 011.32-4.24A2.5 2.5 0 019.5 2zM14.5 2A2.5 2.5 0 0112 4.5v15a2.5 2.5 0 004.96-.46 2.5 2.5 0 001.07-4.69 3 3 0 00-.34-5.58 2.5 2.5 0 00-1.32-4.24A2.5 2.5 0 0014.5 2z"/></symbol>
+  <symbol id="ic-scan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 012-2h2"/><path d="M17 3h2a2 2 0 012 2v2"/><path d="M21 17v2a2 2 0 01-2 2h-2"/><path d="M7 21H5a2 2 0 01-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></symbol>
+  <symbol id="ic-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></symbol>
+  <symbol id="ic-cpu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></symbol>
+  <symbol id="ic-pkg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></symbol>
+  <symbol id="ic-send" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></symbol>
+  <symbol id="ic-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></symbol>
+  <symbol id="ic-cloud" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/></symbol>
+  <symbol id="ic-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+  <symbol id="ic-flag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></symbol>
+  <symbol id="ic-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></symbol>
+  <symbol id="ic-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></symbol>
+  <symbol id="ic-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></symbol>
+  <symbol id="ic-sparkle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17.1 5.8 21.3l2.4-7.4L2 9.4h7.6L12 2z"/></symbol>
+  <symbol id="ic-tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></symbol>
+  <symbol id="ic-calc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="12" y2="18"/></symbol>
+  <symbol id="ic-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></symbol>
+  <symbol id="ic-report" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></symbol>
+  <symbol id="ic-sched" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="15" x2="16" y2="15"/></symbol>
+  <symbol id="ic-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></symbol>
+  <symbol id="ic-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></symbol>
+  <symbol id="ic-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></symbol>
+  <symbol id="ic-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.01 1.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.18 6.18l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></symbol>
+  <symbol id="ic-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+  <symbol id="ic-dl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0018 9h-1.26A8 8 0 103 16.29"/></symbol>
+  <symbol id="ic-filter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></symbol>
+  <symbol id="ic-percent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></symbol>
+  <symbol id="ic-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></symbol>
+  <symbol id="ic-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
+  <symbol id="ic-building" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></symbol>
+  <symbol id="ic-tool" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></symbol>
+  <symbol id="ic-trending" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></symbol>
+</svg>
+
+<!-- ══════════ MOBILE MENU OVERLAY ══════════ -->
+<div class="mob-overlay" id="mob-overlay" onclick="closeMob()" style="display:none"></div>
+<nav class="mob-nav" id="mob-nav" style="transform:translateX(-100%)">
+  <div class="mob-nav-head">
+    <a class="logo-wrap" href="index.html">
+      <img class="logo-img" src="https://bidcoreai-assets.vercel.app/logo.png" alt="BidcoreAI"
+        onerror="this.style.display='none';this.nextElementSibling.style.display='block'"/>
+      <span class="logo-txt" style="display:none">BidcoreAI</span>
+    </a>
+    <button class="mob-close" onclick="closeMob()">
+      <svg width="18" height="18"><use href="#ic-x"/></svg>
+    </button>
+  </div>
+  <div class="mob-links">
+    <a class="mob-nl" href="index.html"><svg width="14" height="14"><use href="#ic-home"/></svg> Home</a>
+    <a class="mob-nl" href="solutions.html"><svg width="14" height="14"><use href="#ic-layout"/></svg> Solutions</a>
+    <a class="mob-nl" href="pricing.html"><svg width="14" height="14"><use href="#ic-tag"/></svg> Pricing</a>
+    <a class="mob-nl hl" href="services.html"><svg width="14" height="14"><use href="#ic-scan"/></svg> Takeoff Services</a>
+    <a class="mob-nl" href="feedback.html"><svg width="14" height="14"><use href="#ic-star"/></svg> Feedback</a>
+    <a class="mob-nl" href="contact.html"><svg width="14" height="14"><use href="#ic-mail"/></svg> Contact</a>
+  </div>
+  <div class="mob-cta">
+    <button class="btn btn-p" style="width:100%;justify-content:center" onclick="openModal()">
+      <svg width="14" height="14"><use href="#ic-zap"/></svg> Get Started Free
+    </button>
+  </div>
+</nav>
+
+<!-- ══════════ NAV ══════════ -->
+<nav class="nav">
+  <div class="nav-in">
+    <button class="mob-toggle" onclick="openMob()" aria-label="Menu">
+      <svg width="20" height="20"><use href="#ic-menu"/></svg>
+    </button>
+    <a class="logo-wrap" href="index.html">
+      <img class="logo-img" src="https://bidcoreai-assets.vercel.app/logo.png" alt="BidcoreAI"
+        onerror="this.style.display='none';this.nextElementSibling.style.display='block'"/>
+      <span class="logo-txt" style="display:none">BidcoreAI</span>
+    </a>
+    <div class="nav-links" id="nav-links">
+      <a class="nl" id="nl-home" href="index.html"><svg width="13" height="13"><use href="#ic-home"/></svg> Home</a>
+      <a class="nl on" id="nl-solutions" href="solutions.html">Solutions</a>
+      <a class="nl" id="nl-pricing" href="pricing.html">Pricing</a>
+      <a class="nl hl" id="nl-services" href="services.html"><svg width="13" height="13"><use href="#ic-scan"/></svg> Takeoff Services</a>
+      <a class="nl" id="nl-feedback" href="feedback.html">Feedback</a>
+      <a class="nl" id="nl-contact" href="contact.html">Contact</a>
+    </div>
+    <div class="nav-cta">
+      <button class="btn btn-gh btn-sm nav-demo" onclick="openModal()">Live Demo</button>
+    </div>
+  </div>
+</nav>
+
+
+  <div class="sol-hero">
+    <div class="sol-hero-in">
+      <div class="rv" style="text-align:center">
+        <div class="eyebrow" style="justify-content:center"><svg width="12" height="12"><use href="#ic-layout"/></svg> Complete Platform</div>
+        <h1 class="h1" style="font-size:clamp(28px,3.8vw,52px)">Built for Every Construction<br><span style="color:var(--orange)">Professional</span></h1>
+        <p style="font-size:16px;color:rgba(255,255,255,.6);max-width:600px;line-height:1.74;margin:14px auto 0">From solo estimators scaling their services to federal GCs running complex multi-trade projects — BidcoreAI is the AI preconstruction platform built for your workflow.</p>
+      </div>
+      <div class="platform-grid rv" style="margin-top:44px">
+        <div class="plat-card"><div class="pc-ico"><svg width="20" height="20"><use href="#ic-db"/></svg></div><div class="pc-title">CSI Cost Database</div><div class="pc-text">Full MasterFormat cost breakdown with assembly-based costing across 50 CSI divisions.</div><div class="pc-tag"><svg width="10" height="10"><use href="#ic-check"/></svg> 50 CSI divisions</div></div>
+        <div class="plat-card"><div class="pc-ico"><svg width="20" height="20"><use href="#ic-pkg"/></svg></div><div class="pc-title">Bid Workspace</div><div class="pc-text">AI-generated bid packages, automated ITBs, sub leveling, and bid costing — one workspace.</div><div class="pc-tag"><svg width="10" height="10"><use href="#ic-check"/></svg> Full bid lifecycle</div></div>
+        <div class="plat-card"><div class="pc-ico"><svg width="20" height="20"><use href="#ic-brain"/></svg></div><div class="pc-title">AI Proposal Generator</div><div class="pc-text">Federal-compliant proposals auto-written from your project documents. Export .doc or PDF.</div><div class="pc-tag"><svg width="10" height="10"><use href="#ic-check"/></svg> Federal-ready</div></div>
+        <div class="plat-card"><div class="pc-ico"><svg width="20" height="20"><use href="#ic-file"/></svg></div><div class="pc-title">AI Document Analysis</div><div class="pc-text">Upload any doc — scope extractions, risk flags, bid checklists generated automatically on upload.</div><div class="pc-tag"><svg width="10" height="10"><use href="#ic-check"/></svg> Instant analysis</div></div>
+        <div class="plat-card"><div class="pc-ico"><svg width="20" height="20"><use href="#ic-sched"/></svg></div><div class="pc-title">L2/L3 Schedule Generation</div><div class="pc-text">Generate Level 2 and Level 3 construction schedules aligned to your cost estimate data.</div><div class="pc-tag"><svg width="10" height="10"><use href="#ic-check"/></svg> Cost-linked</div></div>
+        <div class="plat-card"><div class="pc-ico"><svg width="20" height="20"><use href="#ic-calc"/></svg></div><div class="pc-title">Bid Costing Module</div><div class="pc-text">Set markup, overhead, contingency, and bond. Live AI margin analysis with risk flags before submission.</div><div class="pc-tag"><svg width="10" height="10"><use href="#ic-check"/></svg> AI margin alerts</div></div>
+        <div class="plat-card"><div class="pc-ico"><svg width="20" height="20"><use href="#ic-cloud"/></svg></div><div class="pc-title">Cloud Collaboration</div><div class="pc-text">Invite your team, role-based access, real-time sync, full revision history, and line-item comments.</div><div class="pc-tag"><svg width="10" height="10"><use href="#ic-check"/></svg> Real-time</div></div>
+        <div class="plat-card"><div class="pc-ico"><svg width="20" height="20"><use href="#ic-scan"/></svg></div><div class="pc-title">Professional Takeoff Add-On</div><div class="pc-text">Expert US estimators perform your quantity takeoffs — results feed directly into BidcoreAI.</div><div class="pc-tag"><svg width="10" height="10"><use href="#ic-check"/></svg> $15/hr · 30% off first month</div></div>
+        <div class="plat-card"><div class="pc-ico"><svg width="20" height="20"><use href="#ic-filter"/></svg></div><div class="pc-title">Quantity Takeoff Workspace</div><div class="pc-text">Built-in workspace to organize, track, and manage quantity measurements directly inside your project — no separate tool needed.</div><div class="pc-tag"><svg width="10" height="10"><use href="#ic-check"/></svg> Included in all plans</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHO IS IT BUILT FOR — CASE STUDIES -->
+  <section style="background:var(--white);padding:80px 24px">
+    <div class="con">
+      <div class="rv" style="text-align:center;margin-bottom:48px">
+        <div class="eyebrow"><svg width="12" height="12"><use href="#ic-users"/></svg> Who It's Built For</div>
+        <h2 class="h2">Built for US Construction Professionals</h2>
+        <p class="lead" style="margin:10px auto 0">Whether you're a solo estimator, a specialty subcontractor, a prime contractor, a multifamily builder, or a freelance estimator scaling up — BidcoreAI works for you.</p>
+      </div>
+
+      <!-- CASE 1: US Federal GCs -->
+      <div class="case-study rv" style="margin-bottom:56px">
+        <div class="cs-badge" style="background:rgba(0,123,255,.08);border:1px solid rgba(0,123,255,.18);border-radius:10px;padding:6px 14px;display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--blue);margin-bottom:16px;text-transform:uppercase;letter-spacing:.08em">
+          <svg width="11" height="11"><use href="#ic-shield"/></svg> Case Study 1 — US Federal General Contractors
+        </div>
+        <div class="sol-layout">
+          <div>
+            <h3 class="h3" style="font-size:22px;margin-bottom:10px">US Federal GCs &amp; SAM.gov Bidders</h3>
+            <p style="font-size:14px;color:var(--g600);line-height:1.72;margin-bottom:18px">BidcoreAI is built to the standards of federal procurement — SAM.gov solicitations, CSI MasterFormat pricing, and AI-written proposal sections for every federal contract type and set-aside program including 8(a), HUBZone, WOSB, SDVOSB.</p>
+            <div class="sol-feats">
+              <div class="sol-f"><div class="sf-icon"><svg width="16" height="16"><use href="#ic-shield"/></svg></div><div><div class="sf-title">All Federal Contract Types</div><div class="sf-desc">FFP, IDIQ, RFP, IFB, RFQ — AI-compliant proposals for every SAM.gov solicitation type</div></div></div>
+              <div class="sol-f"><div class="sf-icon"><svg width="16" height="16"><use href="#ic-brain"/></svg></div><div><div class="sf-title">AI Proposal Writing</div><div class="sf-desc">Technical approach, management plan, past performance, and price schedule — all AI-drafted</div></div></div>
+              <div class="sol-f"><div class="sf-icon"><svg width="16" height="16"><use href="#ic-report"/></svg></div><div><div class="sf-title">AI Risk Analysis</div><div class="sf-desc">Scope gaps, hazardous materials, exclusions flagged before submission</div></div></div>
+              <div class="sol-f"><div class="sf-icon"><svg width="16" height="16"><use href="#ic-sched"/></svg></div><div><div class="sf-title">L2/L3 Schedule Generation</div><div class="sf-desc">Cost-linked schedules aligned to your estimate — budget meets execution</div></div></div>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:16px">
+              <div class="sab sa8"><svg width="10" height="10"><use href="#ic-check"/></svg> 8(a)</div>
+              <div class="sab sahub"><svg width="10" height="10"><use href="#ic-check"/></svg> HUBZone</div>
+              <div class="sab sawosb"><svg width="10" height="10"><use href="#ic-check"/></svg> WOSB</div>
+              <div class="sab sasdvo"><svg width="10" height="10"><use href="#ic-check"/></svg> SDVOSB</div>
+              <div class="sab sass"><svg width="10" height="10"><use href="#ic-check"/></svg> Sources Sought</div>
+            </div>
+          </div>
+          <div class="sol-img"><img src="../public/images/discussion.png" alt="Federal AI Bid Proposal"/></div>
+        </div>
+      </div>
+
+      <!-- CASE 2: Subcontractors -->
+      <div class="case-study rv" style="margin-bottom:56px">
+        <div class="cs-badge" style="background:rgba(255,107,0,.08);border:1px solid rgba(255,107,0,.18);border-radius:10px;padding:6px 14px;display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--orange);margin-bottom:16px;text-transform:uppercase;letter-spacing:.08em">
+          <svg width="11" height="11"><use href="#ic-tool"/></svg> Case Study 2 — Specialty Subcontractors (e.g. Lumber Sub)
+        </div>
+        <div class="sol-layout" style="grid-template-columns:1fr 1fr">
+          <div class="sol-img"><img src="../public/images/lumberframingimage.png" alt="Subcontractor Bid Workspace"/></div>
+          <div>
+            <h3 class="h3" style="font-size:22px;margin-bottom:10px">Specialty Subcontractors</h3>
+            <p style="font-size:14px;color:var(--g600);line-height:1.72;margin-bottom:18px">Whether you're a lumber supplier, electrical sub, plumbing contractor, or HVAC specialist — BidcoreAI gives you a professional bidding platform to respond faster, price accurately, and win more work from GCs.</p>
+            <div class="sol-feats">
+              <div class="sol-f"><div class="sf-icon"><svg width="16" height="16"><use href="#ic-file"/></svg></div><div><div class="sf-title">Receive & Respond to ITBs</div><div class="sf-desc">Get invited to bid on GC projects — review scopes, submit bids, track your pipeline</div></div></div>
+              <div class="sol-f"><div class="sf-icon"><svg width="16" height="16"><use href="#ic-db"/></svg></div><div><div class="sf-title">Your Own Cost Library</div><div class="sf-desc">Build your private material and labor database to price jobs fast and consistently</div></div></div>
+              <div class="sol-f"><div class="sf-icon"><svg width="16" height="16"><use href="#ic-brain"/></svg></div><div><div class="sf-title">AI Scope Analysis</div><div class="sf-desc">Upload project specs and AI extracts your exact scope — no more missed line items</div></div></div>
+            </div>
+            <div style="background:var(--g50);border:1px solid var(--g200);border-radius:10px;padding:13px 15px;margin-top:16px">
+              <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:4px">Example: Lumber Subcontractor</div>
+              <div style="font-size:12px;color:var(--g600);line-height:1.6">Upload project drawings → AI extracts lumber quantities by CSI code → build bid with your pricing → submit professional bid directly to GC. Time to bid reduced from 2 days to 2 hours.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CASE 3: Prime Contractors -->
+      <div class="case-study rv" style="margin-bottom:56px">
+        <div class="cs-badge" style="background:rgba(0,201,177,.08);border:1px solid rgba(0,201,177,.18);border-radius:10px;padding:6px 14px;display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--teal);margin-bottom:16px;text-transform:uppercase;letter-spacing:.08em">
+          <svg width="11" height="11"><use href="#ic-building"/></svg> Case Study 3 — Prime Contractors (e.g. Drywall Framing GC)
+        </div>
+        <div class="sol-layout">
+          <div>
+            <h3 class="h3" style="font-size:22px;margin-bottom:10px">Prime Contractors</h3>
+            <p style="font-size:14px;color:var(--g600);line-height:1.72;margin-bottom:18px">Prime contractors and GCs managing drywall, framing, interior fit-out, or any commercial construction project can run their entire bid procurement workflow through BidcoreAI — from documents to award.</p>
+            <div class="sol-feats">
+              <div class="sol-f"><div class="sf-icon"><svg width="16" height="16"><use href="#ic-pkg"/></svg></div><div><div class="sf-title">AI Bid Package Generation</div><div class="sf-desc">One click creates scoped bid packages from uploaded specs — structured by CSI trade</div></div></div>
+              <div class="sol-f"><div class="sf-icon"><svg width="16" height="16"><use href="#ic-users"/></svg></div><div><div class="sf-title">Sub Discovery & ITBs</div><div class="sf-desc">Find nearby subs via radius search, invite with one click, track responses in real-time</div></div></div>
+              <div class="sol-f"><div class="sf-icon"><svg width="16" height="16"><use href="#ic-chart"/></svg></div><div><div class="sf-title">Full Bid Leveling</div><div class="sf-desc">Compare all sub bids side by side — scope gaps, alternates, and exclusions highlighted</div></div></div>
+            </div>
+            <div style="background:var(--g50);border:1px solid var(--g200);border-radius:10px;padding:13px 15px;margin-top:16px">
+              <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:4px">Example: Drywall Framing GC</div>
+              <div style="font-size:12px;color:var(--g600);line-height:1.6">Upload project specs → AI generates framing, drywall, and insulation bid packages → invite 15 local subs → receive bids → level side by side → award in days, not weeks.</div>
+            </div>
+          </div>
+          <div class="sol-img"><img src="../public/images/peopleonsite.png" alt="Prime Contractor Bid Workspace"/></div>
+        </div>
+      </div>
+
+      <!-- CASE 4: Multifamily Contractors -->
+      <div class="case-study rv" style="margin-bottom:56px">
+        <div class="cs-badge" style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:10px;padding:6px 14px;display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#16a34a;margin-bottom:16px;text-transform:uppercase;letter-spacing:.08em">
+          <svg width="11" height="11"><use href="#ic-home"/></svg> Case Study 4 — Multifamily Contractors
+        </div>
+        <div class="sol-layout" style="grid-template-columns:1fr 1fr">
+          <div class="sol-img"><img src="../public/images/truss.png" alt="Multifamily Project Documents"/></div>
+          <div>
+            <h3 class="h3" style="font-size:22px;margin-bottom:10px">Multifamily Builders</h3>
+            <p style="font-size:14px;color:var(--g600);line-height:1.72;margin-bottom:18px">Multifamily contractors running complete bidding from pre-construction through award can manage all trades, documents, and subcontractor bids through one unified platform — no spreadsheets, no email chaos.</p>
+            <div class="sol-feats">
+              <div class="sol-f"><div class="sf-icon"><svg width="16" height="16"><use href="#ic-layers"/></svg></div><div><div class="sf-title">Complete Multi-Trade Bidding</div><div class="sf-desc">Manage concrete, framing, MEP, finishes — all trades in one workspace with full visibility</div></div></div>
+              <div class="sol-f"><div class="sf-icon"><svg width="16" height="16"><use href="#ic-file"/></svg></div><div><div class="sf-title">Document Management</div><div class="sf-desc">Organize drawings, addenda, specs by revision — share with subs via secure invite links</div></div></div>
+              <div class="sol-f"><div class="sf-icon"><svg width="16" height="16"><use href="#ic-calc"/></svg></div><div><div class="sf-title">Full Cost Estimate to Award</div><div class="sf-desc">Build complete project estimate, apply markup and overhead, track to budget in real-time</div></div></div>
+            </div>
+            <div style="background:var(--g50);border:1px solid var(--g200);border-radius:10px;padding:13px 15px;margin-top:16px">
+              <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:4px">Complete Bidding Platform</div>
+              <div style="font-size:12px;color:var(--g600);line-height:1.6">From document upload to subcontractor award — all managed in BidcoreAI. Eliminate spreadsheets, reduce estimating time by 70%, and keep every trade on schedule.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CASE 5: Freelance Estimators -->
+      <div class="case-study rv">
+        <div class="cs-badge" style="background:rgba(255,107,0,.08);border:1px solid rgba(255,107,0,.2);border-radius:10px;padding:6px 14px;display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--orange);margin-bottom:16px;text-transform:uppercase;letter-spacing:.08em">
+          <svg width="11" height="11"><use href="#ic-trending"/></svg> Case Study 5 — Freelance Estimators
+        </div>
+        <div class="sol-layout">
+          <div>
+            <h3 class="h3" style="font-size:22px;margin-bottom:10px">Freelance Estimators Scaling Up</h3>
+            <p style="font-size:14px;color:var(--g600);line-height:1.72;margin-bottom:18px">If you're a freelance estimator spending all your time on manual quantity takeoffs and want to scale your services beyond just takeoffs — BidcoreAI lets you offer complete bidding services to your clients, positioning you as a full preconstruction partner rather than just a counter.</p>
+            <div class="sol-feats">
+              <div class="sol-f"><div class="sf-icon"><svg width="16" height="16"><use href="#ic-trending"/></svg></div><div><div class="sf-title">Scale Beyond Takeoffs</div><div class="sf-desc">Offer complete bidding services — bid packages, ITBs, leveling, proposals — not just counts</div></div></div>
+              <div class="sol-f"><div class="sf-icon"><svg width="16" height="16"><use href="#ic-scan"/></svg></div><div><div class="sf-title">Add Takeoff Services to Your Workflow</div><div class="sf-desc">Use BidcoreAI's professional takeoff service add-on for complex drawings — focus on strategy</div></div></div>
+              <div class="sol-f"><div class="sf-icon"><svg width="16" height="16"><use href="#ic-pkg"/></svg></div><div><div class="sf-title">Bid Workspace & Leveling</div><div class="sf-desc">Provide your clients with professional sub bid management, leveling, and award support</div></div></div>
+              <div class="sol-f"><div class="sf-icon"><svg width="16" height="16"><use href="#ic-brain"/></svg></div><div><div class="sf-title">AI Proposal Writing</div><div class="sf-desc">Generate federal and commercial proposals for your clients — a premium service, minutes to deliver</div></div></div>
+            </div>
+            <div style="background:linear-gradient(135deg,rgba(255,107,0,.06),rgba(0,123,255,.06));border:1px solid rgba(255,107,0,.16);border-radius:10px;padding:14px 16px;margin-top:16px">
+              <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:5px">📈 Transform Your Practice</div>
+              <div style="font-size:12.5px;color:var(--g600);line-height:1.65">Stop trading hours for takeoff fees. With BidcoreAI, a single freelance estimator can deliver complete pre-bid services — from document analysis to awarded bid — for multiple clients simultaneously. Charge more. Work smarter. Scale your revenue.</div>
+            </div>
+          </div>
+          <div class="sol-img"><img src="../public/images/freelanceestimator.png" alt="Freelance Estimator Proposal Writing"/></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Bid Workspace Deep Dive -->
+  <section class="sol-section alt">
+    <div class="con">
+      <div class="sol-layout rv">
+        <div class="sol-img"><img src="../public/images/Bidworkspace.png" alt="BidcoreAI Bid Workspace"/></div>
+        <div>
+          <div class="eyebrow"><svg width="12" height="12"><use href="#ic-pkg"/></svg> Bid Workspace</div>
+          <h2 class="h2" style="font-size:clamp(22px,2.6vw,34px)">Your Complete Bidding<br>Command Center</h2>
+          <p class="lead" style="margin-top:10px;font-size:14px">Manage bid packages, send automated ITBs, track sub responses, level bids side by side, and push costs directly to Bid Costing — all in one structured workspace.</p>
+          <div class="sol-feats">
+            <div class="sol-f"><div class="sf-icon"><svg width="16" height="16"><use href="#ic-pkg"/></svg></div><div><div class="sf-title">AI-Generated Bid Packages</div><div class="sf-desc">One click creates scoped, CSI-based bid packages from your uploaded project documents</div></div></div>
+            <div class="sol-f"><div class="sf-icon"><svg width="16" height="16"><use href="#ic-send"/></svg></div><div><div class="sf-title">Automated ITB Distribution</div><div class="sf-desc">Issue invitations to bid to your directory and nearby subs — track opens and responses live</div></div></div>
+            <div class="sol-f"><div class="sf-icon"><svg width="16" height="16"><use href="#ic-chart"/></svg></div><div><div class="sf-title">Bid Leveling & Comparison</div><div class="sf-desc">Compare all sub bids side by side with alternates, exclusions, and scope gaps highlighted</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI Proposal Deep Dive -->
+  <section class="sol-section">
+    <div class="con">
+      <div class="sol-layout rv" style="grid-template-columns:1fr 1fr">
+        <div>
+          <div class="eyebrow"><svg width="12" height="12"><use href="#ic-brain"/></svg> AI Proposal Writing</div>
+          <h2 class="h2" style="font-size:clamp(22px,2.6vw,34px)">Submission-Ready Proposals<br>in Minutes</h2>
+          <p class="lead" style="margin-top:10px;font-size:14px">Upload project documents, select proposal sections, and AI drafts your Cover Letter, Technical Approach, Management Plan, and Price Schedule — federal-compliant out of the box.</p>
+          <div class="sol-feats">
+            <div class="sol-f"><div class="sf-icon"><svg width="16" height="16"><use href="#ic-brain"/></svg></div><div><div class="sf-title">Federal Section Drafting</div><div class="sf-desc">AI writes all required sections from project context — RFP, IFB, Sources Sought, 8(a)</div></div></div>
+            <div class="sol-f"><div class="sf-icon"><svg width="16" height="16"><use href="#ic-file"/></svg></div><div><div class="sf-title">Boilerplate Library</div><div class="sf-desc">Upload and reuse SFMS proposals, corporate documents, past performance across projects</div></div></div>
+            <div class="sol-f"><div class="sf-icon"><svg width="16" height="16"><use href="#ic-sparkle"/></svg></div><div><div class="sf-title">Refine with AI</div><div class="sf-desc">One click improves tone, detail, or specificity on any section — as many times as needed</div></div></div>
+          </div>
+        </div>
+        <div class="sol-img"><img src="../public/images/Proposal_Writer.png" alt="AI Bid Proposal"/></div>
+      </div>
+    </div>
+  </section>
+
+
+<!-- ════════════════════════════════
+     FAQ — Everything About BidcoreAI Platform
+════════════════════════════════ -->
+<section style="background:var(--g50);padding:88px 24px" id="faq-platform">
+  <div class="con">
+    <div class="rv" style="text-align:center;margin-bottom:56px">
+      <div class="eyebrow" style="justify-content:center"><svg width="12" height="12"><use href="#ic-sparkle"/></svg> Frequently Asked Questions</div>
+      <h2 class="h2">Everything You Need to Know<br><span style="color:var(--orange)">About BidcoreAI</span></h2>
+      <p class="lead" style="margin:12px auto 0;text-align:center">Your questions about the AI-intelligent end-to-end bidding platform — answered clearly.</p>
+    </div>
+
+    <div class="faq-grid rv">
+
+      <!-- Q1 -->
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>What is BidcoreAI?</span>
+          <svg class="faq-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a">
+          BidcoreAI is an AI-intelligent end-to-end bidding solutions platform built for contractors, subcontractors, and preconstruction teams. It manages the entire bidding workflow — from drawing uploads and quantity takeoffs to CSI cost estimation, automated bid packages, subcontractor management, bid leveling, and AI-written proposals. Everything in one connected workspace, updated automatically every 15 days with new capabilities.
+        </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>Who is BidcoreAI built for?</span>
+          <svg class="faq-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a">
+          BidcoreAI is designed for General Contractors, Subcontractors, Estimators, Preconstruction Managers, Builders, Developers, and Construction Service Providers — especially teams that want to bid faster, reduce manual work, and improve win opportunities without adding headcount. Whether you're a solo estimator or a growing firm managing multiple projects simultaneously, the platform scales to your workflow.
+        </div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>What problems does BidcoreAI solve?</span>
+          <svg class="faq-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a">
+          BidcoreAI directly addresses the most common and costly bidding challenges: slow estimating workflows, manual quantity takeoffs consuming days of estimator time, repetitive admin tasks, disorganized bid files across email and spreadsheets, tight bid deadlines with too few resources, limited estimating capacity when bid volume spikes, inconsistent proposal preparation, and difficulty managing multiple projects at once.
+        </div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>What does "end-to-end bidding platform" actually mean?</span>
+          <svg class="faq-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a">
+          It means BidcoreAI supports the entire bid journey inside one ecosystem — from the moment you receive project documents all the way to final submission. You receive documents, review plans, perform takeoffs in the Quantity Takeoff Workspace, build your cost estimate using your private CSI database, generate bid packages, send automated ITBs to subcontractors, level incoming sub bids, and produce AI-written proposals — without switching tools, copying data between spreadsheets, or relying on email chains.
+        </div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>How does AI help inside BidcoreAI?</span>
+          <svg class="faq-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a">
+          AI is embedded throughout the platform — not just in one feature. It assists with quantity takeoff suggestions in the Takeoff Workspace, automatic scope extraction and risk flagging from uploaded documents, bid checklist generation, proposal drafting for federal and commercial projects (Cover Letter, Technical Approach, Management Plan, Price Schedule), real-time margin analysis in Bid Costing with risk alerts, and L2/L3 schedule generation aligned to your estimate. AI is designed to support professional judgment — not replace it.
+        </div>
+      </div>
+
+      <!-- Q6 -->
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>What industries and trades can use BidcoreAI?</span>
+          <svg class="faq-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a">
+          BidcoreAI supports the full spectrum of US construction trades through the CSI MasterFormat framework, including all 50 CSI Divisions. This includes Drywall &amp; Framing, Lumber, Roofing &amp; Siding, Flooring, Doors &amp; Windows, Concrete, MEP (Mechanical, Electrical, Plumbing), Painting, Interior Fit-Out, and General Trades. The CSI MasterFormat cost structure covers all 50 divisions, making it suitable for both specialty subcontractors and large general contractors managing multi-trade projects. Built around the industry-standard CSI cost structure, BidcoreAI is designed to serve both specialty subcontractors and large general contractors managing complex multi-trade projects.
+        </div>
+      </div>
+
+      <!-- Q7 -->
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>What are the main features of BidcoreAI?</span>
+          <svg class="faq-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a">
+          The platform includes: AI Document Analysis (scope extraction, risk flags, bid checklists on upload), Quantity Takeoff Workspace (built-in takeoff management), CSI Cost Database across 50 divisions (materials, labor, equipment, assemblies), Bid Workspace (AI-generated bid packages, automated ITBs, sub discovery, bid tracking), Bid Leveling (side-by-side sub bid comparison with scope gap detection), Bid Costing (markup, overhead, contingency, bond, AI margin alerts), AI Proposal Generator (federal-compliant drafting, export .doc or PDF), L2/L3 Schedule Generation, and Professional Takeoff Services (expert US estimators at $15/hr as an add-on).
+        </div>
+      </div>
+
+      <!-- Q8 -->
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>Is BidcoreAI only software, or do you also provide services?</span>
+          <svg class="faq-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a">
+          BidcoreAI combines software with professional support. Clients can use the platform tools independently, request managed takeoff services where expert US estimators perform your quantity measurements and deliver results directly into your project, or use a hybrid model — letting the platform handle what AI can and human estimators handle what requires professional judgment. Both options work together seamlessly.
+        </div>
+      </div>
+
+      <!-- Q9 -->
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>Why choose BidcoreAI instead of using multiple separate tools?</span>
+          <svg class="faq-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a">
+          Most contractors use separate tools for takeoffs (PlanSwift or Bluebeam), spreadsheets for estimating (Excel), email for ITBs and sub coordination, Word for proposals, and Dropbox for file storage. The result is data scattered across five tools with no connection between them. BidcoreAI brings all of these workflows into one system — so quantities from your takeoff feed directly into your cost estimate, which feeds your bid packages, which generate your ITBs, which receive sub bids that populate your leveling sheet automatically.
+        </div>
+      </div>
+
+      <!-- Q10 -->
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>Can small contractors use BidcoreAI effectively?</span>
+          <svg class="faq-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a">
+          Yes. BidcoreAI is designed to be valuable for small and growing contractors who need to compete efficiently without building a large in-house estimating team. The Starter plan is built specifically for solo estimators and small firms — giving access to the full AI-powered workflow at a fraction of the cost of enterprise estimating software, with no IT setup required and no training needed to get started.
+        </div>
+      </div>
+
+      <!-- Q11 -->
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>How does BidcoreAI support federal contractors and SAM.gov bidding?</span>
+          <svg class="faq-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a">
+          BidcoreAI is built to the standards of federal procurement. It supports SAM.gov solicitations, CSI MasterFormat pricing, and AI-written proposal sections for every federal contract type — FFP, IDIQ, RFP, IFB, RFQ. It handles set-aside programs including 8(a), HUBZone, WOSB, and SDVOSB. AI drafts the Technical Approach, Management Plan, Past Performance, and Price Schedule sections. L2/L3 schedules can be generated aligned to your cost estimate for full proposal packages.
+        </div>
+      </div>
+
+      <!-- Q12 -->
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>How does BidcoreAI help me win more bids?</span>
+          <svg class="faq-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a">
+          BidcoreAI improves win rates by enabling faster turnaround (estimate in hours, not days), better organization (no missed scopes or lost documents), more consistent outputs (your private cost database applied every time), reduced manual workload (AI handles the repetitive parts), and the capacity to pursue more opportunities simultaneously. Winning depends on many factors — but speed and consistency create a measurable competitive edge.
+        </div>
+      </div>
+
+      <!-- Q13 -->
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>What deliverables can BidcoreAI produce?</span>
+          <svg class="faq-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a">
+          Depending on your workflow, BidcoreAI can produce Quantity Reports, Excel Summaries, PDF Reports, Marked-Up Images, Proposal Drafts (.doc or PDF), Bid Support Documents, ITBs (Invitations to Bid), Bid Leveling Sheets, L2/L3 Schedules, and Takeoff Files. For managed service clients, all deliverables are organized inside your BidcoreAI project for immediate use — no manual file transfer needed.
+        </div>
+      </div>
+
+      <!-- Q14 -->
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>Is my project data secure in BidcoreAI?</span>
+          <svg class="faq-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a">
+          BidcoreAI is built for professional business use. Security practices, controlled access, and responsible handling of project data are core priorities. Your private cost database is contractor-owned and never shared. Document access for subcontractors is controlled via read-only invite links — subs see only what you share. The platform is built with the understanding that construction project data is sensitive and commercially valuable.
+        </div>
+      </div>
+
+      <!-- Q15 -->
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>Why choose BidcoreAI over a traditional freelancer or estimating firm?</span>
+          <svg class="faq-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a">
+          With BidcoreAI, you gain more than one individual estimator. You gain a structured platform backed by AI-intelligent technology, repeatable workflows, scalable professional support, and a growing set of tools that improve every 15 days. That means better consistency across every bid, faster turnaround than a traditional estimating firm, long-term institutional knowledge stored in your private cost database, and room to scale your bid volume without proportionally scaling your costs.
+        </div>
+      </div>
+
+      <!-- Q16 -->
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>How can I get started with BidcoreAI?</span>
+          <svg class="faq-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a">
+          Start with a 14-day free trial — no credit card required, no setup, up and running in minutes. You can also book a live demo to see the full platform in action, or contact us directly to discuss your specific workflow, trade, and project volume. A specialist responds within 1 business day to get you set up with the right plan and onboarding.
+        </div>
+      </div>
+
+    </div><!-- /faq-grid -->
+
+    <!-- CTA after FAQ -->
+    <div class="rv" style="text-align:center;margin-top:48px">
+      <button class="btn btn-p btn-lg" onclick="openModal()"><svg width="16" height="16"><use href="#ic-zap"/></svg> Start Free Trial</button>
+      <button class="btn btn-gh btn-lg" onclick="openModal()" style="background:var(--g100);color:var(--navy);border:2px solid var(--g200);margin-left:12px"><svg width="16" height="16"><use href="#ic-play"/></svg> Book a Demo</button>
+      <div style="font-size:12px;color:var(--g400);margin-top:12px">14-day free trial · No credit card · Up and running in minutes</div>
+    </div>
+  </div>
+</section>
+
+<style>
+.faq-grid{display:flex;flex-direction:column;gap:0;border:1px solid var(--g200);border-radius:16px;overflow:hidden;background:var(--white)}
+.faq-item{border-bottom:1px solid var(--g200)}
+.faq-item:last-child{border-bottom:none}
+.faq-q{width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 24px;background:none;border:none;cursor:pointer;font-family:var(--fb);font-size:14.5px;font-weight:600;color:var(--navy);text-align:left;transition:background .15s}
+.faq-q:hover{background:var(--g50)}
+.faq-q.open{background:var(--g50);color:var(--orange)}
+.faq-q.open .faq-arrow{transform:rotate(180deg);stroke:var(--orange)}
+.faq-arrow{flex-shrink:0;transition:transform .22s ease,stroke .15s;stroke:var(--g400)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .32s ease,padding .22s ease;font-size:13.5px;color:var(--g600);line-height:1.76;padding:0 24px;background:var(--g50);border-top:0px solid var(--g200)}
+.faq-a.open{max-height:400px;padding:16px 24px 20px;border-top:1px solid var(--g200)}
+</style>
+
+<script>
+function toggleFaq(btn){
+  const item = btn.parentElement;
+  const ans  = item.querySelector('.faq-a');
+  const isOpen = btn.classList.contains('open');
+  document.querySelectorAll('.faq-q.open').forEach(b=>{ b.classList.remove('open'); b.parentElement.querySelector('.faq-a').classList.remove('open'); });
+  if(!isOpen){ btn.classList.add('open'); ans.classList.add('open'); }
+}
+</script>
+
+<!-- ════════ FOOTER ════════ -->
+<footer class="footer">
+  <div class="ft-in">
+    <div class="ft-grid">
+      <div>
+        <div class="ft-logo-wrap">
+          <img class="ft-logo-img" src="https://bidcoreai-assets.vercel.app/logo.png" alt="BidcoreAI"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='block'"/>
+          <span class="ft-logo-txt" style="display:none">BidcoreAI</span>
+        </div>
+        <div class="ft-tag">AI-powered cost intelligence &amp; preconstruction automation. Built exclusively for US contractors.</div>
+        <div class="ft-badge"><svg width="10" height="10"><use href="#ic-flag"/></svg> Made for US Construction</div>
+      </div>
+      <div>
+        <div class="ft-col-t">Platform</div>
+        <ul class="ft-links">
+          <li href="index.html">Home</li>
+          <li href="solutions.html">Solutions</li>
+          <li href="pricing.html">Pricing</li>
+          <li href="services.html">Takeoff Services</li>
+        </ul>
+      </div>
+      <div>
+        <div class="ft-col-t">For You</div>
+        <ul class="ft-links">
+          <li href="solutions.html">Federal GCs</li>
+          <li href="solutions.html">Subcontractors</li>
+          <li href="solutions.html">Prime Contractors</li>
+          <li href="solutions.html">Multifamily Builders</li>
+          <li href="solutions.html">Freelance Estimators</li>
+        </ul>
+      </div>
+      <div>
+        <div class="ft-col-t">Company</div>
+        <ul class="ft-links">
+          <li href="feedback.html">Feedback</li>
+          <li href="contact.html">Contact</li>
+          <li onclick="openModal()">Book Demo</li>
+          <li onclick="openModal()">Free Trial</li>
+        </ul>
+      </div>
+    </div>
+    <div class="ft-bot">
+      <div class="ft-copy">© 2026 BidcoreAI · All rights reserved</div>
+      <div class="ft-flag"><svg width="11" height="11"><use href="#ic-flag"/></svg> Serving the US Construction Market</div>
+    </div>
+  </div>
+</footer>
+
+<!-- ════════ MODAL ════════ -->
+<div class="mov" id="modal">
+  <div class="mod">
+    <button class="mclose" onclick="closeModal()"><svg width="14" height="14"><use href="#ic-x"/></svg></button>
+    <div id="mod-form">
+      <img class="m-logo-img" src="https://bidcoreai-assets.vercel.app/logo.png" alt="BidcoreAI"
+        onerror="this.style.display='none'"/>
+      <div class="m-title">Get Started with BidcoreAI</div>
+      <div class="m-sub">Book a live demo or start your free trial. A specialist responds within 1 business day.</div>
+      <div class="fg2">
+        <div class="fg"><label>First Name *</label><input type="text" id="m-fn" placeholder="Mike"/></div>
+        <div class="fg"><label>Last Name</label><input type="text" id="m-ln" placeholder="Rodriguez"/></div>
+      </div>
+      <div class="fg"><label>Work Email *</label><input type="email" id="m-em" placeholder="mike@company.com"/></div>
+      <div class="fg"><label>Company *</label><input type="text" id="m-co" placeholder="Rodriguez GC LLC"/></div>
+      <div class="fg2">
+        <div class="fg"><label>Trade / Role *</label>
+          <select id="m-tr">
+            <option value="">Select…</option>
+            <option>General Contractor</option><option>Federal / Gov. Contractor</option>
+            <option>Electrical Sub</option><option>Plumbing / HVAC Sub</option>
+            <option>Civil / Sitework</option><option>Freelance Estimator</option><option>Multifamily Builder</option><option>Other</option>
+          </select>
+        </div>
+        <div class="fg"><label>I'm interested in</label>
+          <select id="m-int">
+            <option value="">Select…</option>
+            <option>Start Free Trial</option><option>Book Live Demo</option>
+            <option>Federal Bidding</option><option>Takeoff Service</option>
+            <option>Pro Plan — Growing Team</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label>Your biggest challenge (optional)</label><textarea id="m-ch" rows="2" placeholder="e.g. Manual estimating, federal proposals, inconsistent costs…"></textarea></div>
+      <div class="ferr" id="m-err">Please fill in all required fields.</div>
+      <button class="fsub" id="m-btn" onclick="submitModal()">
+        <svg width="15" height="15"><use href="#ic-send"/></svg> Get Started
+      </button>
+      <div class="fnote">No credit card required · 14-day free trial · Responds in 1 business day</div>
+    </div>
+    <div class="f-success" id="mod-ok">
+      <div class="f-success-ico">🚀</div>
+      <div class="f-success-t">You're on the list!</div>
+      <div class="f-success-s">We'll reach out within 1 business day to get you set up with BidcoreAI. Check your email for next steps.</div>
+      <button class="btn btn-n" style="margin-top:18px" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script src="../public/script.js"></script>
+</body>
+</html>
