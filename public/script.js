@@ -125,7 +125,7 @@ function toggleBilling(){
   if(btn) btn.classList.toggle('on', isYearly);
   const soloPrice = document.getElementById('solo-price');
   const soloPer   = soloPrice && soloPrice.closest('.pamt') && soloPrice.closest('.pamt').querySelector('.pper');
-  if(soloPrice) soloPrice.textContent = isYearly ? '999' : '89';
+  if(soloPrice) soloPrice.textContent = isYearly ? '1999' : '199';
   if(soloPer)   soloPer.textContent   = isYearly ? '/year' : '/month';
 }
 
