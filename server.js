@@ -47,6 +47,13 @@ const VIEWS_DIR  = path.join(__dirname, 'views');
    pre-built HTML file with full SEO head
 ───────────────────────────────────────*/
 
+const noCache = (req, res, next) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+  next();
+};
+
 app.get('/', (req, res) =>
   res.sendFile(path.join(VIEWS_DIR, 'index.html')));
 
