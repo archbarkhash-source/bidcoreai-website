@@ -117,12 +117,16 @@ function renderPanel(i){
 }
 setTimeout(()=>renderPanel(0), 50);
 
-/* ─── BILLING TOGGLE — Starter only, Pro is Ask for Pricing ─── */
+/* ─── BILLING TOGGLE — Estimator & Pro have fixed prices, Premium is Ask for Pricing ─── */
 let isYearly = false;
 function toggleBilling(){
   isYearly = !isYearly;
   const btn = document.getElementById('billing-toggle');
   if(btn) btn.classList.toggle('on', isYearly);
+  const estimatorPrice = document.getElementById('estimator-price');
+  const estimatorPer   = estimatorPrice && estimatorPrice.closest('.pamt') && estimatorPrice.closest('.pamt').querySelector('.pper');
+  if(estimatorPrice) estimatorPrice.textContent = isYearly ? '623' : '59';
+  if(estimatorPer)   estimatorPer.textContent   = isYearly ? '/year' : '/month';
   const soloPrice = document.getElementById('solo-price');
   const soloPer   = soloPrice && soloPrice.closest('.pamt') && soloPrice.closest('.pamt').querySelector('.pper');
   if(soloPrice) soloPrice.textContent = isYearly ? '1999' : '199';

@@ -3,19 +3,19 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Pricing – Starter & Pro Plans | BidcoreAI</title>
-<meta name="description" content="Simple, transparent pricing for BidcoreAI. Starter plan from $199/month. Pro plan for growing teams — contact us for pricing. 14-day free trial, no credit card required."/>
+<title>Pricing – Estimator, Pro & Premium Plans | BidcoreAI</title>
+<meta name="description" content="Simple, transparent pricing for BidcoreAI. Estimator plan from $59/month, Pro plan from $199/month. Premium plan for growing teams — contact us for pricing. 14-day free trial, no credit card required."/>
 <link rel="canonical" href="https://bidcoreai.com/pricing"/>
 <!-- Open Graph -->
-<meta property="og:title" content="Pricing – Starter & Pro Plans | BidcoreAI"/>
-<meta property="og:description" content="Simple, transparent pricing for BidcoreAI. Starter plan from $199/month. Pro plan for growing teams — contact us for pricing. 14-day free trial, no credit card required."/>
+<meta property="og:title" content="Pricing – Estimator, Pro & Premium Plans | BidcoreAI"/>
+<meta property="og:description" content="Simple, transparent pricing for BidcoreAI. Estimator plan from $59/month, Pro plan from $199/month. Premium plan for growing teams — contact us for pricing. 14-day free trial, no credit card required."/>
 <meta property="og:url" content="https://bidcoreai.com/pricing"/>
 <meta property="og:type" content="website"/>
 <meta property="og:site_name" content="BidcoreAI"/>
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:title" content="Pricing – Starter & Pro Plans | BidcoreAI"/>
-<meta name="twitter:description" content="Simple, transparent pricing for BidcoreAI. Starter plan from $199/month. Pro plan for growing teams — contact us for pricing. 14-day free trial, no credit card required."/>
+<meta name="twitter:title" content="Pricing – Estimator, Pro & Premium Plans | BidcoreAI"/>
+<meta name="twitter:description" content="Simple, transparent pricing for BidcoreAI. Estimator plan from $59/month, Pro plan from $199/month. Premium plan for growing teams — contact us for pricing. 14-day free trial, no credit card required."/>
 <link rel="icon" type="image/png" href="https://bidcoreai-assets.vercel.app/favicon.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet"/>
@@ -137,7 +137,7 @@
         <button class="billing-toggle" id="billing-toggle" onclick="toggleBilling()">
           <div class="bt-knob" id="bt-knob"></div>
         </button>
-        <span style="font-size:13.5px;font-weight:600;color:var(--navy)">Yearly <span style="background:rgba(34,197,94,.12);color:#16a34a;border:1px solid rgba(34,197,94,.22);border-radius:100px;font-size:10.5px;font-weight:700;padding:2px 8px;margin-left:4px">Save 12% on Starter</span></span>
+        <span style="font-size:13.5px;font-weight:600;color:var(--navy)">Yearly <span style="background:rgba(34,197,94,.12);color:#16a34a;border:1px solid rgba(34,197,94,.22);border-radius:100px;font-size:10.5px;font-weight:700;padding:2px 8px;margin-left:4px">Save 12% on Estimator &amp; Pro</span></span>
       </div>
 
       <div class="disc-banner rv">
@@ -146,11 +146,35 @@
       </div>
 
       <div class="price-grid" style="margin-top:32px">
-        <!-- Starter -->
+        <!-- Estimator -->
         <div class="pc2 rv d1">
-          <div class="pt">Starter</div>
+          <div class="pt">Estimator</div>
+          <div class="pname">Solo Estimator</div>
+          <div class="pdesc">For individual estimators who need core cost estimation and takeoff tools to start bidding faster.</div>
+          <div class="pamt" id="p-estimator">
+            <div class="pdollar">$</div><div class="pnum" id="estimator-price">59</div><div class="pper">/month</div>
+          </div>
+          <ul class="pfeats">
+            <li class="pf"><span class="ck"><svg width="13" height="13"><use href="#ic-check"/></svg></span> Up to 5 active projects</li>
+            <li class="pf"><span class="ck"><svg width="13" height="13"><use href="#ic-check"/></svg></span> Cloud cost database (basic)</li>
+            <li class="pf"><span class="ck"><svg width="13" height="13"><use href="#ic-check"/></svg></span> CSI cost estimation (50 divisions)</li>
+            <li class="pf"><span class="ck"><svg width="13" height="13"><use href="#ic-check"/></svg></span> Quantity Takeoff Workspace</li>
+            <li class="pf ms"><span class="ck"><svg width="13" height="13"><use href="#ic-minus"/></svg></span> AI document analysis</li>
+            <li class="pf ms"><span class="ck"><svg width="13" height="13"><use href="#ic-minus"/></svg></span> Bid Workspace &amp; Bid Leveling</li>
+            <li class="pf ms"><span class="ck"><svg width="13" height="13"><use href="#ic-minus"/></svg></span> AI Bid Proposal Generator</li>
+            <li class="pf ms"><span class="ck"><svg width="13" height="13"><use href="#ic-minus"/></svg></span> Team collaboration</li>
+            <li class="pf ms"><span class="ck"><svg width="13" height="13"><use href="#ic-minus"/></svg></span> Professional takeoff (add-on only)</li>
+          </ul>
+          <button class="btn btn-p pcta" onclick="openModal()"><svg width="13" height="13"><use href="#ic-zap"/></svg> Start Free Trial</button>
+          <div class="pnote">14-day trial · No card required</div>
+        </div>
+
+        <!-- Pro -->
+        <div class="pc2 pop rv d2">
+          <div class="pop-b">Most Popular</div>
+          <div class="pt">Pro</div>
           <div class="pname">Solo Estimator & PM</div>
-          <div class="pdesc">For Pre-construction Manager, solo estimators, and individual professionals who want to augment or scale their bidding services.</div>
+          <div class="pdesc">For Pre-construction Managers, solo estimators, and individual professionals who want to augment or scale their bidding services.</div>
           <div class="pamt" id="p-solo">
             <div class="pdollar">$</div><div class="pnum" id="solo-price">199</div><div class="pper">/month</div>
           </div>
@@ -169,10 +193,9 @@
           <div class="pnote">14-day trial · No card required</div>
         </div>
 
-        <!-- Pro -->
-        <div class="pc2 pop rv d2">
-          <div class="pop-b">Most Popular</div>
-          <div class="pt">Pro</div>
+        <!-- Premium -->
+        <div class="pc2 rv d3">
+          <div class="pt">Premium</div>
           <div class="pname">Growing Team</div>
           <div class="pdesc">For small to mid-size firms bidding multiple projects with a growing team. Pricing tailored to your team size.</div>
           <div class="pamt" style="margin-bottom:18px">
@@ -268,29 +291,13 @@
           </div>
         </div>
 
-        <!-- Starter plan card -->
-        <div style="background:var(--g50);border:1px solid var(--g200);border-radius:16px;padding:22px 24px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-            <div style="width:34px;height:34px;border-radius:9px;background:var(--odim);display:flex;align-items:center;justify-content:center;color:var(--orange);flex-shrink:0"><svg width="16" height="16"><use href="#ic-zap"/></svg></div>
-            <div>
-              <div style="font-family:var(--fh);font-size:13.5px;font-weight:700;color:var(--navy)">Starter Plan Subscribers</div>
-              <div style="font-size:11px;color:var(--g400)">Add estimating services as an optional service</div>
-            </div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:7px">
-            <div style="display:flex;align-items:flex-start;gap:7px;font-size:12.5px;color:var(--text)"><span style="color:#22c55e;flex-shrink:0;margin-top:2px"><svg width="13" height="13"><use href="#ic-check"/></svg></span> Professional estimating available as an <strong>optional add-on</strong></div>
-            <div style="display:flex;align-items:flex-start;gap:7px;font-size:12.5px;color:var(--text)"><span style="color:#22c55e;flex-shrink:0;margin-top:2px"><svg width="13" height="13"><use href="#ic-check"/></svg></span> Quantities delivered directly into your BidcoreAI project</div>
-            <div style="display:flex;align-items:flex-start;gap:7px;font-size:12.5px;color:var(--text)"><span style="color:#22c55e;flex-shrink:0;margin-top:2px"><svg width="13" height="13"><use href="#ic-check"/></svg></span> Standard rate: <strong>18/hr</strong></div>
-          </div>
-        </div>
-
-        <!-- Pro plan card -->
+        <!-- Premium plan card -->
         <div style="background:linear-gradient(135deg,rgba(0,123,255,.06),rgba(0,201,177,.06));border:1.5px solid rgba(0,123,255,.2);border-radius:16px;padding:22px 24px;position:relative;overflow:hidden">
           <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--teal))"></div>
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
             <div style="width:34px;height:34px;border-radius:9px;background:var(--bdim);display:flex;align-items:center;justify-content:center;color:var(--blue);flex-shrink:0"><svg width="16" height="16"><use href="#ic-sparkle"/></svg></div>
             <div>
-              <div style="font-family:var(--fh);font-size:13.5px;font-weight:700;color:var(--navy)">Pro Plan Subscribers</div>
+              <div style="font-family:var(--fh);font-size:13.5px;font-weight:700;color:var(--navy)">Premium Plan Subscribers</div>
               <div style="font-size:11px;color:var(--blue);font-weight:600">Best value for estimating support</div>
             </div>
           </div>
@@ -303,7 +310,7 @@
           <!-- Discount highlight -->
           <div style="margin-top:14px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.22);border-radius:9px;padding:10px 14px;display:flex;align-items:center;gap:8px">
             <svg width="14" height="14" style="color:#16a34a;flex-shrink:0"><use href="#ic-percent"/></svg>
-            <span style="font-size:12px;font-weight:700;color:#15803d">Pro subscribers save up to 30% on estimating services vs. standalone rate</span>
+            <span style="font-size:12px;font-weight:700;color:#15803d">Premium subscribers save up to 30% on estimating services vs. standalone rate</span>
           </div>
         </div>
 
@@ -317,7 +324,7 @@
           <svg width="15" height="15"><use href="#ic-scan"/></svg> Request Estimating Service
         </a>
         <button class="btn btn-out btn-lg" onclick="openModal()" style="flex:1;min-width:200px;justify-content:center">
-          <svg width="15" height="15"><use href="#ic-play"/></svg> Contact for Pro Pricing
+          <svg width="15" height="15"><use href="#ic-play"/></svg> Contact for Premium Pricing
         </button>
       </div>
       <div style="font-size:11.5px;color:var(--g400);text-align:center">30% advance · Full refund if undeliverable · Balance due on delivery</div>
@@ -363,7 +370,7 @@
         <ul class="ft-links">
           <li><a href="/solutions">Federal GCs</a></li>
           <li><a href="/solutions">Prime Contractors</a></li>
-          <li><a href="/solutions">Subcontractors</a></li>
+          <li><a href="/solutions#subcontractors">Subcontractors</a></li>
           
         </ul>
       </div>
@@ -413,7 +420,7 @@
             <option value="">Select…</option>
             <option>Start Free Trial</option><option>Book Live Demo</option>
             <option>Federal Bidding</option><option>Takeoff Service</option>
-            <option>Pro Plan — Growing Team</option>
+            <option>Premium Plan — Growing Team</option>
           </select>
         </div>
       </div>
