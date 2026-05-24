@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -18,8 +18,6 @@
 <meta name="twitter:title" content="BidcoreAI – AI Cost Intelligence & Preconstruction Automation"/>
 <meta name="twitter:description" content="BidcoreAI is an AI-powered preconstruction platform built for US contractors,delivering faster takeoffs, structured estimates aligned with CSI MasterFormat, and streamlined bid workflows."/>
 <link rel="icon" type="image/png" href="https://bidcoreai-assets.vercel.app/favicon.png"/>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="../public/style.css"/>
 </head>
 <body>
@@ -89,7 +87,7 @@
     <a class="mob-nl" href="/contact"><svg width="14" height="14"><use href="#ic-mail"/></svg> Contact</a>
   </div>
   <div class="mob-cta">
-    <button class="btn btn-p" style="width:100%;justify-content:center" onclick="openModal()">
+    <button class="btn btn-p" style="width:100%;justify-content:center" onclick="openModal('Start Free Trial')">
       <svg width="14" height="14"><use href="#ic-zap"/></svg> Get Started Free
     </button>
   </div>
@@ -115,7 +113,7 @@
       <a class="nl" id="nl-contact" href="/contact">Contact</a>
     </div>
     <div class="nav-cta">
-      <button class="btn btn-gh btn-sm nav-demo" onclick="openModal()">Live Demo</button>
+      <button class="btn btn-gh btn-sm nav-demo" onclick="openModal('Book Live Demo')">Live Demo</button>
     </div>
   </div>
 </nav>
@@ -129,15 +127,15 @@
   <div class="hero-in">
     <div>
       <div class="hero-tag">
-        <svg width="11" height="11"><use href="#ic-flag"/></svg> Built for US Contractors
+        <svg width="11" height="11"><use href="#ic-flag"/></svg> Built for US and Global Contractors
       </div>
-      <h1 class="h1">Estimate Smarter.<br><span style="color:var(--orange)">Bid Faster.</span><br><span style="color:var(--blu2)">Win More.</span></h1>
+      <h1 class="h1">Estimate Smarter.<br>Bid Faster.<br>Win More.</h1>
       <p class="hero-sub">BidcoreAI is the AI-powered cost intelligence and preconstruction automation platform built exclusively for US contractors from CSI estimation to automated bid packages and federal proposal writing.</p>
       <div class="hero-ctas">
-        <button class="btn btn-p btn-lg" onclick="openModal()">
+        <button class="btn btn-p btn-lg" onclick="openModal('Start Free Trial')">
           <svg width="17" height="17"><use href="#ic-zap"/></svg> Start Free Trial
         </button>
-        <button class="btn btn-gh btn-lg" onclick="openModal()">
+        <button class="btn btn-gh btn-lg" onclick="openModal('Book Live Demo')">
           <svg width="17" height="17"><use href="#ic-play"/></svg> See Live Demo
         </button>
       </div>
@@ -153,9 +151,9 @@
         <div class="ssdot" style="background:#ff5f57"></div>
         <div class="ssdot" style="background:#ffbd2e"></div>
         <div class="ssdot" style="background:#28ca41"></div>
-        <div class="ss-chrome-ttl">BidcoreAI · Bid Workspace</div>
+        <div class="ss-chrome-ttl">BidcoreAI · Takeoff Workspace</div>
       </div>
-      <img src="../public/images/Bidworkspace.png" alt="BidcoreAI Bid Workspace live app"/>
+      <video autoplay muted loop playsinline class="hero-video"><source src="../public/Videos/2026-05-23 10-31-22.mp4" type="video/mp4"></video>
     </div>
   </div>
 </section>
@@ -405,8 +403,8 @@
       <h2 class="h2 h2w" style="margin-bottom:12px">Ready to Bid Smarter?</h2>
       <p style="font-size:15px;color:rgba(255,255,255,.56);max-width:500px;margin:0 auto 28px;line-height:1.74">14-day free trial. No credit card. No setup. Up and running in minutes.</p>
       <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-        <button class="btn btn-p btn-lg" onclick="openModal()"><svg width="16" height="16"><use href="#ic-zap"/></svg> Start Free Trial</button>
-        <button class="btn btn-gh btn-lg" onclick="openModal()"><svg width="16" height="16"><use href="#ic-play"/></svg> Book a Demo</button>
+        <button class="btn btn-p btn-lg" onclick="openModal('Start Free Trial')"><svg width="16" height="16"><use href="#ic-zap"/></svg> Start Free Trial</button>
+        <button class="btn btn-gh btn-lg" onclick="openModal('Book Live Demo')"><svg width="16" height="16"><use href="#ic-play"/></svg> Book a Demo</button>
       </div>
     </div>
   </div>
@@ -483,7 +481,7 @@
           <span class="ft-logo-txt" style="display:none">BidcoreAI</span>
         </div>
         <div class="ft-tag">AI-powered cost intelligence &amp; preconstruction automation. Built exclusively for US contractors.</div>
-        <div class="ft-badge"><svg width="10" height="10"><use href="#ic-flag"/></svg> Made for US Construction</div>
+        <div class="ft-badge"><svg width="10" height="10"><use href="#ic-flag"/></svg> For Global Construction</div>
       </div>
       <div>
         <div class="ft-col-t">Platform</div>
@@ -497,7 +495,7 @@
       <div>
         <div class="ft-col-t">For You</div>
         <ul class="ft-links">
-          <li><a href="/solutions">Federal GCs</a></li>
+          <li><a href="/solutions">General Contractors</a></li>
           <li><a href="/solutions">Prime Contractors</a></li>
           <li><a href="/solutions#subcontractors">Subcontractors</a></li>
           
@@ -508,8 +506,8 @@
         <ul class="ft-links">
           <li><a href="/feedback">Feedback</a></li>
           <li><a href="/contact">Contact</a></li>
-          <li><a href="#" onclick="openModal();return false;">Book Demo</a></li>
-          <li><a href="#" onclick="openModal();return false;">Free Trial</a></li>
+          <li><a href="#" onclick="openModal('Book Live Demo');return false;">Book Demo</a></li>
+          <li><a href="#" onclick="openModal('Start Free Trial');return false;">Free Trial</a></li>
         </ul>
       </div>
     </div>
@@ -545,7 +543,7 @@
           </select>
         </div>
         <div class="fg"><label>I'm interested in</label>
-          <select id="m-int">
+          <select id="m-int" onchange="onInterestChange()">
             <option value="">Select…</option>
             <option>Start Free Trial</option><option>Book Live Demo</option>
             <option>Federal Bidding</option><option>Takeoff Service</option>
@@ -553,7 +551,13 @@
           </select>
         </div>
       </div>
-      <div class="fg"><label>Your biggest challenge (optional)</label><textarea id="m-ch" rows="2" placeholder="e.g. Manual estimating, federal proposals, inconsistent costs…"></textarea></div>
+      
+        <!-- Slot picker — shown when Book Live Demo is selected -->
+        <div class="fg" id="m-slots" style="display:none">
+          <label>Pick a Date &amp; Time *</label>
+          <div id="slot-list" style="display:flex;flex-direction:column;gap:8px;margin-top:6px"></div>
+        </div>
+        <div class="fg"><label>Your biggest challenge (optional)</label><textarea id="m-ch" rows="2" placeholder="e.g. Manual estimating, federal proposals, inconsistent costs…"></textarea></div>
       <div class="ferr" id="m-err">Please fill in all required fields.</div>
       <button class="fsub" id="m-btn" onclick="submitModal()">
         <svg width="15" height="15"><use href="#ic-send"/></svg> Get Started

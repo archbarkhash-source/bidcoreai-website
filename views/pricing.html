@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -17,8 +17,6 @@
 <meta name="twitter:title" content="Pricing – Estimator, Pro & Premium Plans | BidcoreAI"/>
 <meta name="twitter:description" content="Simple, transparent pricing for BidcoreAI. Estimator plan from $59/month, Pro plan from $199/month. Premium plan for growing teams — contact us for pricing. 14-day free trial, no credit card required."/>
 <link rel="icon" type="image/png" href="https://bidcoreai-assets.vercel.app/favicon.png"/>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="../public/style.css"/>
 </head>
 <body>
@@ -88,7 +86,7 @@
     <a class="mob-nl" href="/contact"><svg width="14" height="14"><use href="#ic-mail"/></svg> Contact</a>
   </div>
   <div class="mob-cta">
-    <button class="btn btn-p" style="width:100%;justify-content:center" onclick="openModal()">
+    <button class="btn btn-p" style="width:100%;justify-content:center" onclick="openModal('Start Free Trial')">
       <svg width="14" height="14"><use href="#ic-zap"/></svg> Get Started Free
     </button>
   </div>
@@ -114,7 +112,7 @@
       <a class="nl" id="nl-contact" href="/contact">Contact</a>
     </div>
     <div class="nav-cta">
-      <button class="btn btn-gh btn-sm nav-demo" onclick="openModal()">Live Demo</button>
+      <button class="btn btn-gh btn-sm nav-demo" onclick="openModal('Book Live Demo')">Live Demo</button>
     </div>
   </div>
 </nav>
@@ -165,7 +163,7 @@
             <li class="pf ms"><span class="ck"><svg width="13" height="13"><use href="#ic-minus"/></svg></span> Team collaboration</li>
             <li class="pf ms"><span class="ck"><svg width="13" height="13"><use href="#ic-minus"/></svg></span> Professional takeoff (add-on only)</li>
           </ul>
-          <button class="btn btn-p pcta" onclick="openModal()"><svg width="13" height="13"><use href="#ic-zap"/></svg> Start Free Trial</button>
+          <button class="btn btn-p pcta" onclick="openModal('Start Free Trial')"><svg width="13" height="13"><use href="#ic-zap"/></svg> Start Free Trial</button>
           <div class="pnote">14-day trial · No card required</div>
         </div>
 
@@ -189,7 +187,7 @@
             <li class="pf ms"><span class="ck"><svg width="13" height="13"><use href="#ic-minus"/></svg></span> Team collaboration</li>
             <li class="pf ms"><span class="ck"><svg width="13" height="13"><use href="#ic-minus"/></svg></span> Professional takeoff (add-on only)</li>
           </ul>
-          <button class="btn btn-p pcta" onclick="openModal()"><svg width="13" height="13"><use href="#ic-zap"/></svg> Start Free Trial</button>
+          <button class="btn btn-p pcta" onclick="openModal('Start Free Trial')"><svg width="13" height="13"><use href="#ic-zap"/></svg> Start Free Trial</button>
           <div class="pnote">14-day trial · No card required</div>
         </div>
 
@@ -212,7 +210,7 @@
             <li class="pf"><span class="ck"><svg width="13" height="13"><use href="#ic-check"/></svg></span> 1 project professional Quantity Takeoff included (up to 16 hrs)</li>
             <li class="pf"><span class="ck"><svg width="13" height="13"><use href="#ic-check"/></svg></span> Additional projects: 30% off first month, then 20% off ongoing</li>
           </ul>
-          <button class="btn btn-p pcta" onclick="openModal()"><svg width="13" height="13"><use href="#ic-play"/></svg> Contact for Pricing</button>
+          <button class="btn btn-p pcta" onclick="openModal('Book Live Demo')"><svg width="13" height="13"><use href="#ic-play"/></svg> Contact for Pricing</button>
           <div class="pnote">Custom pricing · Tailored to your team</div>
         </div>
       </div>
@@ -323,7 +321,7 @@
         <a href="/takeoff-services" class="btn btn-p btn-lg" style="flex:1;min-width:200px;justify-content:center">
           <svg width="15" height="15"><use href="#ic-scan"/></svg> Request Estimating Service
         </a>
-        <button class="btn btn-out btn-lg" onclick="openModal()" style="flex:1;min-width:200px;justify-content:center">
+        <button class="btn btn-out btn-lg" onclick="openModal('Book Live Demo')" style="flex:1;min-width:200px;justify-content:center">
           <svg width="15" height="15"><use href="#ic-play"/></svg> Contact for Premium Pricing
         </button>
       </div>
@@ -354,7 +352,7 @@
           <span class="ft-logo-txt" style="display:none">BidcoreAI</span>
         </div>
         <div class="ft-tag">AI-powered cost intelligence &amp; preconstruction automation. Built exclusively for US contractors.</div>
-        <div class="ft-badge"><svg width="10" height="10"><use href="#ic-flag"/></svg> Made for US Construction</div>
+        <div class="ft-badge"><svg width="10" height="10"><use href="#ic-flag"/></svg> For Global Construction</div>
       </div>
       <div>
         <div class="ft-col-t">Platform</div>
@@ -368,7 +366,7 @@
       <div>
         <div class="ft-col-t">For You</div>
         <ul class="ft-links">
-          <li><a href="/solutions">Federal GCs</a></li>
+          <li><a href="/solutions">General Contractors</a></li>
           <li><a href="/solutions">Prime Contractors</a></li>
           <li><a href="/solutions#subcontractors">Subcontractors</a></li>
           
@@ -379,8 +377,8 @@
         <ul class="ft-links">
           <li><a href="/feedback">Feedback</a></li>
           <li><a href="/contact">Contact</a></li>
-          <li><a href="#" onclick="openModal();return false;">Book Demo</a></li>
-          <li><a href="#" onclick="openModal();return false;">Free Trial</a></li>
+          <li><a href="#" onclick="openModal('Book Live Demo');return false;">Book Demo</a></li>
+          <li><a href="#" onclick="openModal('Start Free Trial');return false;">Free Trial</a></li>
         </ul>
       </div>
     </div>
@@ -416,7 +414,7 @@
           </select>
         </div>
         <div class="fg"><label>I'm interested in</label>
-          <select id="m-int">
+          <select id="m-int" onchange="onInterestChange()">
             <option value="">Select…</option>
             <option>Start Free Trial</option><option>Book Live Demo</option>
             <option>Federal Bidding</option><option>Takeoff Service</option>
@@ -424,7 +422,13 @@
           </select>
         </div>
       </div>
-      <div class="fg"><label>Your biggest challenge (optional)</label><textarea id="m-ch" rows="2" placeholder="e.g. Manual estimating, federal proposals, inconsistent costs…"></textarea></div>
+      
+        <!-- Slot picker — shown when Book Live Demo is selected -->
+        <div class="fg" id="m-slots" style="display:none">
+          <label>Pick a Date &amp; Time *</label>
+          <div id="slot-list" style="display:flex;flex-direction:column;gap:8px;margin-top:6px"></div>
+        </div>
+        <div class="fg"><label>Your biggest challenge (optional)</label><textarea id="m-ch" rows="2" placeholder="e.g. Manual estimating, federal proposals, inconsistent costs…"></textarea></div>
       <div class="ferr" id="m-err">Please fill in all required fields.</div>
       <button class="fsub" id="m-btn" onclick="submitModal()">
         <svg width="15" height="15"><use href="#ic-send"/></svg> Get Started

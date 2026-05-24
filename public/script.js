@@ -28,11 +28,15 @@ function closeMob(){
 }
 
 /* ─── MODAL ─── */
-function openModal(){
+function openModal(interest){
   const modal = document.getElementById('modal');
   if(!modal) return;
   modal.classList.add('on');
   document.body.style.overflow = 'hidden';
+  if(interest){
+    const sel = document.getElementById('m-int');
+    if(sel){ sel.value = interest; onInterestChange(); }
+  }
 }
 function closeModal(){
   const modal = document.getElementById('modal');
@@ -236,16 +240,204 @@ async function sendEmail(payload, btnId, errId, bodyId, okId){
 function v(id){ const el=document.getElementById(id); return el?el.value.trim():''; }
 function isEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
 
+/* ─── DEMO DATE & TIME SCHEDULER ─── */
+const DEMO_MONS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DEMO_DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+let demoSelIdx  = null;
+let demoISTH    = 22;
+let demoISTM    = 0;
+let _demoDates  = [];
+let _calYear    = new Date().getFullYear();
+let _calMonth   = new Date().getMonth();
+let _calVisible = false;
+
+function getNextFri(){
+  const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()+1);
+  while(d.getDay()!==5) d.setDate(d.getDate()+1);
+  return [{dayName:DEMO_DAYS[d.getDay()],mon:DEMO_MONS[d.getMonth()],date:d.getDate(),year:d.getFullYear(),month:d.getMonth(),label:`${DEMO_DAYS[d.getDay()]}, ${DEMO_MONS[d.getMonth()]} ${d.getDate()}`}];
+}
+
+function istToLocalStr(year, month, day, istH, istM){
+  // IST = UTC+5:30 → subtract 5h 30m to get UTC
+  let utcH = istH - 5, utcM = istM - 30;
+  if(utcM < 0){ utcM += 60; utcH--; }
+  if(utcH < 0){ utcH += 24; day--; }
+  const utc = new Date(Date.UTC(year, month, day, utcH, utcM));
+  const tz  = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const timeStr = utc.toLocaleTimeString('en-US',{timeZone:tz, hour:'2-digit', minute:'2-digit', timeZoneName:'short'});
+  return timeStr;
+}
+
+function getLocalTZShort(){
+  return new Date().toLocaleTimeString('en-US',{timeZoneName:'short'}).split(' ').pop();
+}
+
+function renderCardsHTML(){
+  return _demoDates.map((dt,i)=>`
+    <div class="demo-date-card${demoSelIdx===i?' demo-date-sel':''}" onclick="demoPick(${i})">
+      <div class="demo-day-name">${dt.dayName}</div>
+      <div class="demo-day-num">${dt.date}</div>
+      <div class="demo-mon">${dt.mon} ${dt.year}</div>
+    </div>`).join('');
+}
+
+function renderDemoSlots(){
+  const list = document.getElementById('slot-list');
+  if(!list) return;
+  _demoDates = getNextFri();
+  demoSelIdx = 0; demoISTH = 22; demoISTM = 0; _calVisible = false;
+  const timeVal = `${String(demoISTH).padStart(2,'0')}:${String(demoISTM).padStart(2,'0')}`;
+  const tzShort = getLocalTZShort();
+  const sd = _demoDates[0];
+  list.innerHTML = `
+    <div class="demo-slot-row">
+      <div id="demo-cards" class="demo-cards-wrap">${renderCardsHTML()}</div>
+      <div class="demo-slot-right">
+        <div class="demo-slot-time-row">
+          <div class="demo-slot-col">
+            <div class="demo-time-lbl">Time <span style="font-weight:400;color:var(--g400)">(IST · UTC+5:30)</span></div>
+            <input type="time" id="demo-time-inp" class="demo-time-inp" value="${timeVal}" onchange="demoTimeChange(this.value)">
+          </div>
+          <div class="demo-slot-arr">→</div>
+          <div class="demo-slot-col">
+            <div class="demo-time-lbl">Your Time <span class="demo-tz-badge">${tzShort}</span></div>
+            <div class="demo-local-time" id="demo-local"><strong>${istToLocalStr(sd.year,sd.month,sd.date,demoISTH,demoISTM)}</strong></div>
+          </div>
+        </div>
+        <div class="demo-time-sub">Suggested: 10:00 PM – 11:00 PM IST</div>
+      </div>
+    </div>
+    <div class="demo-cal-toggle">
+      <button type="button" class="demo-cal-btn" onclick="toggleCal()">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style="flex-shrink:0"><rect x="1" y="2" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M1 6h14" stroke="currentColor" stroke-width="1.5"/><path d="M5 1v2M11 1v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Find another date
+      </button>
+    </div>
+    <div id="demo-cal" class="demo-cal" style="display:none"></div>`;
+}
+
+function demoPick(i){
+  demoSelIdx = i;
+  const dc = document.getElementById('demo-cards');
+  if(dc) dc.innerHTML = renderCardsHTML();
+  const sd = _demoDates[i];
+  const loc = document.getElementById('demo-local');
+  if(loc) loc.innerHTML = `<strong>${istToLocalStr(sd.year, sd.month, sd.date, demoISTH, demoISTM)}</strong>`;
+}
+
+function demoTimeChange(val){
+  const [h,m] = val.split(':').map(Number);
+  demoISTH = h; demoISTM = m;
+  const sd = _demoDates[demoSelIdx];
+  if(sd){
+    const loc = document.getElementById('demo-local');
+    if(loc) loc.innerHTML = `<strong>${istToLocalStr(sd.year, sd.month, sd.date, demoISTH, demoISTM)}</strong>`;
+  }
+}
+
+function toggleCal(){
+  _calVisible = !_calVisible;
+  const el = document.getElementById('demo-cal');
+  if(!el) return;
+  if(_calVisible){
+    const now = new Date();
+    _calYear = now.getFullYear(); _calMonth = now.getMonth();
+    renderCal();
+    el.style.display = 'block';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+function renderCal(){
+  const el = document.getElementById('demo-cal');
+  if(!el) return;
+  const DN = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+  const ML = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const today = new Date(); today.setHours(0,0,0,0);
+  const firstDay = new Date(_calYear, _calMonth, 1).getDay();
+  const daysInMonth = new Date(_calYear, _calMonth+1, 0).getDate();
+  let cells = DN.map(d=>`<div class="demo-cal-dn">${d}</div>`).join('');
+  for(let i=0;i<firstDay;i++) cells+=`<div></div>`;
+  for(let d=1;d<=daysInMonth;d++){
+    const dt=new Date(_calYear,_calMonth,d);
+    const isWknd=dt.getDay()===0||dt.getDay()===6;
+    const isPast=dt<today;
+    const sel=demoSelIdx!==null?_demoDates[demoSelIdx]:null;
+    const isSel=sel&&sel.year===_calYear&&sel.month===_calMonth&&sel.date===d;
+    let cls='demo-cal-day';
+    if(isWknd||isPast) cls+=' cal-off';
+    else if(isSel) cls+=' cal-sel';
+    const click=(!isWknd&&!isPast)?` onclick="calPick(${_calYear},${_calMonth},${d})"`:''
+    cells+=`<div class="${cls}"${click}>${d}</div>`;
+  }
+  el.innerHTML=`
+    <div class="demo-cal-hdr">
+      <button type="button" class="demo-cal-nav" onclick="calNav(-1)">&#8249;</button>
+      <span class="demo-cal-month">${ML[_calMonth]} ${_calYear}</span>
+      <button type="button" class="demo-cal-nav" onclick="calNav(1)">&#8250;</button>
+    </div>
+    <div class="demo-cal-grid">${cells}</div>`;
+}
+
+function calNav(dir){
+  _calMonth+=dir;
+  if(_calMonth<0){_calMonth=11;_calYear--;}
+  if(_calMonth>11){_calMonth=0;_calYear++;}
+  renderCal();
+}
+
+function calPick(year,month,day){
+  const dt=new Date(year,month,day);
+  _demoDates[0]={dayName:DEMO_DAYS[dt.getDay()],mon:DEMO_MONS[month],date:day,year,month,label:`${DEMO_DAYS[dt.getDay()]}, ${DEMO_MONS[month]} ${day}`};
+  demoSelIdx=0;
+  const dc=document.getElementById('demo-cards');
+  if(dc) dc.innerHTML=renderCardsHTML();
+  const loc=document.getElementById('demo-local');
+  if(loc) loc.innerHTML=`<strong>${istToLocalStr(year,month,day,demoISTH,demoISTM)}</strong>`;
+  _calVisible=false;
+  const calEl=document.getElementById('demo-cal');
+  if(calEl) calEl.style.display='none';
+}
+
+/* ─── MODAL INTEREST HANDLER ─── */
+function onInterestChange(){
+  const sel     = document.getElementById('m-int');
+  const val     = sel ? sel.value : '';
+  const slotsEl = document.getElementById('m-slots');
+  const btnEl   = document.getElementById('m-btn');
+  const showSlots = val==='Book Live Demo' || val==='Start Free Trial';
+
+  if(slotsEl) slotsEl.style.display = showSlots ? 'block' : 'none';
+  if(btnEl){
+    btnEl.innerHTML = val==='Book Live Demo'
+      ? '<svg width="15" height="15"><use href="#ic-send"/></svg> Book My Demo'
+      : '<svg width="15" height="15"><use href="#ic-send"/></svg> Get Started';
+  }
+  if(showSlots) renderDemoSlots();
+}
+
 /* ─── MODAL FORM ─── */
 function submitModal(){
   const fn=v('m-fn'),em=v('m-em'),co=v('m-co'),tr=v('m-tr');
+  const interest=v('m-int');
   const err=document.getElementById('m-err');
   if(!fn||!em||!co||!tr){err.textContent='Please fill in all required fields.';err.style.display='block';return;}
   if(!isEmail(em)){err.textContent='Please enter a valid email.';err.style.display='block';return;}
+  let demoInfo = '';
+  if(interest==='Book Live Demo' || interest==='Start Free Trial'){
+    const sd = _demoDates[demoSelIdx];
+    if(sd){
+      const istLabel = `${String(demoISTH).padStart(2,'0')}:${String(demoISTM).padStart(2,'0')} IST`;
+      const localLabel = istToLocalStr(sd.year, sd.month, sd.date, demoISTH, demoISTM);
+      demoInfo = ` — Date: ${sd.label}, ${sd.year} | Time: ${istLabel} (${localLabel})`;
+    }
+  }
   sendEmail({
-    subject:`BidcoreAI Request — ${fn} (${co})`,
+    subject:`BidcoreAI Demo Request — ${fn} (${co})`,
     name:`${fn} ${v('m-ln')}`, email:em, company:co, trade:tr,
-    interest:v('m-int'), challenge:v('m-ch'), source:'Demo Modal'
+    interest: interest + demoInfo,
+    challenge:v('m-ch'), source:'Demo Modal'
   },'m-btn','m-err','mod-form','mod-ok');
 }
 

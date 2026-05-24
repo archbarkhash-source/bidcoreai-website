@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -17,8 +17,6 @@
 <meta name="twitter:title" content="Solutions – AI Bidding Platform for US Contractors | BidcoreAI"/>
 <meta name="twitter:description" content="Designed for General Contractors, prime contractors, and supporting trade partners managing complex projects and tight bid timelines, BidcoreAI helps you estimate faster, structure bids clearly, and reduce risk."/>
 <link rel="icon" type="image/png" href="https://bidcoreai-assets.vercel.app/favicon.png"/>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="../public/style.css"/>
 </head>
 <body>
@@ -88,7 +86,7 @@
     <a class="mob-nl" href="/contact"><svg width="14" height="14"><use href="#ic-mail"/></svg> Contact</a>
   </div>
   <div class="mob-cta">
-    <button class="btn btn-p" style="width:100%;justify-content:center" onclick="openModal()">
+    <button class="btn btn-p" style="width:100%;justify-content:center" onclick="openModal('Start Free Trial')">
       <svg width="14" height="14"><use href="#ic-zap"/></svg> Get Started Free
     </button>
   </div>
@@ -114,7 +112,7 @@
       <a class="nl" id="nl-contact" href="/contact">Contact</a>
     </div>
     <div class="nav-cta">
-      <button class="btn btn-gh btn-sm nav-demo" onclick="openModal()">Live Demo</button>
+      <button class="btn btn-gh btn-sm nav-demo" onclick="openModal('Book Live Demo')">Live Demo</button>
     </div>
   </div>
 </nav>
@@ -152,14 +150,14 @@
         </p>
       </div>
 
-      <!-- CASE 1: US Federal GCs -->
+      <!-- CASE 1: US General Contractors -->
       <div class="case-study rv" style="margin-bottom:56px">
         <div class="cs-badge" style="background:rgba(0,123,255,.08);border:1px solid rgba(0,123,255,.18);border-radius:10px;padding:6px 14px;display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--blue);margin-bottom:16px;text-transform:uppercase;letter-spacing:.08em">
           <svg width="11" height="11"><use href="#ic-shield"/></svg> Case Study 1 - US Federal General Contractors
         </div>
         <div class="sol-layout">
           <div>
-            <h3 class="h3" style="font-size:22px;margin-bottom:10px">US Federal GCs &amp; SAM.gov Bidders</h3>
+            <h3 class="h3" style="font-size:22px;margin-bottom:10px">US General Contractors &amp; SAM.gov Bidders</h3>
             <p style="font-size:14px;color:var(--g600);line-height:1.72;margin-bottom:18px">
               Built for federal procurement workflows,SAM.gov solicitations, CSI MasterFormat pricing, and AI-assisted proposal generation for federal contracts and set-aside programs including 8(a), HUBZone, WOSB, and SDVOSB.
             </p>
@@ -470,8 +468,8 @@
 
     <!-- CTA after FAQ -->
     <div class="rv" style="text-align:center;margin-top:48px">
-      <button class="btn btn-p btn-lg" onclick="openModal()"><svg width="16" height="16"><use href="#ic-zap"/></svg> Start Free Trial</button>
-      <button class="btn btn-gh btn-lg" onclick="openModal()" style="background:var(--g100);color:var(--navy);border:2px solid var(--g200);margin-left:12px"><svg width="16" height="16"><use href="#ic-play"/></svg> Book a Demo</button>
+      <button class="btn btn-p btn-lg" onclick="openModal('Start Free Trial')"><svg width="16" height="16"><use href="#ic-zap"/></svg> Start Free Trial</button>
+      <button class="btn btn-gh btn-lg" onclick="openModal('Book Live Demo')" style="background:var(--g100);color:var(--navy);border:2px solid var(--g200);margin-left:12px"><svg width="16" height="16"><use href="#ic-play"/></svg> Book a Demo</button>
       <div style="font-size:12px;color:var(--g400);margin-top:12px">14-day free trial · No credit card · Up and running in minutes</div>
     </div>
   </div>
@@ -511,7 +509,7 @@ function toggleFaq(btn){
           <span class="ft-logo-txt" style="display:none">BidcoreAI</span>
         </div>
         <div class="ft-tag">AI-powered cost intelligence &amp; preconstruction automation. Built exclusively for US contractors.</div>
-        <div class="ft-badge"><svg width="10" height="10"><use href="#ic-flag"/></svg> Made for US Construction</div>
+        <div class="ft-badge"><svg width="10" height="10"><use href="#ic-flag"/></svg> For Global Construction</div>
       </div>
       <div>
         <div class="ft-col-t">Platform</div>
@@ -525,7 +523,7 @@ function toggleFaq(btn){
       <div>
         <div class="ft-col-t">For You</div>
         <ul class="ft-links">
-          <li><a href="/solutions">Federal GCs</a></li>
+          <li><a href="/solutions">General Contractors</a></li>
           <li><a href="/solutions">Prime Contractors</a></li>
           <li><a href="/solutions#subcontractors">Subcontractors</a></li>
           
@@ -536,8 +534,8 @@ function toggleFaq(btn){
         <ul class="ft-links">
           <li><a href="/feedback">Feedback</a></li>
           <li><a href="/contact">Contact</a></li>
-          <li><a href="#" onclick="openModal();return false;">Book Demo</a></li>
-          <li><a href="#" onclick="openModal();return false;">Free Trial</a></li>
+          <li><a href="#" onclick="openModal('Book Live Demo');return false;">Book Demo</a></li>
+          <li><a href="#" onclick="openModal('Start Free Trial');return false;">Free Trial</a></li>
         </ul>
       </div>
     </div>
@@ -574,7 +572,7 @@ function toggleFaq(btn){
           </select>
         </div>
         <div class="fg"><label>I'm interested in</label>
-          <select id="m-int">
+          <select id="m-int" onchange="onInterestChange()">
             <option value="">Select…</option>
             <option>Start Free Trial</option><option>Book Live Demo</option>
             <option>Federal Bidding</option><option>Takeoff Service</option>
@@ -582,7 +580,13 @@ function toggleFaq(btn){
           </select>
         </div>
       </div>
-      <div class="fg"><label>Your biggest challenge (optional)</label><textarea id="m-ch" rows="2" placeholder="e.g. Manual estimating, federal proposals, inconsistent costs…"></textarea></div>
+      
+        <!-- Slot picker — shown when Book Live Demo is selected -->
+        <div class="fg" id="m-slots" style="display:none">
+          <label>Pick a Date &amp; Time *</label>
+          <div id="slot-list" style="display:flex;flex-direction:column;gap:8px;margin-top:6px"></div>
+        </div>
+        <div class="fg"><label>Your biggest challenge (optional)</label><textarea id="m-ch" rows="2" placeholder="e.g. Manual estimating, federal proposals, inconsistent costs…"></textarea></div>
       <div class="ferr" id="m-err">Please fill in all required fields.</div>
       <button class="fsub" id="m-btn" onclick="submitModal()">
         <svg width="15" height="15"><use href="#ic-send"/></svg> Get Started
