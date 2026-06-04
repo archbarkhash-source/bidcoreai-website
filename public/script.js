@@ -133,7 +133,7 @@ function toggleBilling(){
   if(estimatorPer)   estimatorPer.textContent   = isYearly ? '/year' : '/month';
   const soloPrice = document.getElementById('solo-price');
   const soloPer   = soloPrice && soloPrice.closest('.pamt') && soloPrice.closest('.pamt').querySelector('.pper');
-  if(soloPrice) soloPrice.textContent = isYearly ? '1999' : '199';
+  if(soloPrice) soloPrice.textContent = isYearly ? '2499' : '249';
   if(soloPer)   soloPer.textContent   = isYearly ? '/year' : '/month';
 }
 
