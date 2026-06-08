@@ -129,11 +129,11 @@ function toggleBilling(){
   if(btn) btn.classList.toggle('on', isYearly);
   const estimatorPrice = document.getElementById('estimator-price');
   const estimatorPer   = estimatorPrice && estimatorPrice.closest('.pamt') && estimatorPrice.closest('.pamt').querySelector('.pper');
-  if(estimatorPrice) estimatorPrice.textContent = isYearly ? '623' : '59';
+  if(estimatorPrice) estimatorPrice.textContent = isYearly ? '999' : '99';
   if(estimatorPer)   estimatorPer.textContent   = isYearly ? '/year' : '/month';
   const soloPrice = document.getElementById('solo-price');
   const soloPer   = soloPrice && soloPrice.closest('.pamt') && soloPrice.closest('.pamt').querySelector('.pper');
-  if(soloPrice) soloPrice.textContent = isYearly ? '2499' : '249';
+  if(soloPrice) soloPrice.textContent = isYearly ? '3499' : '299';
   if(soloPer)   soloPer.textContent   = isYearly ? '/year' : '/month';
 }
 
