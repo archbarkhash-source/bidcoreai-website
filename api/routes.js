@@ -1,0 +1,450 @@
+/**
+ * api/routes.js — the free Go/No-Go API, mounted at /api/go-no-go.
+ *
+ * Everything a visitor can do without a BidcoreAI account:
+ *   POST /google | /request-code | /verify-code   sign in
+ *   GET  /me                                      workspace + setup state
+ *   PUT  /profile                                 company intelligence
+ *   PUT|DELETE /api-key                           their SAM.gov key
+ *   GET  /search                                  live SAM.gov, on their key
+ *   POST /score                                   the 12-criterion analysis
+ *
+ * Contracts kept deliberately boring: every response is JSON, every failure is
+ * `{ error: "<sentence a human can act on>" }` with a real status code, so the
+ * page never has to guess what went wrong.
+ */
+const express = require('express');
+const db = require('./db');
+const auth = require('./auth');
+const secretbox = require('./secretbox');
+const samgov = require('./samgov');
+const geocodeLib = require('./geocode');
+const { computeQuickScore } = require('./scoring');
+
+const router = express.Router();
+
+// Daily per-workspace caps — generous for a genuine evaluation, low enough that
+// the page can't be turned into a free SAM.gov proxy.
+const MAX_SEARCHES_PER_DAY = 60;
+const MAX_SCORES_PER_DAY = 40;
+
+// Only the US has a live connector. The rest are listed so the choice is
+// honest — a visitor from Canada learns where they stand instead of pasting a
+// key into something that will never call it.
+const COUNTRIES = [
+  { code: 'US', name: 'United States', portal: 'SAM.gov', connected: true },
+  { code: 'CA', name: 'Canada', portal: 'CanadaBuys', connected: false },
+  { code: 'UK', name: 'United Kingdom', portal: 'Find a Tender', connected: false },
+  { code: 'AU', name: 'Australia', portal: 'AusTender', connected: false },
+  { code: 'IN', name: 'India', portal: 'GeM / CPPP', connected: false },
+];
+
+const isConnectedCountry = (code) =>
+  COUNTRIES.some((c) => c.code === String(code || 'US').toUpperCase() && c.connected);
+
+const asList = (v) => (Array.isArray(v) ? v.map((x) => String(x).trim()).filter(Boolean) : []);
+const splitList = (v) => (typeof v === 'string' ? v.split(',').map((s) => s.trim()).filter(Boolean) : asList(v));
+const numberOrNull = (v) => (v === '' || v == null || Number.isNaN(Number(v)) ? null : Number(v));
+
+/** Wrap an async handler so a rejection reaches the error middleware. */
+const wrap = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
+
+async function loadProfile(workspaceId) {
+  const ws = await db.one('SELECT * FROM workspaces WHERE id = $1', [workspaceId]);
+  const caps = await db.query('SELECT * FROM capabilities WHERE workspace_id = $1 ORDER BY id DESC', [workspaceId]);
+  const perf = await db.query('SELECT * FROM past_performance WHERE workspace_id = $1 ORDER BY id DESC', [workspaceId]);
+  return { ...ws, capabilities: caps.rows, past_performance: perf.rows };
+}
+
+/**
+ * What's set up and what isn't. The API key is the only hard requirement —
+ * without it nothing can be fetched at all. Everything else changes how
+ * precise the score is, and says so.
+ */
+function readiness(profile) {
+  const has = (v) => Array.isArray(v) && v.length > 0;
+  // A key stored against a portal with no connector (Canada, UK…) must not
+  // count as "ready": there is nothing to search with it, and letting it
+  // unlock the workspace would send a CanadaBuys key to SAM.gov and produce a
+  // baffling rejection.
+  const usable = !!profile.api_key_encrypted && isConnectedCountry(profile.country_code);
+  return {
+    api_key: {
+      complete: usable,
+      blocking: true,
+      label: 'SAM.gov API key',
+      hint: 'Required — searches run on your own key.',
+    },
+    naics: {
+      complete: has(profile.naics_codes) || profile.capabilities.length > 0,
+      blocking: false,
+      label: 'NAICS codes',
+      hint: 'The single biggest input to the score.',
+    },
+    certifications: {
+      complete: has(profile.certifications),
+      blocking: false,
+      label: 'Certifications',
+      hint: 'Decides whether you can bid set-aside work at all.',
+    },
+    office: {
+      complete: profile.office_lat != null,
+      blocking: false,
+      label: 'Office address',
+      hint: 'Scores mobilisation distance.',
+    },
+    past_performance: {
+      complete: profile.past_performance.length > 0,
+      blocking: false,
+      label: 'Past performance',
+      hint: 'Scores similarity to work you have delivered.',
+    },
+    can_search: usable,
+  };
+}
+
+function publicProfile(profile) {
+  return {
+    email: profile.email,
+    company: profile.company,
+    name: profile.name,
+    country_code: profile.country_code || 'US',
+    naics_codes: profile.naics_codes || [],
+    psc_codes: profile.psc_codes || [],
+    states_served: profile.states_served || [],
+    target_agencies: profile.target_agencies || [],
+    certifications: profile.certifications || [],
+    office_address: profile.office_address,
+    bonding_capacity: profile.bonding_capacity,
+    project_value_min: profile.project_value_min,
+    project_value_max: profile.project_value_max,
+    min_bid_days: profile.min_bid_days,
+    has_api_key: !!profile.api_key_encrypted,
+    api_key_hint: profile.api_key_hint,
+    api_key_status: profile.api_key_status,
+    capabilities: (profile.capabilities || []).map((c) => ({
+      id: c.id, title: c.title, naics_codes: c.naics_codes || [],
+    })),
+    past_performance: (profile.past_performance || []).map((p) => ({
+      id: p.id, title: p.title, agency: p.agency, contract_value: p.contract_value,
+    })),
+  };
+}
+
+/** Bump a daily counter, resetting it lazily on the first call of a new day. */
+async function bumpUsage(workspace, column, limit, label) {
+  const today = new Date().toISOString().slice(0, 10);
+  const sameDay = workspace.usage_day && new Date(workspace.usage_day).toISOString().slice(0, 10) === today;
+  const used = sameDay ? workspace[column] || 0 : 0;
+
+  if (used >= limit) {
+    throw auth.httpError(
+      429,
+      `You've used all ${limit} free ${label} for today. They reset tomorrow — or create a BidcoreAI account for unlimited access.`,
+    );
+  }
+  await db.query(
+    `UPDATE workspaces
+        SET usage_day = $2::date,
+            searches_today = CASE WHEN usage_day = $2::date THEN searches_today ELSE 0 END + $3,
+            scores_today   = CASE WHEN usage_day = $2::date THEN scores_today   ELSE 0 END + $4
+      WHERE id = $1`,
+    [workspace.id, today, column === 'searches_today' ? 1 : 0, column === 'scores_today' ? 1 : 0],
+  );
+}
+
+async function decryptedKey(workspace) {
+  if (workspace.api_key_encrypted && !isConnectedCountry(workspace.country_code)) {
+    const meta = COUNTRIES.find((c) => c.code === String(workspace.country_code).toUpperCase());
+    throw auth.httpError(
+      428,
+      `${meta ? meta.portal : 'That portal'} has no live integration yet. Switch to United States (SAM.gov) to run an analysis.`,
+    );
+  }
+  const key = secretbox.decrypt(workspace.api_key_encrypted);
+  if (!key) {
+    // 428 Precondition Required: they ARE signed in, they just haven't added
+    // the one thing this page cannot work without — which the UI turns into
+    // "add your key", not "sign in again".
+    throw auth.httpError(428, 'Add your SAM.gov API key first — searches run on your own key.');
+  }
+  return key;
+}
+
+function logEvent(workspaceId, event, detail) {
+  // Lead telemetry. Deliberately fire-and-forget: an analytics insert must
+  // never fail the request the visitor actually asked for.
+  db.query('INSERT INTO go_no_go_events (workspace_id, event, detail) VALUES ($1, $2, $3)',
+    [workspaceId || null, event, detail ? JSON.stringify(detail) : null])
+    .catch((e) => console.warn('[go-no-go] event log failed:', e.message));
+}
+
+// ── Public config (no session needed) ────────────────────────────────────────
+
+router.get('/config', (req, res) => {
+  res.json({
+    countries: COUNTRIES,
+    google_client_id: (process.env.GOOGLE_CLIENT_ID || '').trim() || null,
+    app_url: process.env.APP_URL || 'https://app.bidcoreai.com',
+    configured: db.isConfigured(),
+  });
+});
+
+// ── Sign in ──────────────────────────────────────────────────────────────────
+
+router.post('/google', wrap(async (req, res) => {
+  const { token, workspace } = await auth.googleSignIn({
+    credential: req.body.credential,
+    source: req.body.source || req.get('referer') || null,
+  });
+  const profile = await loadProfile(workspace.id);
+  logEvent(workspace.id, 'sign_in', { provider: 'google' });
+  res.json({ session_token: token, profile: publicProfile(profile), readiness: readiness(profile) });
+}));
+
+router.post('/request-code', wrap(async (req, res) => {
+  const result = await auth.requestCode({
+    email: req.body.email,
+    company: req.body.company,
+    source: req.body.source || req.get('referer') || null,
+  });
+  res.json(result);
+}));
+
+router.post('/verify-code', wrap(async (req, res) => {
+  const { token, workspace } = await auth.verifyCode({ email: req.body.email, code: req.body.code });
+  const profile = await loadProfile(workspace.id);
+  logEvent(workspace.id, 'sign_in', { provider: 'email' });
+  res.json({ session_token: token, profile: publicProfile(profile), readiness: readiness(profile) });
+}));
+
+router.post('/sign-out', auth.requireSession, wrap(async (req, res) => {
+  await auth.signOut(req.workspace.id);
+  res.json({ ok: true });
+}));
+
+// ── Workspace ────────────────────────────────────────────────────────────────
+
+router.get('/me', auth.requireSession, wrap(async (req, res) => {
+  const profile = await loadProfile(req.workspace.id);
+  const today = new Date().toISOString().slice(0, 10);
+  const sameDay = profile.usage_day && new Date(profile.usage_day).toISOString().slice(0, 10) === today;
+  res.json({
+    profile: publicProfile(profile),
+    readiness: readiness(profile),
+    usage: {
+      searches_today: sameDay ? profile.searches_today : 0,
+      searches_limit: MAX_SEARCHES_PER_DAY,
+      scores_today: sameDay ? profile.scores_today : 0,
+      scores_limit: MAX_SCORES_PER_DAY,
+    },
+  });
+}));
+
+router.put('/profile', auth.requireSession, wrap(async (req, res) => {
+  const b = req.body || {};
+  const address = typeof b.office_address === 'string' ? b.office_address.trim() : undefined;
+
+  // Geocode once, here, rather than on every score — Nominatim asks callers to
+  // keep their rate down, and an address changes far less often than it's used.
+  let lat = null;
+  let lng = null;
+  if (address) {
+    const coords = await geocodeLib.geocode(address);
+    if (coords) { lat = coords.lat; lng = coords.lng; }
+  }
+
+  await db.query(
+    `UPDATE workspaces SET
+        naics_codes       = COALESCE($2::jsonb, naics_codes),
+        psc_codes         = COALESCE($3::jsonb, psc_codes),
+        states_served     = COALESCE($4::jsonb, states_served),
+        target_agencies   = COALESCE($5::jsonb, target_agencies),
+        certifications    = COALESCE($6::jsonb, certifications),
+        office_address    = COALESCE($7, office_address),
+        office_lat        = CASE WHEN $7 IS NULL THEN office_lat ELSE $8 END,
+        office_lng        = CASE WHEN $7 IS NULL THEN office_lng ELSE $9 END,
+        bonding_capacity  = COALESCE($10, bonding_capacity),
+        project_value_min = COALESCE($11, project_value_min),
+        project_value_max = COALESCE($12, project_value_max),
+        min_bid_days      = COALESCE($13, min_bid_days),
+        company           = COALESCE($14, company)
+      WHERE id = $1`,
+    [
+      req.workspace.id,
+      b.naics_codes === undefined ? null : JSON.stringify(splitList(b.naics_codes)),
+      b.psc_codes === undefined ? null : JSON.stringify(splitList(b.psc_codes)),
+      b.states_served === undefined ? null : JSON.stringify(splitList(b.states_served).map((s) => s.toUpperCase())),
+      b.target_agencies === undefined ? null : JSON.stringify(splitList(b.target_agencies)),
+      b.certifications === undefined ? null : JSON.stringify(splitList(b.certifications)),
+      address === undefined || address === '' ? null : address,
+      lat, lng,
+      numberOrNull(b.bonding_capacity),
+      numberOrNull(b.project_value_min),
+      numberOrNull(b.project_value_max),
+      numberOrNull(b.min_bid_days),
+      b.company ? String(b.company).slice(0, 255) : null,
+    ],
+  );
+
+  const profile = await loadProfile(req.workspace.id);
+  res.json({ profile: publicProfile(profile), readiness: readiness(profile) });
+}));
+
+router.post('/capabilities', auth.requireSession, wrap(async (req, res) => {
+  const title = String(req.body.title || '').trim();
+  if (!title) throw auth.httpError(400, 'Give the capability a name.');
+  await db.query(
+    'INSERT INTO capabilities (workspace_id, title, naics_codes) VALUES ($1, $2, $3::jsonb)',
+    [req.workspace.id, title.slice(0, 200), JSON.stringify(splitList(req.body.naics_codes))],
+  );
+  const profile = await loadProfile(req.workspace.id);
+  res.json({ profile: publicProfile(profile), readiness: readiness(profile) });
+}));
+
+router.delete('/capabilities/:id', auth.requireSession, wrap(async (req, res) => {
+  await db.query('DELETE FROM capabilities WHERE id = $1 AND workspace_id = $2', [req.params.id, req.workspace.id]);
+  const profile = await loadProfile(req.workspace.id);
+  res.json({ profile: publicProfile(profile), readiness: readiness(profile) });
+}));
+
+router.post('/past-performance', auth.requireSession, wrap(async (req, res) => {
+  const title = String(req.body.title || '').trim();
+  if (!title) throw auth.httpError(400, 'Give the project a name.');
+  await db.query(
+    `INSERT INTO past_performance (workspace_id, title, agency, naics_code, contract_value)
+     VALUES ($1, $2, $3, $4, $5)`,
+    [
+      req.workspace.id, title.slice(0, 200),
+      req.body.agency ? String(req.body.agency).slice(0, 200) : null,
+      req.body.naics_code ? String(req.body.naics_code).slice(0, 10) : null,
+      numberOrNull(req.body.contract_value),
+    ],
+  );
+  const profile = await loadProfile(req.workspace.id);
+  res.json({ profile: publicProfile(profile), readiness: readiness(profile) });
+}));
+
+router.delete('/past-performance/:id', auth.requireSession, wrap(async (req, res) => {
+  await db.query('DELETE FROM past_performance WHERE id = $1 AND workspace_id = $2', [req.params.id, req.workspace.id]);
+  const profile = await loadProfile(req.workspace.id);
+  res.json({ profile: publicProfile(profile), readiness: readiness(profile) });
+}));
+
+// ── SAM.gov key ──────────────────────────────────────────────────────────────
+
+router.put('/api-key', auth.requireSession, wrap(async (req, res) => {
+  const country = String(req.body.country_code || 'US').toUpperCase();
+  const meta = COUNTRIES.find((c) => c.code === country);
+  if (!meta) throw auth.httpError(400, 'Choose a supported country.');
+
+  const apiKey = String(req.body.api_key || '').trim();
+  if (!apiKey) throw auth.httpError(400, 'Paste your API key.');
+
+  if (!meta.connected) {
+    // Stored but honestly labelled: no connector exists to verify it against.
+    await db.query(
+      `UPDATE workspaces SET country_code = $2, api_key_encrypted = $3, api_key_hint = $4,
+              api_key_status = 'no_connector', api_key_checked_at = NOW() WHERE id = $1`,
+      [req.workspace.id, country, secretbox.encrypt(apiKey), secretbox.hint(apiKey)],
+    );
+    const stored = await loadProfile(req.workspace.id);
+    return res.json({
+      verified: false,
+      error: `${meta.portal} has no live integration yet — your key is saved but not used.`,
+      profile: publicProfile(stored), readiness: readiness(stored),
+    });
+  }
+
+  // Verified at save time: on this page an unusable key is the difference
+  // between a working demo and a dead end, so it's checked immediately rather
+  // than behind a separate button the visitor might never press.
+  const check = await samgov.verifyKey(apiKey);
+  if (!check.ok) {
+    throw auth.httpError(400, check.error || 'SAM.gov rejected this key.');
+  }
+
+  await db.query(
+    `UPDATE workspaces SET country_code = $2, api_key_encrypted = $3, api_key_hint = $4,
+            api_key_status = 'ok', api_key_checked_at = NOW() WHERE id = $1`,
+    [req.workspace.id, country, secretbox.encrypt(apiKey), secretbox.hint(apiKey)],
+  );
+  logEvent(req.workspace.id, 'api_key_linked', { country });
+
+  const profile = await loadProfile(req.workspace.id);
+  res.json({ verified: true, profile: publicProfile(profile), readiness: readiness(profile) });
+}));
+
+router.delete('/api-key', auth.requireSession, wrap(async (req, res) => {
+  await db.query(
+    `UPDATE workspaces SET api_key_encrypted = NULL, api_key_hint = NULL,
+            api_key_status = NULL, api_key_checked_at = NULL WHERE id = $1`,
+    [req.workspace.id],
+  );
+  const profile = await loadProfile(req.workspace.id);
+  res.json({ profile: publicProfile(profile), readiness: readiness(profile) });
+}));
+
+// ── Search + score ───────────────────────────────────────────────────────────
+
+router.get('/search', auth.requireSession, wrap(async (req, res) => {
+  const key = await decryptedKey(req.workspace);
+  await bumpUsage(req.workspace, 'searches_today', MAX_SEARCHES_PER_DAY, 'searches');
+
+  const q = String(req.query.q || '').trim();
+  // One search box. A 6-digit number is a NAICS code, a longer alphanumeric
+  // token is a solicitation number, anything else is a keyword — so the visitor
+  // never has to know which field their text belongs in.
+  const params = { limit: 20 };
+  if (/^\d{6}$/.test(q)) params.naics = q;
+  else if (/^[A-Za-z0-9][A-Za-z0-9-]{7,}$/.test(q) && /\d/.test(q)) params.solicitationNumber = q;
+  else if (q) params.keyword = q;
+  if (req.query.naics) params.naics = String(req.query.naics).trim();
+  if (req.query.set_aside) params.setAside = String(req.query.set_aside).trim();
+
+  const { results, total } = await samgov.search(params, key);
+  logEvent(req.workspace.id, 'search', { q, results: results.length });
+  res.json({ results, total });
+}));
+
+router.post('/score', auth.requireSession, wrap(async (req, res) => {
+  await decryptedKey(req.workspace); // same gate as search: no key, no analysis
+  await bumpUsage(req.workspace, 'scores_today', MAX_SCORES_PER_DAY, 'Go/No-Go analyses');
+
+  const o = req.body || {};
+  if (!o.title && !o.solicitation_number) {
+    throw auth.httpError(400, 'Pick an opportunity to analyse.');
+  }
+
+  const profile = await loadProfile(req.workspace.id);
+
+  // Distance needs the notice's coordinates; only worth fetching when there is
+  // an office to measure from.
+  let opportunity = { ...o, solicitation_value_estimate: numberOrNull(o.solicitation_value_estimate) };
+  if (profile.office_lat != null && (o.place_of_performance_city || o.place_of_performance_state)) {
+    const coords = await geocodeLib.geocodePlace(o.place_of_performance_city, o.place_of_performance_state);
+    if (coords) {
+      opportunity.place_of_performance_lat = coords.lat;
+      opportunity.place_of_performance_lng = coords.lng;
+    }
+  }
+
+  const result = computeQuickScore(opportunity, profile);
+  logEvent(req.workspace.id, 'score', {
+    solicitation: o.solicitation_number || null,
+    score: result.overall_score,
+    recommendation: result.recommendation,
+  });
+
+  res.json({ result, readiness: readiness(profile) });
+}));
+
+// ── Errors ───────────────────────────────────────────────────────────────────
+// One shape for every failure, so the page can always render `error` verbatim.
+router.use((err, req, res, _next) => {
+  const status = err.statusCode || 500;
+  if (status >= 500) console.error('[go-no-go]', err);
+  res.status(status).json({ error: err.message || 'Something went wrong. Please try again.' });
+});
+
+module.exports = router;

@@ -1,0 +1,118 @@
+# Free Federal Go/No-Go — setup & deployment
+
+The interactive lead magnet at **`/go-no-go`**. A visitor signs up (Google or an
+emailed code), picks a country, connects their **own** SAM.gov API key, and gets
+an instant 12-criterion bid/no-bid analysis on any live federal solicitation.
+
+It is deliberately self-contained: its own database, its own auth, its own
+scoring. Nothing here touches the BidcoreAI product app or its database — this
+is the one surface an unauthenticated stranger can write to, so it shares
+nothing with paying tenants' data.
+
+## Files
+
+| Path | What it does |
+|---|---|
+| `views/go-no-go.html` | The page shell (SEO head, inline icons, mount point) |
+| `public/go-no-go.css` | Styles — white, black text, one orange accent |
+| `public/go-no-go.js` | The whole client, vanilla JS, no build step |
+| `api/routes.js` | The API, mounted at `/api/go-no-go` |
+| `api/auth.js` | Google sign-in + emailed 6-digit code + sessions |
+| `api/db.js` | Neon connection and schema (created on first use) |
+| `api/samgov.js` | SAM.gov client, per-key rate-limit cooldown |
+| `api/scoring.js` | The 12-criterion Go/No-Go rubric |
+| `api/secretbox.js` | AES-256-GCM encryption for stored API keys |
+| `api/geocode.js` | Address → lat/lng for the distance criterion |
+
+## Environment variables
+
+Set these in **Vercel → Project → Settings → Environment Variables** (and in
+`.env` for local development).
+
+| Variable | Required | What it is |
+|---|---|---|
+| `DATABASE_URL` | **yes** | The `Bidcoreai-Webopp` Neon branch connection string. Vercel's Neon integration sets this for you when you connect the database. |
+| `SECRET_KEY` | **yes** | Any long random string. Encrypts visitors' stored SAM.gov keys. **Rotating it invalidates every stored key** (visitors are asked to paste theirs again — nothing breaks). Must NOT be shared with the product app. |
+| `GOOGLE_CLIENT_ID` | no | Enables "Continue with Google". Without it the button is hidden and the emailed-code path is the only way in. |
+| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASSWORD` / `SMTP_FROM_NAME` | no | Delivers the 6-digit code. Already set for the contact form. Without them the code is printed to the server log instead (fine locally, useless in production). |
+| `APP_URL` | no | Where "Create your account" links. Defaults to `https://app.bidcoreai.com`. |
+
+### Google sign-in setup
+
+1. [Google Cloud Console](https://console.cloud.google.com/apis/credentials) →
+   **Create credentials** → **OAuth client ID** → **Web application**.
+2. Authorised JavaScript origins: `https://bidcoreai.com`,
+   `https://www.bidcoreai.com`, and `http://localhost:3000` for local testing.
+   (No redirect URI is needed — Google Identity Services returns the token to
+   the page, it doesn't redirect.)
+3. Copy the client ID into `GOOGLE_CLIENT_ID`.
+
+The ID token is verified server-side against Google's public keys, including
+that its audience is this client ID — a token minted for another site is
+rejected.
+
+## Local development
+
+```bash
+npm install
+# minimum to boot; without DATABASE_URL the page loads but every action 503s
+DATABASE_URL="postgres://…" SECRET_KEY="anything-long" npm run dev
+# → http://localhost:3000/go-no-go
+```
+
+Without SMTP configured, the 6-digit code is printed to the terminal:
+
+```
+[go-no-go] access code for you@example.com: 481920
+```
+
+`npm run check` syntax-checks every file the page depends on.
+
+## Deployment (Vercel)
+
+`vercel.json` routes every request through `server.js` as a Node function, so
+the existing marketing pages and this one deploy together, unchanged.
+
+1. Import the repo into Vercel (Framework preset: **Other**).
+2. Connect the **Bidcoreai-Webopp** Neon database — that sets `DATABASE_URL`.
+3. Add `SECRET_KEY`, and `GOOGLE_CLIENT_ID` if you want Google sign-in.
+4. Deploy. The database schema creates itself on the first request.
+
+## How the scoring works
+
+Twelve criteria, each 0-100, averaged:
+
+NAICS · PSC · Project Magnitude · Distance from Office · Preferred State ·
+Preferred Agency · Contract Type · Set-Aside · Capability Match · Bond Capacity ·
+Past Performance · Bid Preparation Time
+
+Bands: **85-100 GO · 65-84 REVIEW · below 65 NO-GO**.
+
+Three results override the average:
+
+* **Deadline passed** → 0, NO-GO. The bid is impossible, not merely unattractive.
+* **Set-aside you don't hold** → 0, NO-GO. Same reason.
+* **Half or more criteria unknown** → **NEEDS MORE INFO**, not a verdict. A new
+  visitor with an empty profile scores ~58 purely from neutral 50s; calling that
+  NO-GO would be judging the absence of a profile, not the opportunity.
+
+A score of 50 always means "nothing on file — neutral", never "bad", so the page
+can honestly point at which missing input would sharpen the answer.
+
+> **Keep in step with the product.** `api/scoring.js` mirrors the rubric in the
+> BidcoreAI app (`backend/quick_go_no_go.py`, `backend/capability_matching.py`).
+> The duplication is intentional — this site shares no runtime with the product —
+> but a change to the bands or thresholds in one belongs in the other too.
+
+## Abuse limits
+
+Per workspace, per day: **60 searches**, **40 analyses**. Both reset at UTC
+midnight and are enforced server-side. Searches spend the visitor's own SAM.gov
+quota, never a shared key.
+
+## Data stored
+
+`workspaces` (email, company, profile, encrypted API key), `capabilities`,
+`past_performance`, and `go_no_go_events` (a lead funnel: sign-ins, key links,
+searches, scores). Sessions last 30 days and slide forward on every visit — the
+page is meant to be bookmarked and used weekly.

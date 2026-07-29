@@ -1,0 +1,223 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Free Federal Opportunity Go/No-Go — page styles.
+
+   Restraint is the whole design: white background, black text, one orange
+   accent (#FF6B00, the site's own), and grey only for hierarchy. A visitor who
+   has never seen this page should never have to decode what a colour means —
+   the words carry the meaning, the orange marks the one thing to click next.
+
+   Font matches the rest of bidcoreai.com ('Segoe UI'), so the page reads as
+   part of the site rather than an embedded app.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --gg-orange: #FF6B00;
+  --gg-orange-dark: #E35F00;
+  --gg-black: #000;
+  --gg-grey: #666;
+  --gg-line: #E4E4E4;
+  --gg-soft: #F7F7F7;
+  --gg-font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --gg-radius: 10px;
+}
+
+.gg *, .gg *::before, .gg *::after { box-sizing: border-box; }
+
+.gg {
+  font-family: var(--gg-font);
+  color: var(--gg-black);
+  background: #fff;
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Header ── */
+.gg-head {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 24px; border-bottom: 1px solid var(--gg-line);
+  position: sticky; top: 0; background: #fff; z-index: 20;
+}
+.gg-brand { display: flex; align-items: center; gap: 9px; text-decoration: none; color: var(--gg-black); }
+.gg-brand img { height: 26px; width: auto; }
+.gg-brand span { font-size: 17px; font-weight: 800; letter-spacing: -0.01em; }
+.gg-tag {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--gg-orange); border: 1px solid var(--gg-orange); border-radius: 999px; padding: 3px 9px;
+}
+.gg-head-right { margin-left: auto; display: flex; align-items: center; gap: 16px; }
+.gg-usage { font-size: 12.5px; color: var(--gg-grey); }
+
+/* ── Layout ── */
+.gg-wrap { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
+.gg-wrap--wide { max-width: 1100px; }
+
+.gg-card {
+  border: 1px solid var(--gg-line); border-radius: var(--gg-radius);
+  padding: 28px; background: #fff;
+}
+.gg-card + .gg-card { margin-top: 16px; }
+
+h1.gg-h1 { font-size: clamp(30px, 4vw, 44px); font-weight: 800; line-height: 1.12; letter-spacing: -0.02em; margin: 0 0 14px; }
+h2.gg-h2 { font-size: 21px; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 6px; }
+h3.gg-h3 { font-size: 15px; font-weight: 700; margin: 0 0 4px; }
+.gg-lead { font-size: 16px; color: var(--gg-grey); margin: 0 0 26px; max-width: 56ch; }
+.gg-sub { font-size: 13.5px; color: var(--gg-grey); margin: 0 0 22px; }
+.gg-muted { color: var(--gg-grey); }
+
+/* ── Buttons: exactly one filled style, so "what do I press" is never a question ── */
+.gg-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  font-family: var(--gg-font); font-size: 15px; font-weight: 600; line-height: 1;
+  padding: 13px 22px; border-radius: var(--gg-radius); border: 1px solid transparent;
+  background: var(--gg-orange); color: #fff; cursor: pointer;
+  transition: background .15s, opacity .15s;
+}
+.gg-btn:hover:not(:disabled) { background: var(--gg-orange-dark); }
+.gg-btn:disabled { opacity: .45; cursor: not-allowed; }
+.gg-btn--block { width: 100%; }
+.gg-btn--ghost { background: #fff; color: var(--gg-black); border-color: var(--gg-line); }
+.gg-btn--ghost:hover:not(:disabled) { background: var(--gg-soft); }
+.gg-btn--small { font-size: 13px; padding: 9px 14px; }
+.gg-btn--link {
+  background: none; border: none; padding: 0; color: var(--gg-orange);
+  font-size: 13.5px; font-weight: 600; cursor: pointer;
+}
+.gg-btn--link:hover { text-decoration: underline; }
+
+/* ── Inputs ── */
+.gg-field { margin-bottom: 18px; }
+.gg-label { display: block; font-size: 13.5px; font-weight: 600; margin-bottom: 6px; }
+.gg-hint { font-size: 12.5px; color: var(--gg-grey); margin-top: 6px; line-height: 1.5; }
+.gg-input {
+  width: 100%; font-family: var(--gg-font); font-size: 15px; color: var(--gg-black);
+  padding: 12px 14px; border: 1px solid var(--gg-line); border-radius: var(--gg-radius);
+  background: #fff; outline: none; transition: border-color .15s;
+}
+.gg-input::placeholder { color: #AAA; }
+.gg-input:focus { border-color: var(--gg-orange); }
+.gg-input--code { font-size: 26px; font-weight: 700; letter-spacing: 12px; text-align: center; }
+.gg-grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0 16px; }
+
+/* ── Messages ── */
+.gg-msg { font-size: 13.5px; border-radius: var(--gg-radius); padding: 12px 14px; margin-bottom: 16px; border: 1px solid var(--gg-line); }
+.gg-msg--error { border-color: var(--gg-orange); }
+.gg-msg--ok { background: var(--gg-soft); }
+
+/* ── Steps ── */
+.gg-steps { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; flex-wrap: wrap; }
+.gg-step { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--gg-grey); }
+.gg-step b { font-weight: 600; }
+.gg-step-n {
+  width: 24px; height: 24px; border-radius: 999px; display: inline-flex;
+  align-items: center; justify-content: center; font-size: 12px; font-weight: 700;
+  border: 1px solid var(--gg-line); background: #fff; color: var(--gg-grey);
+}
+.gg-step.is-active { color: var(--gg-black); }
+.gg-step.is-active .gg-step-n { background: var(--gg-orange); border-color: var(--gg-orange); color: #fff; }
+.gg-step.is-done .gg-step-n { background: var(--gg-black); border-color: var(--gg-black); color: #fff; }
+.gg-step-line { width: 26px; height: 1px; background: var(--gg-line); }
+
+/* ── Hero (signed out) ── */
+.gg-hero { display: grid; grid-template-columns: 1.05fr .95fr; gap: 56px; align-items: center; }
+.gg-hero ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+.gg-hero li { display: flex; gap: 10px; align-items: flex-start; font-size: 15px; }
+.gg-hero li svg { flex: 0 0 18px; margin-top: 3px; color: var(--gg-orange); }
+@media (max-width: 860px) { .gg-hero { grid-template-columns: 1fr; gap: 36px; } }
+
+/* Google button sits above the divider — the fastest route in, offered first. */
+.gg-or { display: flex; align-items: center; gap: 12px; margin: 20px 0; color: var(--gg-grey); font-size: 12.5px; }
+.gg-or::before, .gg-or::after { content: ''; flex: 1; height: 1px; background: var(--gg-line); }
+#gg-google { display: flex; justify-content: center; min-height: 44px; }
+
+/* ── Country choice ── */
+.gg-choice {
+  display: flex; align-items: center; gap: 13px; width: 100%; text-align: left;
+  padding: 15px 17px; margin-bottom: 10px; cursor: pointer;
+  border: 1px solid var(--gg-line); border-radius: var(--gg-radius); background: #fff;
+  font-family: var(--gg-font); color: var(--gg-black); transition: border-color .15s;
+}
+.gg-choice:hover:not(:disabled) { border-color: var(--gg-black); }
+.gg-choice.is-on { border-color: var(--gg-orange); border-width: 2px; padding: 14px 16px; }
+.gg-choice:disabled { opacity: .45; cursor: not-allowed; }
+.gg-choice-dot { width: 16px; height: 16px; border-radius: 999px; border: 1px solid #BBB; flex-shrink: 0; }
+.gg-choice.is-on .gg-choice-dot { border: 5px solid var(--gg-orange); }
+.gg-choice-name { font-size: 15px; font-weight: 600; }
+.gg-choice-portal { font-size: 12.5px; color: var(--gg-grey); }
+.gg-choice-soon { margin-left: auto; font-size: 11px; font-weight: 700; color: var(--gg-grey); text-transform: uppercase; letter-spacing: .04em; }
+
+/* ── Search + results ── */
+.gg-search { display: flex; gap: 10px; align-items: center; }
+.gg-search .gg-input { flex: 1; }
+@media (max-width: 620px) { .gg-search { flex-direction: column; align-items: stretch; } }
+
+.gg-result { border: 1px solid var(--gg-line); border-radius: var(--gg-radius); padding: 18px 20px; margin-bottom: 12px; }
+.gg-result-top { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; }
+.gg-result-title { font-size: 15.5px; font-weight: 700; line-height: 1.35; margin-bottom: 4px; }
+.gg-result-meta { font-size: 13px; color: var(--gg-grey); }
+.gg-result-actions { display: flex; gap: 8px; margin-left: auto; flex-shrink: 0; }
+@media (max-width: 620px) { .gg-result-actions { margin-left: 0; width: 100%; } }
+
+/* ── Verdict: no colour coding beyond the one accent.
+      GO is filled orange, REVIEW is outlined, NO-GO is filled black —
+      three shapes, instantly distinguishable, still monochrome + orange. ── */
+.gg-verdict { display: flex; align-items: center; gap: 14px; margin: 18px 0 16px; flex-wrap: wrap; }
+.gg-verdict-badge {
+  display: flex; align-items: center; gap: 12px; padding: 12px 18px; border-radius: var(--gg-radius);
+  border: 2px solid var(--gg-orange);
+}
+.gg-verdict-badge.is-go { background: var(--gg-orange); color: #fff; }
+.gg-verdict-badge.is-nogo { background: var(--gg-black); border-color: var(--gg-black); color: #fff; }
+.gg-verdict-score { font-size: 32px; font-weight: 800; line-height: 1; }
+.gg-verdict-label { font-size: 10.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; opacity: .7; }
+.gg-verdict-word { font-size: 17px; font-weight: 800; letter-spacing: -0.01em; }
+
+.gg-crit { display: flex; gap: 10px; align-items: flex-start; padding: 9px 0; border-bottom: 1px solid var(--gg-line); font-size: 13.5px; }
+.gg-crit:last-child { border-bottom: none; }
+.gg-crit-score { flex: 0 0 42px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.gg-crit-name { font-weight: 600; }
+.gg-crit-why { color: var(--gg-grey); }
+.gg-crit.is-weak .gg-crit-score { color: var(--gg-orange); }
+
+.gg-list-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; margin: 20px 0 8px; }
+
+/* ── Setup checklist ── */
+.gg-check { display: flex; flex-wrap: wrap; gap: 8px; }
+.gg-chip {
+  display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px;
+  padding: 7px 12px; border: 1px solid var(--gg-line); border-radius: 999px; background: #fff;
+}
+.gg-chip.is-done { border-color: var(--gg-black); }
+.gg-chip.is-required { border-color: var(--gg-orange); color: var(--gg-orange); font-weight: 600; }
+.gg-chip-box { width: 13px; height: 13px; border-radius: 3px; border: 1px solid currentColor; flex-shrink: 0; }
+.gg-chip.is-done .gg-chip-box { background: var(--gg-black); border-color: var(--gg-black); }
+
+/* ── Collapsible ── */
+.gg-toggle {
+  display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
+  background: none; border: none; padding: 0; cursor: pointer; font-family: var(--gg-font); color: var(--gg-black);
+}
+.gg-toggle-caret { margin-left: auto; color: var(--gg-grey); transition: transform .18s; }
+.gg-toggle[aria-expanded="true"] .gg-toggle-caret { transform: rotate(180deg); }
+
+.gg-row {
+  display: flex; align-items: center; gap: 12px; padding: 11px 14px;
+  border: 1px solid var(--gg-line); border-radius: var(--gg-radius); margin-bottom: 8px; font-size: 14px;
+}
+.gg-row-x { margin-left: auto; background: none; border: none; cursor: pointer; color: var(--gg-grey); font-size: 18px; line-height: 1; padding: 0 4px; }
+.gg-row-x:hover { color: var(--gg-black); }
+
+/* ── CTA ── */
+.gg-cta {
+  margin-top: 20px; border: 1px solid var(--gg-black); border-radius: var(--gg-radius); padding: 26px;
+  display: flex; gap: 20px; align-items: center; flex-wrap: wrap;
+}
+.gg-cta div { flex: 1; min-width: 260px; }
+
+.gg-foot { margin-top: 32px; text-align: center; font-size: 12.5px; color: var(--gg-grey); line-height: 1.7; }
+.gg-foot a { color: var(--gg-grey); }
+
+/* ── Loading ── */
+@keyframes gg-spin { to { transform: rotate(360deg); } }
+.gg-spin { display: inline-block; width: 15px; height: 15px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 999px; animation: gg-spin .7s linear infinite; }
+.gg-skeleton { color: var(--gg-grey); font-size: 14px; padding: 20px 0; }

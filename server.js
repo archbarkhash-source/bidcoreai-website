@@ -95,6 +95,27 @@ app.get('/contact', (req, res) =>
   res.sendFile(path.join(VIEWS_DIR, 'contact.html')));
 
 /* ─────────────────────────────────────
+   FREE GO/NO-GO — the interactive lead
+   magnet. A visitor connects their own
+   SAM.gov API key and gets an instant
+   12-criterion bid/no-bid analysis.
+
+   Self-contained under /api/go-no-go and
+   backed by its own Neon database
+   (DATABASE_URL) — it shares nothing with
+   the BidcoreAI product app, which is the
+   point: this is the one surface a
+   stranger can write to.
+───────────────────────────────────────*/
+app.get('/go-no-go', noCache, (req, res) =>
+  res.sendFile(path.join(VIEWS_DIR, 'go-no-go.html')));
+
+// Descriptive alias for campaign links and SEO.
+app.get('/free-go-no-go-analysis', (req, res) => res.redirect(301, '/go-no-go'));
+
+app.use('/api/go-no-go', require('./api/routes'));
+
+/* ─────────────────────────────────────
    EMAIL HELPERS
 ───────────────────────────────────────*/
 

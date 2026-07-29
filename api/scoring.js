@@ -1,0 +1,432 @@
+/**
+ * api/scoring.js — Quick Go/No-Go, the free complimentary analysis.
+ *
+ * Twelve criteria, each 0-100, averaged into one score:
+ *
+ *   NAICS · PSC · Project Magnitude · Distance from Office · Preferred State ·
+ *   Preferred Agency · Contract Type · Set-Aside · Capability Match ·
+ *   Bond Capacity · Past Performance · Bid Preparation Time
+ *
+ * Bands: 85-100 GO · 65-84 REVIEW · below 65 NO-GO.
+ *
+ * Two conditions override the average outright, because both make the bid
+ * legally impossible rather than merely unattractive: a due date that has
+ * already passed, and a set-aside whose certification the contractor doesn't
+ * hold. Eleven strong scores must not average those away.
+ *
+ * 50 means "nothing on file — neutral", never "bad". That distinction matters
+ * on a free page where most visitors have filled in very little: an empty
+ * profile should read as unknown, not as a red flag, and the UI can then
+ * honestly say which missing input would sharpen the answer.
+ *
+ * ── Provenance ──────────────────────────────────────────────────────────────
+ * This mirrors the rubric in the BidcoreAI product app
+ * (backend/quick_go_no_go.py + capability_matching.py). It is a deliberate
+ * second implementation, not a shared library: this site runs in its own repo,
+ * its own runtime and its own database precisely so it shares nothing with the
+ * product. The cost of that isolation is that a change to the product's bands
+ * or thresholds must be made here too — keep the two in step when either moves.
+ */
+
+const DEFAULT_PREFERRED_BID_DAYS = 20;
+
+// NAICS sector 23 (Construction). Enough to name a primary trade from the code
+// alone; anything outside sector 23 reports the bare code rather than guessing.
+const NAICS_TRADE_TITLES = {
+  236115: 'New Single-Family Housing Construction',
+  236116: 'New Multifamily Housing Construction',
+  236220: 'Commercial and Institutional Building Construction',
+  237110: 'Water and Sewer Line Construction',
+  237130: 'Power and Communication Line Construction',
+  237310: 'Highway, Street, and Bridge Construction',
+  237990: 'Other Heavy and Civil Engineering Construction',
+  238110: 'Poured Concrete Foundation and Structure Contractors',
+  238120: 'Structural Steel and Precast Concrete Contractors',
+  238140: 'Masonry Contractors',
+  238160: 'Roofing Contractors',
+  238210: 'Electrical Contractors',
+  238220: 'Plumbing, Heating, and Air-Conditioning Contractors',
+  238310: 'Drywall and Insulation Contractors',
+  238320: 'Painting and Wall Covering Contractors',
+  238330: 'Flooring Contractors',
+  238910: 'Site Preparation Contractors',
+  238990: 'All Other Specialty Trade Contractors',
+};
+
+// SAM.gov set-aside codes -> the certification a bidder must actually hold.
+const SET_ASIDE_CERTS = {
+  SBA: 'Small Business',
+  SBP: 'Small Business',
+  '8A': '8(a)',
+  '8AN': '8(a)',
+  HZC: 'HUBZone',
+  HZS: 'HUBZone',
+  SDVOSBC: 'SDVOSB',
+  SDVOSBS: 'SDVOSB',
+  WOSB: 'WOSB',
+  WOSBSS: 'WOSB',
+  EDWOSB: 'EDWOSB',
+  EDWOSBSS: 'EDWOSB',
+  VSA: 'VOSB',
+  VSS: 'VOSB',
+  LAS: 'Local Area Set-Aside',
+  IEE: 'Indian Economic Enterprise',
+  ISBEE: 'Indian Small Business Economic Enterprise',
+  BICiv: 'Buy Indian',
+};
+
+const STOPWORDS = new Set([
+  'the', 'and', 'for', 'with', 'from', 'this', 'that', 'services', 'service',
+  'project', 'contract', 'construction', 'building', 'work', 'base', 'new',
+]);
+
+const keywords = (text) =>
+  String(text || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .split(' ')
+    .filter((w) => w.length > 3 && !STOPWORDS.has(w));
+
+const asList = (v) => (Array.isArray(v) ? v.filter(Boolean).map(String) : []);
+
+// ── Individual criteria ──────────────────────────────────────────────────────
+
+function scoreNaics(opportunityNaics, companyNaics) {
+  const code = String(opportunityNaics || '').trim();
+  const mine = asList(companyNaics).map((c) => String(c).trim());
+  if (!code) return [50, 'This notice has no NAICS code — neutral score.'];
+  if (!mine.length) return [50, 'No NAICS codes on file — add yours for a sharper score.'];
+  if (mine.includes(code)) return [100, `Exact NAICS match on ${code}.`];
+  if (mine.some((c) => c.slice(0, 4) === code.slice(0, 4))) {
+    return [75, `Same NAICS industry group (${code.slice(0, 4)}xx) as codes you hold.`];
+  }
+  if (mine.some((c) => c.slice(0, 2) === code.slice(0, 2))) {
+    return [55, `Same NAICS sector (${code.slice(0, 2)}) but a different industry group.`];
+  }
+  return [25, `NAICS ${code} is outside the codes on file.`];
+}
+
+function scorePsc(opportunityPsc, companyPsc) {
+  const code = String(opportunityPsc || '').trim().toUpperCase();
+  const mine = asList(companyPsc).map((c) => String(c).trim().toUpperCase());
+  if (!code) return [50, 'This notice has no PSC code — neutral score.'];
+  if (!mine.length) return [50, 'No PSC codes on file — neutral score.'];
+  if (mine.includes(code)) return [100, `Exact PSC match on ${code}.`];
+  if (mine.some((c) => c[0] === code[0])) return [70, `Same PSC family (${code[0]}) as codes you hold.`];
+  return [30, `PSC ${code} is outside the codes on file.`];
+}
+
+function scoreMagnitude(value, min, max) {
+  if (value == null) return [50, 'No project value published by SAM.gov — neutral score.'];
+  if (min == null && max == null) return [50, 'No typical project size on file — neutral score.'];
+  if (min != null && value < min) {
+    return [40, `$${Math.round(value).toLocaleString()} is below your typical minimum of $${Math.round(min).toLocaleString()}.`];
+  }
+  if (max != null && value > max) {
+    return [20, `$${Math.round(value).toLocaleString()} is above your typical maximum of $${Math.round(max).toLocaleString()}.`];
+  }
+  return [100, `$${Math.round(value).toLocaleString()} sits inside your typical project size range.`];
+}
+
+function scoreDistance(miles) {
+  if (miles == null) return [50, 'No office address on file — add one to score mobilisation distance.'];
+  if (miles <= 50) return [100, `${Math.round(miles)} miles from your office — local work.`];
+  if (miles <= 150) return [85, `${Math.round(miles)} miles from your office — comfortable day trip.`];
+  if (miles <= 250) return [70, `${Math.round(miles)} miles from your office — within normal coverage.`];
+  if (miles <= 500) return [45, `${Math.round(miles)} miles from your office — mobilisation cost is material.`];
+  return [20, `${Math.round(miles)} miles from your office — significant mobilisation risk.`];
+}
+
+function scoreState(state, statesServed) {
+  const code = String(state || '').trim().toUpperCase();
+  const mine = asList(statesServed).map((s) => String(s).trim().toUpperCase());
+  if (!code) return [50, 'No place of performance on this notice — neutral score.'];
+  if (!mine.length) return [50, 'No states on file — neutral score.'];
+  if (mine.includes(code)) return [100, `${code} is a state you work in.`];
+  return [30, `${code} is outside the states on file.`];
+}
+
+function scoreAgency(agency, targetAgencies) {
+  const name = String(agency || '').toLowerCase();
+  const mine = asList(targetAgencies).map((a) => String(a).toLowerCase());
+  if (!name) return [50, 'No issuing agency on this notice — neutral score.'];
+  if (!mine.length) return [50, 'No target agencies on file — neutral score.'];
+  if (mine.some((a) => name.includes(a) || a.includes(name))) {
+    return [100, 'Issued by an agency you target.'];
+  }
+  return [40, 'Not one of the agencies on file — no existing relationship scored.'];
+}
+
+const TIME_AND_MATERIALS = /\b(t\s*&\s*m|time\s+and\s+materials)\b/i;
+
+function classifyContractType(type, title) {
+  const text = `${type || ''} ${title || ''}`.toUpperCase();
+  if (TIME_AND_MATERIALS.test(text)) return 'T&M';
+  if (/\bMATOC\b/.test(text)) return 'MATOC';
+  if (/\bSATOC\b/.test(text)) return 'SATOC';
+  if (/\bIDIQ\b/.test(text)) return 'IDIQ';
+  if (/\bBPA\b/.test(text)) return 'BPA';
+  if (/INVITATION FOR BID|\bIFB\b/.test(text)) return 'IFB';
+  if (/REQUEST FOR PROPOSAL|\bRFP\b|COMBINED SYNOPSIS/.test(text)) return 'RFP';
+  if (/REQUEST FOR QUOT|\bRFQ\b/.test(text)) return 'RFQ';
+  if (/SOURCES SOUGHT/.test(text)) return 'Sources Sought';
+  if (/PRESOLICITATION/.test(text)) return 'Presolicitation';
+  return null;
+}
+
+function scoreContractType(type, title, preferred) {
+  const canonical = classifyContractType(type, title);
+  const mine = asList(preferred);
+  if (!canonical) return [[50, 'Contract type could not be determined from this notice — neutral score.'], null];
+  if (!mine.length) return [[70, `${canonical} — recognised type, no preference stated.`], canonical];
+  if (mine.includes(canonical)) return [[100, `${canonical} is a contract type you prefer.`], canonical];
+  return [[45, `${canonical} is outside your preferred contract types.`], canonical];
+}
+
+function scoreSetAside(setAsideCode, certifications) {
+  const code = String(setAsideCode || '').trim().toUpperCase();
+  if (!code) return [100, 'Full and open competition — no certification required.'];
+  const required = SET_ASIDE_CERTS[code] || code;
+  const held = asList(certifications).map((c) => String(c).toLowerCase());
+  if (!held.length) {
+    return [50, `Reserved for ${required}. No certifications on file — add yours to confirm eligibility.`];
+  }
+  const needle = required.toLowerCase();
+  if (held.some((c) => c.includes(needle) || needle.includes(c))) {
+    return [100, `Set aside for ${required}, which you hold.`];
+  }
+  // Zero, not merely low: this is the override that makes the bid ineligible.
+  return [0, `Reserved for ${required} — not among the certifications on file, so you cannot bid it.`];
+}
+
+function scoreCapability(title, naics, capabilities) {
+  if (!capabilities.length) return [50, 'No capabilities on file to match against — neutral score.'];
+  const needles = keywords(title);
+  const code = String(naics || '').trim();
+  const matched = [];
+  let naicsHit = false;
+
+  for (const c of capabilities) {
+    const hay = String(c.title || '').toLowerCase();
+    if (needles.some((n) => hay.includes(n))) matched.push(c.title);
+    if (code && asList(c.naics_codes).map(String).includes(code)) {
+      naicsHit = true;
+      if (!matched.includes(c.title)) matched.push(c.title);
+    }
+  }
+
+  if (naicsHit && matched.length) return [100, `NAICS and scope both match your capabilities (${matched.slice(0, 2).join(', ')}).`];
+  if (matched.length >= 2) return [90, `Several capabilities cover this scope (${matched.slice(0, 2).join(', ')}).`];
+  if (matched.length) return [70, `One capability covers this scope (${matched[0]}).`];
+  if (!needles.length && !code) return [50, 'Nothing in this notice to match against your capabilities.'];
+  return [40, "No capability on file matches this notice's scope or NAICS."];
+}
+
+function scoreBonding(value, capacity) {
+  if (value == null) return [50, 'No project value published — bonding fit cannot be assessed.'];
+  if (!capacity) return [50, 'No bonding capacity on file — neutral score.'];
+  if (capacity >= value) return [100, `Bonding capacity ($${Math.round(capacity).toLocaleString()}) covers this project.`];
+  if (capacity >= value * 0.5) return [60, `Bonding capacity covers roughly half of this project's value.`];
+  return [20, `Bonding capacity ($${Math.round(capacity).toLocaleString()}) is well below this project's value.`];
+}
+
+function scorePastPerformance(title, naics, records) {
+  if (!records.length) return [50, 'No past performance on file — neutral score.'];
+  const hay = records.map((r) => `${r.title || ''} ${r.agency || ''} ${r.naics_code || ''}`.toLowerCase());
+  const needles = keywords(title);
+  if (naics) needles.push(String(naics).trim());
+  if (!needles.length) return [50, 'Nothing in this notice to compare against your past performance.'];
+
+  const hits = needles.reduce((n, needle) => n + (hay.some((h) => h.includes(needle)) ? 1 : 0), 0);
+  if (hits >= 2) return [100, 'Strong overlap with work you have delivered before.'];
+  if (hits === 1) return [70, 'Some overlap with work you have delivered before.'];
+  return [30, 'No overlap found with the past performance on file.'];
+}
+
+function scoreBidTime(dueDate, preferredDays) {
+  if (!dueDate) return [[50, 'No response deadline published — neutral score.'], null];
+  const due = new Date(`${dueDate}T23:59:59Z`);
+  if (Number.isNaN(due.getTime())) return [[50, 'Response deadline could not be read — neutral score.'], null];
+
+  const days = Math.ceil((due.getTime() - Date.now()) / 86400000);
+  if (days < 0) return [[0, `The response deadline (${dueDate}) has already passed.`], days];
+  if (days >= preferredDays) return [[100, `${days} days to respond — at or above your ${preferredDays}-day preparation window.`], days];
+  if (days >= preferredDays * 0.5) return [[65, `${days} days to respond — tight against your ${preferredDays}-day window.`], days];
+  if (days >= 3) return [[35, `Only ${days} days to respond — well inside your ${preferredDays}-day window.`], days];
+  return [[15, `Only ${days} day(s) to respond — realistically too little time to prepare a bid.`], days];
+}
+
+// ── Support ──────────────────────────────────────────────────────────────────
+
+/** Great-circle distance in miles. */
+function haversineMiles(lat1, lon1, lat2, lon2) {
+  const toRad = (d) => (d * Math.PI) / 180;
+  const R = 3958.8;
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a = Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+
+const RISK_TITLES = {
+  'Distance from Office': 'Mobilisation',
+  'Set-Aside': 'Eligibility',
+  'Bid Preparation Time': 'Schedule',
+  'Bond Capacity': 'Bonding',
+  'Project Magnitude': 'Project Size Fit',
+  'Capability Match': 'Capability Gap',
+  'Past Performance': 'Past Performance',
+  'Contract Type': 'Contract Type Fit',
+  'NAICS Match': 'Scope Fit',
+  'PSC Match': 'Scope Fit',
+  'Preferred State': 'Geography',
+  'Agency Match': 'Agency Relationship',
+};
+
+const status = (s) => (s >= 70 ? 'PASS' : s >= 40 ? 'REVIEW' : 'FAIL');
+const recommend = (s) => (s >= 85 ? 'GO' : s >= 65 ? 'REVIEW' : 'NO-GO');
+
+/** Medium and High only, worst first, max 3. A 50 is "not on file", not a risk. */
+function buildRisks(matches) {
+  return matches
+    .filter((m) => m.score < 50)
+    .sort((a, b) => a.score - b.score)
+    .slice(0, 3)
+    .map((m) => ({
+      title: RISK_TITLES[m.title] || m.title,
+      severity: m.score <= 20 ? 'High' : 'Medium',
+      reason: m.reason,
+    }));
+}
+
+/** Which missing input would most improve this particular answer. */
+function buildSuggestions(profile, matches) {
+  const out = [];
+  const neutral = (t) => matches.some((m) => m.title === t && m.score === 50);
+  if (!asList(profile.naics_codes).length && neutral('NAICS Match')) {
+    out.push('Add the NAICS codes you hold — it is the single biggest input to this score.');
+  }
+  if (!asList(profile.certifications).length && neutral('Set-Aside')) {
+    out.push('Add your certifications (8(a), HUBZone, SDVOSB…) to confirm set-aside eligibility.');
+  }
+  if (!profile.office_lat && neutral('Distance from Office')) {
+    out.push('Add your office address to score mobilisation distance.');
+  }
+  if (!profile.past_performance_count && neutral('Past Performance')) {
+    out.push('Add one or two past contracts to score past-performance similarity.');
+  }
+  return out.slice(0, 3);
+}
+
+// ── Entry point ──────────────────────────────────────────────────────────────
+
+/**
+ * @param opportunity a shaped SAM.gov record (see samgov.shape)
+ * @param profile     the workspace row plus { capabilities, past_performance }
+ * @returns the full report the page renders
+ */
+function computeQuickScore(opportunity, profile) {
+  const capabilities = profile.capabilities || [];
+  const pastPerformance = profile.past_performance || [];
+  const preferredDays = profile.min_bid_days || DEFAULT_PREFERRED_BID_DAYS;
+
+  // NAICS from the profile and from individual capability entries both count.
+  const companyNaics = [
+    ...asList(profile.naics_codes),
+    ...capabilities.flatMap((c) => asList(c.naics_codes)),
+  ];
+
+  let distance = null;
+  if (profile.office_lat != null && profile.office_lng != null &&
+      opportunity.place_of_performance_lat != null && opportunity.place_of_performance_lng != null) {
+    distance = haversineMiles(
+      profile.office_lat, profile.office_lng,
+      opportunity.place_of_performance_lat, opportunity.place_of_performance_lng,
+    );
+  }
+
+  const value = opportunity.solicitation_value_estimate ?? null;
+  const [contractType, contractTypeCanonical] = scoreContractType(
+    opportunity.solicitation_type, opportunity.title, profile.preferred_contract_types,
+  );
+  const [bidTime, daysRemaining] = scoreBidTime(opportunity.solicitation_due_date, preferredDays);
+  const setAside = scoreSetAside(opportunity.solicitation_set_aside, profile.certifications);
+
+  const criteria = [
+    ['NAICS Match', scoreNaics(opportunity.solicitation_naics, companyNaics)],
+    ['PSC Match', scorePsc(opportunity.psc_code, profile.psc_codes)],
+    ['Project Magnitude', scoreMagnitude(value, profile.project_value_min, profile.project_value_max)],
+    ['Distance from Office', scoreDistance(distance)],
+    ['Preferred State', scoreState(opportunity.place_of_performance_state, profile.states_served)],
+    ['Agency Match', scoreAgency(opportunity.agency, profile.target_agencies)],
+    ['Contract Type', contractType],
+    ['Set-Aside', setAside],
+    ['Capability Match', scoreCapability(opportunity.title, opportunity.solicitation_naics, capabilities)],
+    ['Bond Capacity', scoreBonding(value, profile.bonding_capacity)],
+    ['Past Performance', scorePastPerformance(opportunity.title, opportunity.solicitation_naics, pastPerformance)],
+    ['Bid Preparation Time', bidTime],
+  ];
+
+  const matches = criteria.map(([title, [score, reason]]) => ({
+    title, score, status: status(score), reason,
+  }));
+
+  let overall = Math.round(matches.reduce((sum, m) => sum + m.score, 0) / matches.length);
+  let recommendation = recommend(overall);
+  let overrideReason = null;
+
+  // A brand-new visitor has almost nothing on file, so most criteria return the
+  // neutral 50 and the average lands around 58 — which the bands would call
+  // NO-GO. That verdict would be a lie: nothing about the opportunity was
+  // judged, only the absence of a profile. When half or more of the criteria
+  // are "not on file", say so instead of pronouncing on the bid.
+  const unknowns = matches.filter((m) => m.score === 50).length;
+  const mostlyUnknown = unknowns >= matches.length / 2;
+
+  if (daysRemaining != null && daysRemaining < 0) {
+    overall = 0;
+    recommendation = 'NO-GO';
+    overrideReason = bidTime[1];
+  } else if (setAside[0] === 0) {
+    overall = 0;
+    recommendation = 'NO-GO';
+    overrideReason = setAside[1];
+  } else if (mostlyUnknown) {
+    // The two overrides above still win: an expired deadline and an ineligible
+    // set-aside are facts about the opportunity, true no matter how little the
+    // visitor has told us.
+    recommendation = 'NEEDS MORE INFO';
+    overrideReason = `${unknowns} of the 12 criteria have nothing to score against yet. ` +
+      'Add your NAICS codes and certifications below and re-run this — the verdict will mean something.';
+  }
+
+  const naicsCode = String(opportunity.solicitation_naics || '').trim();
+  return {
+    overall_score: overall,
+    recommendation,
+    override_reason: overrideReason,
+    summary: {
+      project_title: opportunity.title || 'Untitled opportunity',
+      solicitation_number: opportunity.solicitation_number || 'Unknown',
+      agency: opportunity.agency || 'Unknown',
+      contract_type: contractTypeCanonical || opportunity.solicitation_type || 'Unknown',
+      set_aside: opportunity.solicitation_set_aside || 'None — open competition',
+      naics: naicsCode || 'Unknown',
+      psc: opportunity.psc_code || 'Unknown',
+      primary_trade: NAICS_TRADE_TITLES[naicsCode] || (naicsCode ? `NAICS ${naicsCode}` : 'Unknown'),
+      location: [opportunity.place_of_performance_city, opportunity.place_of_performance_state]
+        .filter(Boolean).join(', ') || 'Unknown',
+      distance: distance == null ? 'Unknown' : `${Math.round(distance)} miles`,
+      bid_due: opportunity.solicitation_due_date || 'Unknown',
+      days_remaining: daysRemaining,
+      preferred_bid_days: preferredDays,
+    },
+    matches,
+    risks: buildRisks(matches),
+    suggestions: buildSuggestions(profile, matches),
+    computed_at: new Date().toISOString(),
+  };
+}
+
+module.exports = { computeQuickScore, classifyContractType, SET_ASIDE_CERTS };

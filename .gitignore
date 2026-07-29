@@ -1,0 +1,15 @@
+# Secrets — SMTP credentials, SECRET_KEY, the Neon connection string.
+.env
+.env.*
+!.env.example
+
+node_modules/
+npm-debug.log*
+
+# Vercel
+.vercel/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp

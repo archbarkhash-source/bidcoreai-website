@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Free Federal Go/No-Go Analysis — Should You Bid It? | BidcoreAI</title>
+<meta name="description" content="Free bid/no-bid analysis for federal construction solicitations. Connect your own SAM.gov API key, search live opportunities, and get an instant GO / REVIEW / NO-GO scored across 12 criteria against your company's NAICS, certifications, bonding and past performance."/>
+<meta name="keywords" content="federal bid no bid analysis, go no go decision, SAM.gov search, government construction bidding, federal contracting, capture management"/>
+<link rel="canonical" href="https://bidcoreai.com/go-no-go"/>
+<meta name="robots" content="index, follow"/>
+
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://bidcoreai.com/go-no-go"/>
+<meta property="og:title" content="Free Federal Go/No-Go Analysis — BidcoreAI"/>
+<meta property="og:description" content="Should you bid it? Search live SAM.gov solicitations with your own API key and get an instant 12-criterion GO / REVIEW / NO-GO. Free, no card."/>
+<meta name="twitter:card" content="summary_large_image"/>
+
+<link rel="icon" type="image/png" href="https://bidcoreai-assets.vercel.app/favicon.png"/>
+<link rel="stylesheet" href="/go-no-go.css"/>
+</head>
+
+<body class="gg">
+
+<!-- Icons used by the page. Inline so there is no icon-font request and no
+     external dependency — this page must work even if everything else is slow. -->
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="gg-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></symbol>
+  <symbol id="gg-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></symbol>
+  <symbol id="gg-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+  <symbol id="gg-ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></symbol>
+  <symbol id="gg-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></symbol>
+  <symbol id="gg-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></symbol>
+</svg>
+
+<header class="gg-head">
+  <a class="gg-brand" href="/">
+    <!-- height is also set inline: the stylesheet sizes it, but if CSS hasn't
+         loaded yet this logo is a wide banner and would render full-size. -->
+    <img src="https://bidcoreai-assets.vercel.app/logo.png" alt="BidcoreAI" height="26" style="height:26px;width:auto"
+         onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"/>
+    <span style="display:none">BidcoreAI</span>
+  </a>
+  <span class="gg-tag">Free Go/No-Go</span>
+  <div class="gg-head-right" id="gg-head-right"><!-- filled by go-no-go.js --></div>
+</header>
+
+<main id="gg-app">
+  <div class="gg-wrap">
+    <div class="gg-skeleton">Loading…</div>
+  </div>
+</main>
+
+<!-- Google Identity Services. Loaded async so a slow (or blocked) Google never
+     delays the page — the emailed-code path works with or without it, and
+     ggOnGoogleLoad renders the button whenever the script arrives. -->
+<script src="https://accounts.google.com/gsi/client" async defer onload="window.ggOnGoogleLoad && window.ggOnGoogleLoad()"></script>
+<script src="/go-no-go.js"></script>
+</body>
+</html>
