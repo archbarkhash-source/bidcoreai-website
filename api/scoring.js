@@ -7,8 +7,8 @@
  *   Preferred Agency · Contract Type · Set-Aside · Capability Match ·
  *   Bond Capacity · Past Performance · Bid Preparation Time
  *
- * Bands come from the environment (see BANDS) — by default above 55 GO,
- * 40-55 NOT SURE, below 40 NO-GO.
+ * Bands come from the environment (see BANDS) — by default 85+ GO, 65-84 GO
+ * with review required, 40-64 NOT SURE, below 40 NO-GO.
  *
  * Two conditions override the average outright, because both make the bid
  * legally impossible rather than merely unattractive: a due date that has
@@ -360,18 +360,27 @@ const CAPS = {
 };
 
 const BANDS = {
-  go: numberFromEnv('GO_SCORE_MIN', 55),
+  go: numberFromEnv('GO_SCORE_MIN', 85),
+  goReview: numberFromEnv('GO_REVIEW_SCORE_MIN', 65),
   notSure: numberFromEnv('NOT_SURE_SCORE_MIN', 40),
   unknownRatio: numberFromEnv('UNKNOWN_RATIO', 0.5),
 };
 
+/**
+ * Four answers, not three. The middle band is the honest one for most real
+ * opportunities: good enough to pursue, not so clean that nobody should look
+ * at it first — which is what a capture manager would actually say.
+ */
 const recommend = (s) =>
-  (s > BANDS.go ? 'GO' : s >= BANDS.notSure ? 'NOT SURE' : 'NO-GO');
+  (s >= BANDS.go ? 'GO'
+    : s >= BANDS.goReview ? 'GO - REVIEW REQUIRED'
+      : s >= BANDS.notSure ? 'NOT SURE'
+        : 'NO-GO');
 
 /** One sentence describing the current bands, so nothing has to restate them. */
 function bandsSummary() {
-  return `Above ${BANDS.go} GO \u00b7 ${BANDS.notSure}\u2013${BANDS.go} NOT SURE \u00b7 ` +
-    `below ${BANDS.notSure} NO-GO`;
+  return `${BANDS.go}+ GO \u00b7 ${BANDS.goReview}\u2013${BANDS.go - 1} GO, review required \u00b7 ` +
+    `${BANDS.notSure}\u2013${BANDS.goReview - 1} NOT SURE \u00b7 below ${BANDS.notSure} NO-GO`;
 }
 
 /** Medium and High only, worst first, max 3. A 50 is "not on file", not a risk. */
@@ -497,8 +506,9 @@ function computeQuickScore(opportunity, profile) {
     overrideReason = setAside[1];
   } else if (blockers.length && recommendation === 'GO') {
     // Capped, not zeroed: this is "look closer", not "impossible" — the two
-    // overrides above are the impossible ones.
-    recommendation = 'NOT SURE';
+    // overrides above are the impossible ones. A clean GO held back by one bad
+    // criterion becomes a GO that needs reviewing, which is exactly what it is.
+    recommendation = 'GO - REVIEW REQUIRED';
     overrideReason = blockers.length === 1
       ? `${blockers[0].title} scores ${blockers[0].score}, too low to call this a GO on the ` +
         `strength of the others: ${blockers[0].reason}`
@@ -627,6 +637,9 @@ function isConstructionNaics(code, alsoAllow) {
 
 module.exports = {
   computeQuickScore, classifyContractType, isConstructionNaics,
+  // recommend is exported so the band boundaries can be tested directly rather
+  // than inferred from whole scored opportunities.
+  recommend,
   BANDS, bandsSummary, WEIGHTS, CAPS,
   SET_ASIDE_CERTS, SET_ASIDE_OPTIONS, CONTRACT_TYPE_OPTIONS, STATE_OPTIONS,
   NAICS_OPTIONS,

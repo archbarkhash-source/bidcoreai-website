@@ -507,7 +507,13 @@ router.post('/score', auth.requireSession, wrap(async (req, res) => {
 // The same stages the BidcoreAI app uses, so someone who later moves up isn't
 // learning a second vocabulary for the same thing.
 
+// How long a card may sit in triage before it clears itself. Only the first
+// stage expires: anything the visitor deliberately advanced is a commitment,
+// and deleting a commitment because a month passed would be indefensible.
+const ANALYSED_TTL_DAYS = Number(process.env.ANALYSED_TTL_DAYS) || 30;
+
 const STAGES = [
+  { key: 'analysed', label: 'Analysed', expires: ANALYSED_TTL_DAYS },
   { key: 'under_review', label: 'Under Review' },
   { key: 'go_approved', label: 'GO Approved' },
   { key: 'capture_planning', label: 'Capture Planning' },
@@ -520,13 +526,32 @@ const STAGE_KEYS = STAGES.map((s) => s.key);
 
 router.get('/stages', (req, res) => res.json({ stages: STAGES }));
 
+/**
+ * Clear out triage that was never acted on. Saving an opportunity to look at
+ * later is cheap, so the Analysed column fills up with notices whose deadlines
+ * have long gone; a board nobody trusts is a board nobody reads. Runs on read
+ * rather than on a schedule — there is no scheduler here, and the only moment
+ * anyone cares is when they are looking at it.
+ */
+async function expireAnalysed(workspaceId) {
+  const { rowCount } = await db.query(
+    `DELETE FROM gg_opportunities
+      WHERE workspace_id = $1
+        AND status = 'analysed'
+        AND COALESCE(updated_at, created_at) < NOW() - ($2 || ' days')::interval`,
+    [workspaceId, String(ANALYSED_TTL_DAYS)],
+  );
+  return rowCount;
+}
+
 router.get('/opportunities', auth.requireSession, wrap(async (req, res) => {
+  const expired = await expireAnalysed(req.workspace.id);
   const { rows } = await db.query(
     `SELECT * FROM gg_opportunities WHERE workspace_id = $1
       ORDER BY COALESCE(updated_at, created_at) DESC`,
     [req.workspace.id],
   );
-  res.json({ stages: STAGES, opportunities: rows });
+  res.json({ stages: STAGES, opportunities: rows, expired });
 }));
 
 router.post('/opportunities', auth.requireSession, wrap(async (req, res) => {

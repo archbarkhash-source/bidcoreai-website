@@ -106,7 +106,6 @@
     typesOpen: false,    // and most visitors set them once
     statesOpen: false,
     naicsOpen: false,
-    tipsOpen: false,
     sort: 'due',         // 'due' = soonest deadline first | 'none' = as SAM.gov returned
     scoring: false,      // the panel's own loading state, separate from busy
     score: null,
@@ -396,6 +395,12 @@
       .then(function (body) {
         S.opportunities = body.opportunities || [];
         S.stages = body.stages || [];
+        if (body.expired) {
+          // Say it rather than letting cards vanish silently.
+          S.notice = body.expired + ' analysed opportunit' + (body.expired === 1 ? 'y' : 'ies') +
+            ' cleared after 30 days.';
+          setTimeout(function () { S.notice = null; render(); }, 6000);
+        }
         render();
       })
       .catch(function () { /* an empty pipeline is the normal first state */ });
@@ -423,8 +428,7 @@
   }
 
   /** How the score is arrived at, in the order someone reading a verdict
-   *  wants it. Written once and shown in two places — the right sidebar while
-   *  working, and Settings when reading up. */
+   *  wants it. Written once, shown in Settings. */
   /** The current bands, as the server reports them. Never a second copy of the
    *  numbers — if the thresholds are retuned, every sentence on the page
    *  follows without an edit. */
@@ -440,9 +444,10 @@
      'Each scores 0\u2013100.'],
     ['One bad criterion can hold a verdict back',
      'A roofer is not a highway contractor because the paperwork suits them. If the work, your ' +
-     'capability, the size, the deadline or the bonding scores badly, the answer is held at ' +
-     'NOT SURE however well everything else did.'],
-    ['85\u2013100 GO \u00b7 65\u201384 REVIEW \u00b7 below 65 NO-GO',
+     'capability, the size, the deadline or the bonding scores badly, a clean GO is held back ' +
+     'to “review required” however well everything else did — and the verdict names ' +
+     'which criterion held it.'],
+    [bandsText(),
      'The band is the recommendation. Open the full calculation under any verdict to see ' +
      'exactly what each criterion contributed.'],
     ['50 means \u201cnothing on file\u201d',
@@ -511,6 +516,9 @@
   function visibleResults() {
     var mine = (S.profile && S.profile.states_served) || [];
     var rows = (S.results || []).filter(function (r) {
+      // Anything already analysed and saved lives in the pipeline now. Leaving
+      // it in the feed as well means deciding twice about the same notice.
+      if (savedFor(r)) return false;
       if (S.month && (r.solicitation_due_date || '').slice(0, 7) !== S.month) return false;
       if (!S.place) return true;
       var st = (r.place_of_performance_state || '').toUpperCase();
@@ -527,14 +535,16 @@
     return rows;
   }
 
-  function isSaved(r, i) {
-    var key = r.notice_id || r.solicitation_number || r.title || String(i);
-    return S.opportunities.some(function (o) {
-      return (o.notice_id && o.notice_id === r.notice_id) ||
-             (o.solicitation_number && o.solicitation_number === r.solicitation_number) ||
-             (o.title && o.title === r.title) || String(o.id) === key;
-    });
+  /** The saved card for this notice, if it is already in the pipeline. */
+  function savedFor(r) {
+    return S.opportunities.filter(function (o) {
+      return (r.notice_id && o.notice_id === r.notice_id) ||
+             (r.solicitation_number && o.solicitation_number === r.solicitation_number) ||
+             (r.title && o.title === r.title);
+    })[0] || null;
   }
+
+  function isSaved(r) { return !!savedFor(r); }
 
   /** Score an opportunity already in the pipeline. The notice was stored whole
    *  when it was saved, so this needs no SAM.gov call — the same rubric runs
@@ -915,7 +925,7 @@
   function viewResult(r, i) {
     var id = r.notice_id || r.solicitation_number || String(i);
     var open = S.openId === id;
-    var saved = isSaved(r, i);
+    var saved = savedFor(r);
     var meta = [
       r.agency,
       [r.place_of_performance_city, r.place_of_performance_state].filter(Boolean).join(', '),
@@ -935,8 +945,8 @@
         '</div>' +
         '<div class="gg-result-actions">' +
           (r.ui_link ? '<a class="gg-btn gg-btn--ghost gg-btn--small" href="' + esc(r.ui_link) + '" target="_blank" rel="noopener">SAM.gov ' + icon('gg-ext', 13) + '</a>' : '') +
-          '<button class="gg-btn gg-btn--ghost gg-btn--small" data-act="save" data-i="' + i + '"' +
-            (saved ? ' disabled' : '') + '>' + (saved ? 'In pipeline' : 'Save') + '</button>' +
+          '<button class="gg-btn gg-btn--ghost gg-btn--small" data-act="save" data-i="' + i + '">' +
+            'Save' + '</button>' +
           '<button class="gg-btn gg-btn--small' + (open ? ' gg-btn--ghost' : '') + '" data-act="analyse" data-i="' + i + '">' +
             (open ? 'Analysed →' : 'Go/No-Go') + '</button>' +
           '<button class="gg-result-x" data-act="dismiss" data-i="' + i + '" ' +
@@ -1098,24 +1108,6 @@
     '</div>';
   }
 
-  /** How scoring works, collapsed by default. Beneath the verdict rather than
-   *  above it: the answer first, the method for whoever wants it. */
-  function viewTips() {
-    return '<div class="gg-tips">' +
-      '<button class="gg-toggle gg-tips-head" data-act="toggle-tips" ' +
-        'aria-expanded="' + (S.tipsOpen ? 'true' : 'false') + '">' +
-        '<span class="gg-tips-bulb">' + icon('gg-bulb', 15) + '</span>' +
-        '<span>How the score works</span>' +
-        '<span class="gg-toggle-caret">' + icon('gg-caret', 14) + '</span>' +
-      '</button>' +
-      (S.tipsOpen
-        ? '<ul class="gg-tips-list">' + scoringTips().map(function (t) {
-            return '<li><strong>' + t[0] + '</strong><br/><span class="gg-crit-why">' + t[1] + '</span></li>';
-          }).join('') + '</ul>'
-        : '') +
-    '</div>';
-  }
-
   /** The capture pipeline — the app's stages, one column each. */
   function viewBoard() {
     var stages = S.stages.length ? S.stages : [{ key: 'under_review', label: 'Under Review' }];
@@ -1123,6 +1115,10 @@
       var cards = S.opportunities.filter(function (o) { return o.status === stage.key; });
       return '<div class="gg-col">' +
         '<div class="gg-col-head">' + esc(stage.label) +
+          (stage.expires
+            ? '<span class="gg-col-ttl" title="Cards here clear themselves after ' +
+              stage.expires + ' days unless you move them along">' + stage.expires + 'd</span>'
+            : '') +
           '<span class="gg-col-count">' + cards.length + '</span>' +
           (cards.length
             ? '<button class="gg-col-clear" data-act="clear-stage" data-stage="' + esc(stage.key) + '" ' +
@@ -1130,6 +1126,10 @@
             : '') +
         '</div>' +
         '<div class="gg-col-body">' +
+          (stage.expires && cards.length
+            ? '<div class="gg-col-empty" style="padding:0 3px 6px">Clears after ' +
+              stage.expires + ' days \u2014 move a card on to keep it.</div>'
+            : '') +
           (cards.length ? cards.map(function (o) {
             return '<div class="gg-card-mini' +
               (S.openId === 'saved-' + o.id ? ' is-selected' : '') + '">' +
@@ -1137,11 +1137,14 @@
               '<div class="gg-card-mini-meta">' +
                 esc([o.agency, o.due_date ? 'due ' + o.due_date : null].filter(Boolean).join(' · ')) +
               '</div>' +
+              (o.score != null
+                ? '<div class="gg-card-mini-verdict">' +
+                    '<span class="gg-score-pill ' + verdictClass(o.recommendation) + '">' +
+                      o.score + '</span>' +
+                    '<span class="gg-card-mini-word">' + esc(o.recommendation || '') + '</span>' +
+                  '</div>'
+                : '') +
               '<div class="gg-card-mini-foot">' +
-                (o.score != null
-                  ? '<span class="gg-score-pill ' + verdictClass(o.recommendation) + '" ' +
-                    'title="' + esc(o.recommendation || '') + '">' + o.score + '</span>'
-                  : '') +
                 '<button class="gg-move gg-move--score" data-act="score-saved" data-id="' + o.id + '" ' +
                   'title="' + (o.score != null ? 'Re-run the analysis' : 'Run the Go/No-Go analysis') + '">' +
                   (o.score != null ? '↻' : 'Go/No-Go') + '</button>' +
@@ -1248,7 +1251,6 @@
       // be, so the two are read together.
       viewChecklist() +
       '<div class="gg-side-title">Go/No-Go analysis</div>' + body +
-      viewTips() +
     '</aside>';
   }
 
@@ -1258,6 +1260,9 @@
   function verdictClass(recommendation) {
     var v = String(recommendation || '').toUpperCase();
     if (v === 'GO') return 'is-go';
+    // Still a go, so still green — outlined rather than filled, because it
+    // carries a condition.
+    if (v.indexOf('GO -') === 0 || v.indexOf('GO,') === 0) return 'is-go-review';
     if (v === 'NO-GO' || v === 'NO GO') return 'is-nogo';
     return '';
   }
@@ -1732,7 +1737,6 @@
     else if (act === 'toggle-types') { S.typesOpen = !S.typesOpen; render(); }
     else if (act === 'toggle-states') { S.statesOpen = !S.statesOpen; render(); }
     else if (act === 'toggle-naics') { S.naicsOpen = !S.naicsOpen; render(); }
-    else if (act === 'toggle-tips') { S.tipsOpen = !S.tipsOpen; render(); }
     else if (act === 'goto') {
       var fieldId = el.getAttribute('data-field');
       if (fieldId === 'gg-set-asides' && !S.setAsideOpen) { S.setAsideOpen = true; render(); }

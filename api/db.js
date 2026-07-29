@@ -147,9 +147,12 @@ CREATE TABLE IF NOT EXISTS gg_opportunities (
   city                TEXT,
   state               TEXT,
   ui_link             TEXT,
-  -- under_review | go_approved | capture_planning | proposal_development |
-  -- submitted | awarded | lost
-  status              TEXT NOT NULL DEFAULT 'under_review',
+  -- analysed | under_review | go_approved | capture_planning |
+  -- proposal_development | submitted | awarded | lost
+  --
+  -- 'analysed' is triage: saved to look at, scored, not yet committed to. It
+  -- is the only stage that expires (see expireAnalysed in routes.js).
+  status              TEXT NOT NULL DEFAULT 'analysed',
   score               INTEGER,
   recommendation      TEXT,
   raw                 JSONB,

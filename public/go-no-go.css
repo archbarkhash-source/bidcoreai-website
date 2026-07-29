@@ -222,6 +222,10 @@ h3.gg-h3 { font-size: 15px; font-weight: 700; margin: 0 0 4px; }
 }
 .gg-verdict-badge.is-go { background: var(--gg-go); border-color: var(--gg-go); color: #fff; }
 .gg-verdict-badge.is-nogo { background: var(--gg-nogo); border-color: var(--gg-nogo); color: #fff; }
+/* A go with a condition attached: green, because it is a go, but outlined
+   rather than filled, because it is not the clean one. */
+.gg-verdict-badge.is-go-review { border-color: var(--gg-go); color: var(--gg-go); background: #fff; }
+.gg-verdict-badge.is-go-review .gg-verdict-word { font-size: 14px; }
 /* Undecided keeps the outline treatment: it is not a verdict, and should not
    look as settled as one. */
 .gg-verdict-badge .gg-verdict-label { opacity: .75; }
@@ -324,6 +328,7 @@ h3.gg-h3 { font-size: 15px; font-weight: 700; margin: 0 0 4px; }
 /* Pipeline badges follow the same code, so a board can be read at a glance. */
 .gg-score-pill.is-go { border-color: var(--gg-go); color: #fff; background: var(--gg-go); }
 .gg-score-pill.is-nogo { border-color: var(--gg-nogo); color: #fff; background: var(--gg-nogo); }
+.gg-score-pill.is-go-review { border-color: var(--gg-go); color: var(--gg-go); background: #fff; }
 
 /* ── Who's signed in, top left of the header ── */
 .gg-who { display: flex; align-items: center; gap: 9px; padding: 4px 8px 4px 12px; border-left: 1px solid var(--gg-line); }
@@ -558,3 +563,14 @@ button.gg-chip:hover { border-color: var(--gg-black); }
 }
 .gg-move--score:hover:not(:disabled) { background: var(--gg-orange-dark); border-color: var(--gg-orange-dark); color: #fff; }
 .gg-card-mini.is-selected { border-color: var(--gg-orange); border-width: 2px; padding: 9px 10px; }
+.gg-side-title--icon { display: flex; align-items: center; gap: 8px; }
+
+.gg-col-ttl {
+  font-size: 10px; font-weight: 700; letter-spacing: .03em; color: var(--gg-grey);
+  border: 1px solid var(--gg-line); border-radius: 4px; padding: 1px 5px; margin-left: 6px;
+}
+
+/* A card's verdict, above its controls: the number alone does not say what it
+   means, and "74" beside "GO, review required" is the whole point. */
+.gg-card-mini-verdict { display: flex; align-items: center; gap: 7px; margin-bottom: 8px; flex-wrap: wrap; }
+.gg-card-mini-word { font-size: 11px; font-weight: 700; letter-spacing: .02em; }
