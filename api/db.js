@@ -27,8 +27,21 @@ function getPool() {
   const isLocal = /@(localhost|127\.0\.0\.1|\[::1\])[:/]/.test(connectionString);
   const sslDisabled = /[?&]sslmode=disable\b/.test(connectionString);
 
+  // The `ssl` option below is what actually decides TLS, so an sslmode= in the
+  // URL is dead weight — but pg-connection-string still parses it and prints a
+  // multi-paragraph deprecation warning about 'require' changing meaning in pg
+  // v9. Drop the parameter now that we have read what we needed from it: the
+  // connection behaves identically and the startup noise goes away.
+  const cleaned = (() => {
+    const q = connectionString.indexOf('?');
+    if (q === -1) return connectionString;
+    const kept = connectionString.slice(q + 1).split('&')
+      .filter((p) => p && !/^(sslmode|uselibpqcompat)=/i.test(p));
+    return connectionString.slice(0, q) + (kept.length ? `?${kept.join('&')}` : '');
+  })();
+
   pool = new Pool({
-    connectionString,
+    connectionString: cleaned,
     // rejectUnauthorized:false matches how Neon's own quickstarts connect from
     // serverless runtimes, where the platform CA bundle isn't always present.
     ssl: isLocal || sslDisabled ? false : { rejectUnauthorized: false },

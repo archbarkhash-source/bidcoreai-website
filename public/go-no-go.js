@@ -139,9 +139,16 @@
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
-  function icon(id, size) {
+  // Icons live in the inline <svg> sprite in go-no-go.html under a "gg-i-"
+  // prefix that nothing else may use. Ids share one namespace per document, and
+  // getElementById returns whichever comes FIRST — the sprite sits at the top of
+  // <body>, so a symbol named after a field (there was a "gg-key" symbol and a
+  // "gg-key" input) wins, and val() reads .value off an SVGSymbolElement, which
+  // has none. That threw on every "Connect and start". Keep the prefix here, in
+  // one place, so a new icon can never shadow a form field again.
+  function icon(name, size) {
     var s = size || 16;
-    return '<svg width="' + s + '" height="' + s + '" aria-hidden="true"><use href="#' + id + '"/></svg>';
+    return '<svg width="' + s + '" height="' + s + '" aria-hidden="true"><use href="#gg-i-' + name + '"/></svg>';
   }
 
   /** Every request goes through here so a dead session always lands the visitor
@@ -181,7 +188,13 @@
     if (body.usage) S.usage = body.usage;
   }
 
-  var val = function (id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; };
+  // Reads a field. `typeof el.value` rather than a plain truthiness check: if an
+  // id ever collides with a non-field element again, this returns '' — the same
+  // as an empty field — instead of throwing and killing the click handler.
+  var val = function (id) {
+    var el = document.getElementById(id);
+    return el && typeof el.value === 'string' ? el.value.trim() : '';
+  };
 
   // ── Boot ───────────────────────────────────────────────────────────────────
 
@@ -299,9 +312,29 @@
       .catch(fail);
   };
 
+  // Three separate reasons this button can fail to appear, and until now all
+  // three looked identical from the outside — an empty space where Google should
+  // be, which is exactly how "works locally, missing in the cloud" happens. Each
+  // one now names itself in the console, so whoever is looking knows whether to
+  // go to the host's env vars or to the Google console.
   function mountGoogle() {
     var host = document.getElementById('gg-google');
-    if (!host || !S.config.google_client_id || !window.google || !window.google.accounts) return;
+    if (!host) return;
+
+    if (!S.config.google_client_id) {
+      warnGoogle('GOOGLE_CLIENT_ID is not set on this host, so /go-no-go/api/config ' +
+        'reports no client id and the button is hidden. Set it in the host\'s ' +
+        'environment (Vercel: Project → Settings → Environment Variables; Render: ' +
+        'Service → Environment) and redeploy. Emailed codes work without it.');
+      return;
+    }
+    if (!window.google || !window.google.accounts) {
+      warnGoogle('accounts.google.com/gsi/client has not loaded — blocked by a network, ' +
+        'an extension or a content-security policy. ggOnGoogleLoad remounts the button ' +
+        'if it arrives later.');
+      return;
+    }
+
     window.google.accounts.id.initialize({
       client_id: S.config.google_client_id,
       callback: window.ggGoogleCallback,
@@ -309,6 +342,21 @@
     window.google.accounts.id.renderButton(host, {
       theme: 'outline', size: 'large', width: 320, text: 'continue_with', shape: 'rectangular',
     });
+
+    // Google rejects an unregistered origin by logging origin_mismatch and
+    // drawing nothing at all — no exception to catch, so the only tell is that
+    // the host stayed empty.
+    setTimeout(function () {
+      if (host.childElementCount === 0) {
+        warnGoogle('Google declined to render the button for origin ' + location.origin +
+          '. Add that exact origin (scheme + host, no path) to the OAuth client\'s ' +
+          'Authorised JavaScript origins in the Google Cloud console.');
+      }
+    }, 1200);
+  }
+
+  function warnGoogle(why) {
+    if (window.console && console.warn) console.warn('[go-no-go] Google sign-in unavailable: ' + why);
   }
 
   function signOut() {
@@ -813,7 +861,7 @@
           '<input class="gg-input" id="gg-company" placeholder="Acme Construction LLC" value="' + esc(S.company) + '"/>' +
         '</div>' +
         '<button class="gg-btn gg-btn--block" data-act="send"' + (S.busy ? ' disabled' : '') + '>' +
-          (S.busy ? '<span class="gg-spin"></span> Sending…' : 'Continue ' + icon('gg-arrow', 15)) +
+          (S.busy ? '<span class="gg-spin"></span> Sending…' : 'Continue ' + icon('arrow', 15)) +
         '</button>' +
         '<p class="gg-hint">We email you a code — no password to create or remember.</p>';
 
@@ -823,9 +871,9 @@
         '<p class="gg-lead">Search live federal solicitations with your own SAM.gov key and get an instant ' +
           'GO / REVIEW / NO-GO — scored across 12 criteria against your company. Free, no card.</p>' +
         '<ul>' +
-          '<li>' + icon('gg-check', 18) + '<span>Your SAM.gov key, your quota, your data</span></li>' +
-          '<li>' + icon('gg-check', 18) + '<span>12 scored criteria, with the reason behind every score</span></li>' +
-          '<li>' + icon('gg-check', 18) + '<span>Set up in three steps — sign in, country, key</span></li>' +
+          '<li>' + icon('check', 18) + '<span>Your SAM.gov key, your quota, your data</span></li>' +
+          '<li>' + icon('check', 18) + '<span>12 scored criteria, with the reason behind every score</span></li>' +
+          '<li>' + icon('check', 18) + '<span>Set up in three steps — sign in, country, key</span></li>' +
         '</ul>' +
       '</div>' +
       '<div class="gg-card">' +
@@ -846,7 +894,7 @@
     return '<div class="gg-steps">' + labels.map(function (l, i) {
       var cls = i < current ? 'is-done' : i === current ? 'is-active' : '';
       return '<div class="gg-step ' + cls + '"><span class="gg-step-n">' +
-        (i < current ? icon('gg-check', 12) : i + 1) + '</span><b>' + l + '</b></div>' +
+        (i < current ? icon('check', 12) : i + 1) + '</span><b>' + l + '</b></div>' +
         (i < labels.length - 1 ? '<span class="gg-step-line"></span>' : '');
     }).join('') + '</div>';
   }
@@ -870,7 +918,7 @@
           '</button>';
         }).join('') +
         '<button class="gg-btn gg-btn--block" style="margin-top:14px" data-act="to-key"' +
-          (selected && selected.connected ? '' : ' disabled') + '>Continue ' + icon('gg-arrow', 15) + '</button>' +
+          (selected && selected.connected ? '' : ' disabled') + '>Continue ' + icon('arrow', 15) + '</button>' +
       '</div>' +
     '</div>';
   }
@@ -899,14 +947,14 @@
         messages() +
         '<div class="gg-msg">' +
           '<div style="display:flex;gap:8px;align-items:center;font-weight:600;margin-bottom:8px">' +
-            icon('gg-bulb', 15) + 'How to get one — it is free' +
+            icon('bulb', 15) + 'How to get one — it is free' +
           '</div>' +
           '<ol class="gg-steps-list">' +
             API_KEY_STEPS.map(function (t) { return '<li>' + t + '</li>'; }).join('') +
           '</ol>' +
           '<div style="margin-top:10px">' +
             '<a href="https://sam.gov" target="_blank" rel="noopener" ' +
-              'style="color:var(--gg-orange);font-weight:600">Open sam.gov ' + icon('gg-ext', 12) + '</a>' +
+              'style="color:var(--gg-orange);font-weight:600">Open sam.gov ' + icon('ext', 12) + '</a>' +
           '</div>' +
         '</div>' +
         (p.has_api_key
@@ -933,7 +981,7 @@
             : '<button class="gg-btn gg-btn--ghost" data-act="to-country">Back</button>') +
           '<button class="gg-btn" data-act="link-key"' + (S.busy ? ' disabled' : '') + '>' +
             (S.busy ? '<span class="gg-spin"></span> Verifying…'
-              : (S.settingsMode ? 'Save key' : 'Connect and start ' + icon('gg-arrow', 15)))
+              : (S.settingsMode ? 'Save key' : 'Connect and start ' + icon('arrow', 15)))
           '</button>' +
         '</div>' +
       '</div>' +
@@ -990,7 +1038,7 @@
           '<div class="gg-result-meta">' + esc(meta) + '</div>' +
         '</div>' +
         '<div class="gg-result-actions">' +
-          (r.ui_link ? '<a class="gg-btn gg-btn--ghost gg-btn--small" href="' + esc(r.ui_link) + '" target="_blank" rel="noopener">SAM.gov ' + icon('gg-ext', 13) + '</a>' : '') +
+          (r.ui_link ? '<a class="gg-btn gg-btn--ghost gg-btn--small" href="' + esc(r.ui_link) + '" target="_blank" rel="noopener">SAM.gov ' + icon('ext', 13) + '</a>' : '') +
           '<button class="gg-btn gg-btn--ghost gg-btn--small" data-act="save" data-i="' + i + '">' +
             'Save' + '</button>' +
           '<button class="gg-btn gg-btn--small' + (open ? ' gg-btn--ghost' : '') + '" data-act="analyse" data-i="' + i + '">' +
@@ -1015,7 +1063,7 @@
         '<span class="gg-who-sub">' + esc(p.email || '') + '</span>' +
       '</span>' +
       // The chevron is what makes this read as a menu rather than a label.
-      '<span class="gg-who-caret">' + icon('gg-caret', 14) + '</span>' +
+      '<span class="gg-who-caret">' + icon('caret', 14) + '</span>' +
     '</button>';
   }
 
@@ -1139,7 +1187,7 @@
           '</ol>' +
           '<div class="gg-set-actions">' +
             '<a class="gg-btn gg-btn--ghost gg-btn--small" href="https://sam.gov/content/api-keys" ' +
-              'target="_blank" rel="noopener">Open SAM.gov API keys ' + icon('gg-ext', 13) + '</a>' +
+              'target="_blank" rel="noopener">Open SAM.gov API keys ' + icon('ext', 13) + '</a>' +
           '</div>') +
 
         '<section class="gg-set-signout">' +
@@ -1627,7 +1675,7 @@
           'data-act="toggle-pp" aria-expanded="' + (S.ppOpen ? 'true' : 'false') + '">' +
           'Past performance' +
           '<span class="gg-col-count">' + perf.length + '</span>' +
-          '<span class="gg-toggle-caret">' + icon('gg-caret', 14) + '</span>' +
+          '<span class="gg-toggle-caret">' + icon('caret', 14) + '</span>' +
         '</button>' +
         (S.ppOpen
           ? perf.map(function (r) {
@@ -1660,7 +1708,7 @@
         'aria-expanded="' + (S.setAsideOpen ? 'true' : 'false') + '">' +
         '<span class="gg-label" style="margin:0">Set-asides you hold</span>' +
         '<span class="gg-picker-count">' + (chosen.length ? chosen.length + ' selected' : 'none') + '</span>' +
-        '<span class="gg-toggle-caret">' + icon('gg-caret', 14) + '</span>' +
+        '<span class="gg-toggle-caret">' + icon('caret', 14) + '</span>' +
       '</button>' +
       (chosen.length && !S.setAsideOpen
         ? '<div class="gg-picker-summary">' +
@@ -1693,7 +1741,7 @@
         'aria-expanded="' + (S.naicsOpen ? 'true' : 'false') + '">' +
         '<span class="gg-label" style="margin:0">NAICS codes you hold</span>' +
         '<span class="gg-picker-count">' + (chosen.length ? chosen.length + ' selected' : 'none') + '</span>' +
-        '<span class="gg-toggle-caret">' + icon('gg-caret', 14) + '</span>' +
+        '<span class="gg-toggle-caret">' + icon('caret', 14) + '</span>' +
       '</button>' +
       (chosen.length && !S.naicsOpen
         ? '<div class="gg-picker-summary">' +
@@ -1727,7 +1775,7 @@
         'aria-expanded="' + (S.statesOpen ? 'true' : 'false') + '">' +
         '<span class="gg-label" style="margin:0">States you work in</span>' +
         '<span class="gg-picker-count">' + (chosen.length ? chosen.length + ' selected' : 'none') + '</span>' +
-        '<span class="gg-toggle-caret">' + icon('gg-caret', 14) + '</span>' +
+        '<span class="gg-toggle-caret">' + icon('caret', 14) + '</span>' +
       '</button>' +
       (S.statesOpen
         ? '<div class="gg-hint" style="margin:0 0 6px">These score the opportunity — they do ' +
@@ -1761,7 +1809,7 @@
         'aria-expanded="' + (S.typesOpen ? 'true' : 'false') + '">' +
         '<span class="gg-label" style="margin:0">Contract types you bid</span>' +
         '<span class="gg-picker-count">' + (chosen.length ? chosen.length + ' selected' : 'none') + '</span>' +
-        '<span class="gg-toggle-caret">' + icon('gg-caret', 14) + '</span>' +
+        '<span class="gg-toggle-caret">' + icon('caret', 14) + '</span>' +
       '</button>' +
       (chosen.length && !S.typesOpen
         ? '<div class="gg-picker-summary">' +
@@ -1846,7 +1894,7 @@
           '<input class="gg-input" id="gg-q" value="' + esc(S.query) + '" ' +
             'placeholder="Search opportunities"/>' +
           '<button class="gg-btn" data-act="search"' + (S.busy ? ' disabled' : '') + '>' +
-            (S.busy ? '<span class="gg-spin"></span> Searching…' : icon('gg-search', 15) + ' Search') +
+            (S.busy ? '<span class="gg-spin"></span> Searching…' : icon('search', 15) + ' Search') +
           '</button>' +
         '</div>' +
         // The box takes three different things and works out which — say so,
@@ -2127,6 +2175,20 @@
 
   // Google Identity Services calls this once its script has loaded.
   window.ggOnGoogleLoad = function () { if (!S.token) mountGoogle(); };
+
+  // A crash inside a handler used to leave the page merely unresponsive — the
+  // button did nothing, and since the failure is in the browser, nothing showed
+  // up in the server logs either, so there was nothing to go on. Say so on the
+  // page. Resource failures (a blocked Google script, a missing image) arrive
+  // here too with no message; those are already handled and are not worth a
+  // scare message.
+  window.addEventListener('error', function (e) {
+    if (S.booting || !e || !e.message) return;
+    S.busy = false;
+    S.error = 'Something broke on this page: ' + e.message +
+      ' — reload and try again. If it keeps happening, send us this message.';
+    try { render(); } catch (_) { /* render is what broke; the console has it */ }
+  });
 
   boot();
 })();

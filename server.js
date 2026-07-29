@@ -261,5 +261,30 @@ app.use((req, res) => {
   res.status(404).sendFile(path.join(VIEWS_DIR, 'index.html'));
 });
 
+/* ─────────────────────────────────────
+   Startup config report
+
+   Everything the Go/No-Go workspace needs comes from the environment, and a
+   host that is missing one of these does not fail loudly — it just quietly
+   drops a feature. "Continue with Google" simply isn't rendered when
+   GOOGLE_CLIENT_ID is unset, which looks like a broken deploy rather than an
+   unset variable, and there was nothing in the log to tell the two apart.
+   So: one line per variable, on every boot, on every host.
+───────────────────────────────────────*/
+function reportConfig() {
+  const on = (name) => !!(process.env[name] || '').trim();
+  const checks = [
+    ['DATABASE_URL', on('DATABASE_URL') || on('POSTGRES_URL'), 'the workspace cannot store anything — sign-in fails'],
+    ['SECRET_KEY', on('SECRET_KEY'), 'saved SAM.gov keys cannot be encrypted or read back'],
+    ['GOOGLE_CLIENT_ID', on('GOOGLE_CLIENT_ID'), '"Continue with Google" is hidden; emailed codes still work'],
+    ['RESEND_API_KEY / SMTP_HOST', on('RESEND_API_KEY') || on('SMTP_HOST'), 'no access-code email can be sent'],
+  ];
+  console.log(`[BidcoreAI] config (${process.env.VERCEL ? 'vercel' : process.env.RENDER ? 'render' : 'local'}):`);
+  for (const [name, ok, effect] of checks) {
+    console.log(`  ${ok ? '✓' : '✗'} ${name}${ok ? '' : ` — not set: ${effect}`}`);
+  }
+}
+
 const PORT = process.env.PORT || 3000;
+reportConfig();
 app.listen(PORT, () => console.log(`BidcoreAI running on http://localhost:${PORT}`));

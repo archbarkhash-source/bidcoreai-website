@@ -51,6 +51,21 @@ The ID token is verified server-side against Google's public keys, including
 that its audience is this client ID — a token minted for another site is
 rejected.
 
+**The button shows locally but not on the deployed site.** Two causes, and the
+browser console now names which one:
+
+- `GOOGLE_CLIENT_ID` is in your local `.env` but not in the host's environment,
+  so `/api/go-no-go/config` returns `google_client_id: null` and the page hides
+  the button by design. Set it on the host (Vercel: Project → Settings →
+  Environment Variables; Render: Service → Environment) and **redeploy** — the
+  variable is read at boot, so a save alone changes nothing. The startup log
+  prints a ✓/✗ line per variable, so the deploy log settles this in one look.
+- The deployed URL is not an authorised origin. Google refuses with
+  `origin_mismatch` and draws *nothing* — no error on the page. Every hostname
+  that serves the page needs its own entry (`https://bidcoreai.com`,
+  `https://www.bidcoreai.com`, the `*.vercel.app` preview URL, the
+  `*.onrender.com` URL): scheme and host only, no trailing slash, no path.
+
 ## Local development
 
 ```bash
