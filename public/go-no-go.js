@@ -48,7 +48,9 @@
     // Workspace
     query: localStorage.getItem(QUERY_KEY) || '',
     results: null,       // null = not searched yet
-    openId: null,        // which result's analysis is expanded
+    openId: null,        // which result the score panel is describing
+    scoreFor: null,      // its title, shown at the top of that panel
+    scoring: false,      // the panel's own loading state, separate from busy
     score: null,
     detailsOpen: false,
 
@@ -260,7 +262,7 @@
   function search() {
     S.query = val('gg-q');
     if (S.query) localStorage.setItem(QUERY_KEY, S.query);
-    S.busy = true; S.error = null; S.openId = null; S.score = null; render();
+    S.busy = true; S.error = null; S.openId = null; S.score = null; S.scoreFor = null; render();
 
     api('/search?q=' + encodeURIComponent(S.query))
       .then(function (body) {
@@ -274,18 +276,27 @@
   function analyse(index) {
     var r = S.results[index];
     var id = r.notice_id || r.solicitation_number || String(index);
-    if (S.openId === id) { S.openId = null; S.score = null; render(); return; }
+    // Pressing the same one again clears the panel; pressing a different one
+    // replaces it, so the panel always describes exactly one opportunity.
+    if (S.openId === id) { S.openId = null; S.score = null; S.scoreFor = null; render(); return; }
 
-    S.openId = id; S.score = null; S.busy = true; S.error = null; render();
+    S.openId = id;
+    S.score = null;
+    S.scoreFor = r.title || r.solicitation_number || null;
+    // `scoring` is separate from `busy`: busy disables the search button, and
+    // the two can't be conflated now that the panel has its own loading state.
+    S.scoring = true;
+    S.error = null;
+    render();
 
     api('/score', { method: 'POST', body: r })
       .then(function (body) {
-        S.busy = false;
+        S.scoring = false;
         S.score = body.result;
         if (body.readiness) S.readiness = body.readiness;
         render();
       })
-      .catch(function (e) { S.openId = null; fail(e); });
+      .catch(function (e) { S.scoring = false; S.openId = null; S.scoreFor = null; fail(e); });
   }
 
   function saveProfile() {
@@ -470,7 +481,11 @@
       r.solicitation_due_date ? 'due ' + r.solicitation_due_date : null,
     ].filter(Boolean).join(' · ');
 
-    return '<div class="gg-result">' +
+    // The analysis itself renders in the right-hand panel, not here: expanding
+    // it inline pushed every other result off screen, and comparing two
+    // opportunities meant scrolling back and forth. The selected row is marked
+    // so it's obvious which one the panel is describing.
+    return '<div class="gg-result' + (open ? ' is-selected' : '') + '">' +
       '<div class="gg-result-top">' +
         '<div style="min-width:240px;flex:1">' +
           '<div class="gg-result-title">' + esc(r.title || r.solicitation_number || 'Untitled notice') + '</div>' +
@@ -478,14 +493,27 @@
         '</div>' +
         '<div class="gg-result-actions">' +
           (r.ui_link ? '<a class="gg-btn gg-btn--ghost gg-btn--small" href="' + esc(r.ui_link) + '" target="_blank" rel="noopener">SAM.gov ' + icon('gg-ext', 13) + '</a>' : '') +
-          '<button class="gg-btn gg-btn--small" data-act="analyse" data-i="' + i + '">' +
-            (open ? 'Hide analysis' : 'Go/No-Go') + '</button>' +
+          '<button class="gg-btn gg-btn--small' + (open ? ' gg-btn--ghost' : '') + '" data-act="analyse" data-i="' + i + '">' +
+            (open ? 'Analysed →' : 'Go/No-Go') + '</button>' +
         '</div>' +
       '</div>' +
-      (open ? '<div style="border-top:1px solid var(--gg-line);margin-top:16px;padding-top:16px">' +
-        (S.score ? viewScore(S.score) : '<div class="gg-skeleton">Scoring 12 criteria…</div>') +
-      '</div>' : '') +
     '</div>';
+  }
+
+  /** The right-hand panel: the verdict for whichever result is selected. */
+  function viewScorePanel() {
+    var body;
+    if (S.scoring) {
+      body = '<div class="gg-skeleton">Scoring 12 criteria…</div>';
+    } else if (S.score) {
+      body = (S.scoreFor ? '<div class="gg-score-for">' + esc(S.scoreFor) + '</div>' : '') + viewScore(S.score);
+    } else {
+      body = '<div class="gg-score-empty">Press <strong>Go/No-Go</strong> on any result and the verdict appears here — ' +
+        'a score out of 100, what to watch, and the reason behind all 12 criteria.</div>';
+    }
+    return '<aside class="gg-side gg-card">' +
+      '<div class="gg-side-title">Go/No-Go analysis</div>' + body +
+    '</aside>';
   }
 
   function viewScore(s) {
@@ -546,46 +574,50 @@
     return out;
   }
 
-  function viewCompanyDetails() {
+  /** The left sidebar: everything about the visitor's company, permanently in
+   *  view beside the results. It answers "why did it score that?" without a
+   *  click, and editing a field is one field away from re-running the score. */
+  function viewSidebar() {
     var p = S.profile || {};
     var perf = p.past_performance || [];
-    return '<details class="gg-card" style="margin-top:16px"><summary style="cursor:pointer;font-weight:700;font-size:15px">' +
-        'Improve my score' +
-        '<span class="gg-muted" style="font-weight:400;font-size:13px"> — the more we know about your company, the more of the 12 criteria can score</span>' +
-      '</summary>' +
-      '<div style="margin-top:20px">' +
-        '<div class="gg-grid2">' +
-          field('gg-naics', 'NAICS codes you hold', (p.naics_codes || []).join(', '), '236220, 238160') +
-          field('gg-certs', 'Certifications', (p.certifications || []).join(', '), '8(a), HUBZone, SDVOSB') +
-          field('gg-states', 'States you work in', (p.states_served || []).join(', '), 'VA, MD, DC') +
-          field('gg-office', 'Office address', p.office_address || '', '123 Main St, Richmond, VA') +
-          field('gg-bond', 'Bonding capacity ($)', p.bonding_capacity || '', '5000000') +
-          field('gg-min', 'Smallest job you take ($)', p.project_value_min || '', '100000') +
-          field('gg-max', 'Largest job you take ($)', p.project_value_max || '', '5000000') +
-        '</div>' +
-        '<button class="gg-btn gg-btn--small" data-act="save-profile"' + (S.busy ? ' disabled' : '') + '>Save</button>' +
 
-        '<div class="gg-list-title">Past performance</div>' +
+    return '<aside class="gg-side gg-card">' +
+      '<div class="gg-side-block">' +
+        '<div class="gg-side-title">Your company</div>' +
+        '<p class="gg-hint" style="margin:-6px 0 12px">The more of this we know, the more of the 12 criteria can score.</p>' +
+        field('gg-naics', 'NAICS codes you hold', (p.naics_codes || []).join(', '), '236220, 238160') +
+        field('gg-certs', 'Certifications', (p.certifications || []).join(', '), '8(a), HUBZone, SDVOSB') +
+        field('gg-states', 'States you work in', (p.states_served || []).join(', '), 'VA, MD, DC') +
+        field('gg-office', 'Office address', p.office_address || '', '123 Main St, Richmond, VA') +
+        field('gg-bond', 'Bonding capacity ($)', p.bonding_capacity || '', '5000000') +
+        field('gg-min', 'Smallest job you take ($)', p.project_value_min || '', '100000') +
+        field('gg-max', 'Largest job you take ($)', p.project_value_max || '', '5000000') +
+        '<button class="gg-btn gg-btn--small gg-btn--block" data-act="save-profile"' +
+          (S.busy ? ' disabled' : '') + '>Save</button>' +
+      '</div>' +
+
+      '<div class="gg-side-block">' +
+        '<div class="gg-side-title">Past performance</div>' +
         perf.map(function (r) {
-          return '<div class="gg-row"><span>' + esc(r.title) +
-            (r.agency ? ' <span class="gg-muted">· ' + esc(r.agency) + '</span>' : '') +
+          return '<div class="gg-row" style="font-size:13px;padding:8px 10px"><span>' + esc(r.title) +
+            (r.agency ? '<br/><span class="gg-muted" style="font-size:12px">' + esc(r.agency) + '</span>' : '') +
             '</span><button class="gg-row-x" data-act="rm-pp" data-id="' + r.id + '" aria-label="Remove">&times;</button></div>';
         }).join('') +
-        '<div class="gg-grid2">' +
-          field('gg-pp-title', 'Project', '', 'Barracks roof replacement, Fort Lee') +
-          field('gg-pp-agency', 'Agency', '', 'USACE') +
-          field('gg-pp-value', 'Contract value ($)', '', '1200000') +
-        '</div>' +
-        '<button class="gg-btn gg-btn--small gg-btn--ghost" data-act="add-pp">Add project</button>' +
-
-        '<div class="gg-list-title">Connected account</div>' +
-        '<div class="gg-row">' +
-          '<span>' + (p.has_api_key ? 'SAM.gov key ****' + esc(p.api_key_hint || '') : 'No key connected') + '</span>' +
-          '<button class="gg-btn gg-btn--link" style="margin-left:auto" data-act="to-country">Change</button>' +
-          (p.has_api_key ? '<button class="gg-btn gg-btn--link" style="margin-left:14px" data-act="rm-key">Remove</button>' : '') +
-        '</div>' +
+        field('gg-pp-title', 'Project', '', 'Barracks roof replacement') +
+        field('gg-pp-agency', 'Agency', '', 'USACE') +
+        field('gg-pp-value', 'Contract value ($)', '', '1200000') +
+        '<button class="gg-btn gg-btn--small gg-btn--ghost gg-btn--block" data-act="add-pp">Add project</button>' +
       '</div>' +
-    '</details>';
+
+      '<div class="gg-side-block">' +
+        '<div class="gg-side-title">Connected account</div>' +
+        '<div style="font-size:13px;margin-bottom:8px">' +
+          (p.has_api_key ? 'SAM.gov key ****' + esc(p.api_key_hint || '') : 'No key connected') +
+        '</div>' +
+        '<button class="gg-btn gg-btn--link" data-act="to-country">Change</button>' +
+        (p.has_api_key ? '<button class="gg-btn gg-btn--link" style="margin-left:16px" data-act="rm-key">Remove</button>' : '') +
+      '</div>' +
+    '</aside>';
   }
 
   function field(id, label, value, placeholder) {
@@ -609,30 +641,26 @@
       body = S.results.map(viewResult).join('');
     }
 
+    // No link to the product app anywhere on this page — it stands on its own
+    // as a free tool rather than as a funnel into a signup.
     return '<div class="gg-wrap gg-wrap--wide">' +
-      viewChecklist() +
-      messages() +
-      '<div class="gg-card" style="margin-bottom:16px">' +
-        '<div class="gg-search">' +
-          '<input class="gg-input" id="gg-q" value="' + esc(S.query) + '" ' +
-            'placeholder="What do you build? e.g. roofing, HVAC, paving — or a NAICS or solicitation number"/>' +
-          '<button class="gg-btn" data-act="search"' + (S.busy ? ' disabled' : '') + '>' +
-            (S.busy ? '<span class="gg-spin"></span> Searching…' : icon('gg-search', 15) + ' Search') +
-          '</button>' +
-        '</div>' +
-      '</div>' +
-      body +
-      viewCompanyDetails() +
-      '<div class="gg-cta">' +
-        '<div><h3 class="gg-h3">This is the quick score. The full picture is in BidcoreAI.</h3>' +
-        '<p class="gg-muted" style="margin:0;font-size:13.5px">A full account adds the capture pipeline, automatic ' +
-        'solicitation-document import, amendment tracking, document-level deep Go/No-Go, compliance matrices and ' +
-        'proposal drafting.</p></div>' +
-        // New tab, deliberately: the visitor keeps their workspace, their
-        // search and their analysis rather than losing all three to the
-        // product's login screen.
-        '<a class="gg-btn" href="' + esc(S.config.app_url) + '/signup" target="_blank" rel="noopener">' +
-          'Create your account ' + icon('gg-arrow', 15) + '</a>' +
+      '<div class="gg-layout">' +
+        viewSidebar() +
+        '<main class="gg-main">' +
+          viewChecklist() +
+          messages() +
+          '<div class="gg-card" style="margin-bottom:16px">' +
+            '<div class="gg-search">' +
+              '<input class="gg-input" id="gg-q" value="' + esc(S.query) + '" ' +
+                'placeholder="What do you build? e.g. roofing, HVAC, paving — or a NAICS or solicitation number"/>' +
+              '<button class="gg-btn" data-act="search"' + (S.busy ? ' disabled' : '') + '>' +
+                (S.busy ? '<span class="gg-spin"></span> Searching…' : icon('gg-search', 15) + ' Search') +
+              '</button>' +
+            '</div>' +
+          '</div>' +
+          body +
+        '</main>' +
+        viewScorePanel() +
       '</div>' +
       '<div class="gg-foot">Opportunity data comes from SAM.gov via your own API key. ' +
         'BidcoreAI is not affiliated with SAM.gov or any government agency.<br/>' +

@@ -146,6 +146,42 @@ h3.gg-h3 { font-size: 15px; font-weight: 700; margin: 0 0 4px; }
 .gg-choice-portal { font-size: 12.5px; color: var(--gg-grey); }
 .gg-choice-soon { margin-left: auto; font-size: 11px; font-weight: 700; color: var(--gg-grey); text-transform: uppercase; letter-spacing: .04em; }
 
+/* ── Workspace layout: company profile at the left, work at the right ──
+   The profile is reference material you adjust occasionally and read
+   constantly ("why did it score that?"), so it belongs beside the results
+   rather than buried under them. Sticky, so it stays put while a long list of
+   opportunities scrolls. */
+.gg-layout { display: grid; grid-template-columns: 270px minmax(0, 1fr) 330px; gap: 18px; align-items: start; }
+.gg-side { position: sticky; top: 80px; max-height: calc(100vh - 100px); overflow-y: auto; }
+.gg-side .gg-field { margin-bottom: 12px; }
+.gg-side .gg-input { font-size: 13.5px; padding: 9px 11px; }
+.gg-side .gg-label { font-size: 12px; }
+.gg-side-block { border-bottom: 1px solid var(--gg-line); padding-bottom: 16px; margin-bottom: 16px; }
+.gg-side-block:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+.gg-side-title {
+  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+  margin-bottom: 12px; color: var(--gg-black);
+}
+/* The score panel is the one that must stay readable, so it keeps its column
+   longest; the profile folds away first. */
+@media (max-width: 1180px) {
+  .gg-layout { grid-template-columns: minmax(0, 1fr) 320px; }
+  .gg-layout > .gg-side:first-child { grid-column: 1 / -1; }
+}
+@media (max-width: 860px) {
+  .gg-layout { grid-template-columns: 1fr; }
+  .gg-side { position: static; max-height: none; }
+}
+
+/* Right-hand score panel */
+.gg-score-empty { font-size: 13.5px; color: var(--gg-grey); line-height: 1.6; }
+.gg-score-for {
+  font-size: 12.5px; font-weight: 600; line-height: 1.4; margin-bottom: 14px;
+  padding-bottom: 12px; border-bottom: 1px solid var(--gg-line);
+}
+.gg-side .gg-verdict { margin: 0 0 14px; }
+.gg-side .gg-verdict-badge { width: 100%; }
+
 /* ── Search + results ── */
 .gg-search { display: flex; gap: 10px; align-items: center; }
 .gg-search .gg-input { flex: 1; }
@@ -221,3 +257,6 @@ h3.gg-h3 { font-size: 15px; font-weight: 700; margin: 0 0 4px; }
 @keyframes gg-spin { to { transform: rotate(360deg); } }
 .gg-spin { display: inline-block; width: 15px; height: 15px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 999px; animation: gg-spin .7s linear infinite; }
 .gg-skeleton { color: var(--gg-grey); font-size: 14px; padding: 20px 0; }
+
+/* The result the score panel is currently describing. */
+.gg-result.is-selected { border-color: var(--gg-orange); border-width: 2px; padding: 17px 19px; }
