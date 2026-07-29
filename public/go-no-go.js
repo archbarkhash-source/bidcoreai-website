@@ -384,6 +384,19 @@
         S.score = body.result;
         adopt(body);          // readiness + fresh usage counters
         render();
+
+        // Analysing something is what puts it in the Analysed column —
+        // otherwise that column is a promise the page never keeps, and the
+        // work of deciding is thrown away the moment the next search runs. The
+        // upsert leaves `status` alone, so a notice already further along the
+        // board keeps its stage and just gains a fresh verdict.
+        return api('/opportunities', {
+          method: 'POST',
+          body: Object.assign({}, r, {
+            score: body.result.overall_score,
+            recommendation: body.result.recommendation,
+          }),
+        }).then(loadOpportunities);
       })
       .catch(function (e) { S.scoring = false; S.openId = null; S.scoreFor = null; fail(e); });
   }
@@ -1596,12 +1609,24 @@
       // The input carries its own border, so a card around it would be a box
       // inside a box for no gain.
       ? (S.results && S.results.length ? viewFeedBar() : '') +
-        '<div class="gg-search" style="margin-bottom:16px">' +
+        '<div class="gg-search">' +
           '<input class="gg-input" id="gg-q" value="' + esc(S.query) + '" ' +
-            'placeholder="What do you build? e.g. roofing, HVAC, paving — or a NAICS or solicitation number"/>' +
+            'placeholder="Search opportunities"/>' +
           '<button class="gg-btn" data-act="search"' + (S.busy ? ' disabled' : '') + '>' +
             (S.busy ? '<span class="gg-spin"></span> Searching…' : icon('gg-search', 15) + ' Search') +
           '</button>' +
+        '</div>' +
+        // The box takes three different things and works out which — say so,
+        // rather than leaving it to be discovered. Each example is clickable,
+        // because the fastest way to learn what a box accepts is to watch it
+        // work once.
+        '<div class="gg-search-hint">Search by ' +
+          '<button class="gg-eg" data-act="example" data-q="roofing">keyword</button> ' +
+          '<span class="gg-muted">(roofing, HVAC, paving)</span>, ' +
+          '<button class="gg-eg" data-act="example" data-q="238220">NAICS code</button> ' +
+          '<span class="gg-muted">(6 digits)</span>, or ' +
+          '<button class="gg-eg" data-act="example" data-q="W912DR26R0012">' +
+            'solicitation number</button>' +
         '</div>' + body
       : (S.opportunities.length
           ? viewBoard()
@@ -1720,6 +1745,10 @@
     else if (act === 'link-key') { e.preventDefault(); linkKey(); }
     else if (act === 'rm-key') removeKey();
     else if (act === 'search') { e.preventDefault(); search(); }
+    else if (act === 'example') {
+      var box = document.getElementById('gg-q');
+      if (box) { box.value = el.getAttribute('data-q'); box.focus(); }
+    }
     else if (act === 'analyse') analyse(Number(el.getAttribute('data-i')));
     else if (act === 'save') saveOpportunity(Number(el.getAttribute('data-i')));
     else if (act === 'view') setView(el.getAttribute('data-v'));

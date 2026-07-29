@@ -580,3 +580,10 @@ button.gg-chip:hover { border-color: var(--gg-black); }
 @media (max-width: 860px) { .gg-layout--board { grid-template-columns: 1fr; } }
 /* Narrower columns as well — eight stages should be scannable, not a slideshow. */
 .gg-col { flex: 0 0 200px; }
+
+/* What the one search box accepts. */
+.gg-search-hint { font-size: 12.5px; color: var(--gg-grey); margin: 8px 0 16px; line-height: 1.6; }
+.gg-eg {
+  background: none; border: none; padding: 0; cursor: pointer; font-family: var(--gg-font);
+  font-size: 12.5px; font-weight: 600; color: var(--gg-orange); text-decoration: underline;
+}
