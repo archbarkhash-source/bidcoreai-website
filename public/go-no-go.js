@@ -882,14 +882,14 @@
 
     var isFeed = S.view === 'feed';
     var centre = isFeed
-      ? '<div class="gg-card" style="margin-bottom:16px">' +
-          '<div class="gg-search">' +
-            '<input class="gg-input" id="gg-q" value="' + esc(S.query) + '" ' +
-              'placeholder="What do you build? e.g. roofing, HVAC, paving — or a NAICS or solicitation number"/>' +
-            '<button class="gg-btn" data-act="search"' + (S.busy ? ' disabled' : '') + '>' +
-              (S.busy ? '<span class="gg-spin"></span> Searching…' : icon('gg-search', 15) + ' Search') +
-            '</button>' +
-          '</div>' +
+      // The input carries its own border, so a card around it would be a box
+      // inside a box for no gain.
+      ? '<div class="gg-search" style="margin-bottom:16px">' +
+          '<input class="gg-input" id="gg-q" value="' + esc(S.query) + '" ' +
+            'placeholder="What do you build? e.g. roofing, HVAC, paving — or a NAICS or solicitation number"/>' +
+          '<button class="gg-btn" data-act="search"' + (S.busy ? ' disabled' : '') + '>' +
+            (S.busy ? '<span class="gg-spin"></span> Searching…' : icon('gg-search', 15) + ' Search') +
+          '</button>' +
         '</div>' + body
       : (S.opportunities.length
           ? viewBoard()
