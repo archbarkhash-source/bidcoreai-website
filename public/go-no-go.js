@@ -595,7 +595,7 @@
           (S.settingsMode
             ? '<button class="gg-btn gg-btn--ghost" data-act="cancel-settings">Cancel</button>'
             : '<button class="gg-btn gg-btn--ghost" data-act="to-country">Back</button>') +
-          '<button class="gg-btn" style="flex:1" data-act="link-key"' + (S.busy ? ' disabled' : '') + '>' +
+          '<button class="gg-btn" data-act="link-key"' + (S.busy ? ' disabled' : '') + '>' +
             (S.busy ? '<span class="gg-spin"></span> Verifying…'
               : (S.settingsMode ? 'Save key' : 'Connect and start ' + icon('gg-arrow', 15)))
           '</button>' +
@@ -715,8 +715,10 @@
     '</div>';
   }
 
-  /** Settings — everything about the account and its connected portal, on one
-   *  screen instead of scattered across a dropdown. */
+  /** Settings. One section per subject, in the order they matter: who you are,
+   *  what you are connected to, what feeds the score, what you have used. Sign
+   *  out sits alone at the bottom, away from everything else — it is the one
+   *  action here you would not want to hit while reaching for something else. */
   function viewSettings() {
     var p = S.profile || {};
     var country = (S.config.countries || []).filter(function (c) { return c.code === (p.country_code || 'US'); })[0];
@@ -725,55 +727,72 @@
 
     function row(label, value) {
       return '<div class="gg-prof-row"><span class="gg-muted">' + esc(label) + '</span>' +
-        '<span>' + esc(value == null || value === '' ? '—' : value) + '</span></div>';
+        '<span>' + esc(value == null || value === '' ? '\u2014' : value) + '</span></div>';
+    }
+    function section(title, inner) {
+      return '<section class="gg-set-section">' +
+        '<div class="gg-side-title">' + esc(title) + '</div>' + inner + '</section>';
     }
 
     return '<div class="gg-wrap">' +
+      '<div class="gg-set-head">' +
+        '<h2 class="gg-h2" style="margin:0">Settings</h2>' +
+        '<button class="gg-btn gg-btn--ghost gg-btn--small" data-act="cancel-settings">' +
+          'Back to workspace</button>' +
+      '</div>' +
+
+      messages() +
+
       '<div class="gg-card">' +
-        '<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">' +
-          '<h2 class="gg-h2" style="margin:0">Settings</h2>' +
-          '<button class="gg-btn gg-btn--ghost gg-btn--small" style="margin-left:auto" ' +
-            'data-act="cancel-settings">Back to workspace</button>' +
-        '</div>' +
+        section('Account',
+          row('Email', p.email) +
+          row('Company', p.company) +
+          (p.name ? row('Name', p.name) : '')) +
 
-        messages() +
+        section('Procurement portal',
+          row('Country', country ? country.name : (p.country_code || 'US')) +
+          row(portal + ' API key', p.has_api_key ? '****' + (p.api_key_hint || '') : 'not connected') +
+          row('Status', p.api_key_status === 'ok' ? 'Verified with ' + portal : 'Not verified') +
+          '<div class="gg-set-actions">' +
+            '<button class="gg-btn gg-btn--small" data-act="edit-key">' +
+              (p.has_api_key ? 'Change key or country' : 'Connect a key') + '</button>' +
+            (p.has_api_key
+              ? '<button class="gg-btn gg-btn--ghost gg-btn--small" data-act="rm-key">Remove key</button>'
+              : '') +
+          '</div>') +
 
-        '<div class="gg-side-title">Account</div>' +
-        row('Email', p.email) +
-        row('Company', p.company) +
-        (p.name ? row('Name', p.name) : '') +
+        section('Company profile',
+          row('NAICS codes', (p.naics_codes || []).join(', ')) +
+          row('Certifications', (p.certifications || []).join(', ')) +
+          row('States served', (p.states_served || []).join(', ')) +
+          row('Office address', p.office_address) +
+          row('Bonding capacity', p.bonding_capacity ? '$' + Number(p.bonding_capacity).toLocaleString() : '') +
+          row('Job size', (p.project_value_min || p.project_value_max)
+            ? '$' + Number(p.project_value_min || 0).toLocaleString() + ' to $' +
+              Number(p.project_value_max || 0).toLocaleString()
+            : '') +
+          row('Past performance', (p.past_performance || []).length + ' project(s)') +
+          '<p class="gg-hint">These feed the score. Edit them in the left column of the workspace, ' +
+            'where they sit beside the results they explain.</p>' +
+          '<div class="gg-set-actions">' +
+            '<button class="gg-btn gg-btn--ghost gg-btn--small" data-act="cancel-settings">' +
+              'Edit in workspace</button>' +
+          '</div>') +
 
-        '<div class="gg-side-title" style="margin-top:26px">Procurement portal</div>' +
-        row('Country', country ? country.name : (p.country_code || 'US')) +
-        row(portal + ' API key', p.has_api_key ? '****' + (p.api_key_hint || '') : 'not connected') +
-        row('Verified', p.api_key_status === 'ok' ? 'yes' : 'not verified') +
-        '<div style="display:flex;gap:10px;margin-top:14px">' +
-          '<button class="gg-btn gg-btn--small" data-act="edit-key">' +
-            (p.has_api_key ? 'Change key or country' : 'Connect a key') + '</button>' +
-          (p.has_api_key ? '<button class="gg-btn gg-btn--ghost gg-btn--small" data-act="rm-key">Remove key</button>' : '') +
-        '</div>' +
+        section('Usage today',
+          row('Searches', (used.searches_today || 0) + ' / ' + (used.searches_limit || 60)) +
+          row('Analyses', (used.scores_today || 0) + ' / ' + (used.scores_limit || 40)) +
+          '<p class="gg-hint">Both reset at midnight UTC. Searches spend your own ' + esc(portal) +
+            ' quota, never a shared one.</p>') +
 
-        '<div class="gg-side-title" style="margin-top:26px">Company profile</div>' +
-        row('NAICS codes', (p.naics_codes || []).join(', ')) +
-        row('Certifications', (p.certifications || []).join(', ')) +
-        row('States served', (p.states_served || []).join(', ')) +
-        row('Office address', p.office_address) +
-        row('Bonding capacity', p.bonding_capacity ? '$' + Number(p.bonding_capacity).toLocaleString() : '') +
-        row('Job size', (p.project_value_min || p.project_value_max)
-          ? '$' + Number(p.project_value_min || 0).toLocaleString() + ' – $' + Number(p.project_value_max || 0).toLocaleString()
-          : '') +
-        row('Past performance', (p.past_performance || []).length + ' project(s)') +
-        '<p class="gg-hint">These feed the score directly. Edit them in the left column of the ' +
-          'workspace, where they sit beside the results they explain.</p>' +
-
-        '<div class="gg-side-title" style="margin-top:26px">Usage today</div>' +
-        row('Searches', (used.searches_today || 0) + ' / ' + (used.searches_limit || 60)) +
-        row('Analyses', (used.scores_today || 0) + ' / ' + (used.scores_limit || 40)) +
-
-        '<div style="display:flex;gap:10px;margin-top:26px">' +
-          '<button class="gg-btn" data-act="cancel-settings">Back to workspace</button>' +
+        '<section class="gg-set-signout">' +
+          '<div>' +
+            '<div style="font-weight:600;font-size:14px">Sign out</div>' +
+            '<div class="gg-hint" style="margin-top:2px">Your workspace, key and pipeline stay here. ' +
+              'Sign back in with the same email to pick up where you left off.</div>' +
+          '</div>' +
           '<button class="gg-btn gg-btn--ghost" data-act="sign-out">Sign out</button>' +
-        '</div>' +
+        '</section>' +
       '</div>' +
     '</div>';
   }

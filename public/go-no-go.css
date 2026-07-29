@@ -381,3 +381,15 @@ button.gg-who:hover { background: var(--gg-soft); border-radius: 8px; }
 .gg-pager-info { font-size: 13px; }
 button.gg-chip { cursor: pointer; font-family: var(--gg-font); }
 button.gg-chip:hover { border-color: var(--gg-black); }
+
+/* ── Settings ── */
+.gg-set-head { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+.gg-set-head .gg-btn { margin-left: auto; }
+.gg-set-section { padding-bottom: 22px; margin-bottom: 22px; border-bottom: 1px solid var(--gg-line); }
+.gg-set-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+/* Sign out sits alone at the foot, separated from every other control. */
+.gg-set-signout {
+  display: flex; align-items: center; gap: 20px; flex-wrap: wrap; padding-top: 4px;
+}
+.gg-set-signout > div { flex: 1; min-width: 220px; }
+.gg-set-signout .gg-btn { flex-shrink: 0; }
