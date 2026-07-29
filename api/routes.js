@@ -395,7 +395,10 @@ router.get('/search', auth.requireSession, wrap(async (req, res) => {
   // One search box. A 6-digit number is a NAICS code, a longer alphanumeric
   // token is a solicitation number, anything else is a keyword — so the visitor
   // never has to know which field their text belongs in.
-  const params = { limit: 20 };
+  // 50 is SAM.gov's per-request maximum. One search costs the visitor the same
+  // single API call whether it returns 20 rows or 50, so take the 50 and let
+  // the page paginate them — five pages of results for one unit of quota.
+  const params = { limit: 50 };
   if (/^\d{6}$/.test(q)) params.naics = q;
   else if (/^[A-Za-z0-9][A-Za-z0-9-]{7,}$/.test(q) && /\d/.test(q)) params.solicitationNumber = q;
   else if (q) params.keyword = q;
@@ -437,6 +440,88 @@ router.post('/score', auth.requireSession, wrap(async (req, res) => {
   });
 
   res.json({ result, readiness: readiness(profile) });
+}));
+
+// ── Capture pipeline ─────────────────────────────────────────────────────────
+// The same stages the BidcoreAI app uses, so someone who later moves up isn't
+// learning a second vocabulary for the same thing.
+
+const STAGES = [
+  { key: 'under_review', label: 'Under Review' },
+  { key: 'go_approved', label: 'GO Approved' },
+  { key: 'capture_planning', label: 'Capture Planning' },
+  { key: 'proposal_development', label: 'Proposal Development' },
+  { key: 'submitted', label: 'Submitted' },
+  { key: 'awarded', label: 'Awarded' },
+  { key: 'lost', label: 'Lost' },
+];
+const STAGE_KEYS = STAGES.map((s) => s.key);
+
+router.get('/stages', (req, res) => res.json({ stages: STAGES }));
+
+router.get('/opportunities', auth.requireSession, wrap(async (req, res) => {
+  const { rows } = await db.query(
+    `SELECT * FROM gg_opportunities WHERE workspace_id = $1
+      ORDER BY COALESCE(updated_at, created_at) DESC`,
+    [req.workspace.id],
+  );
+  res.json({ stages: STAGES, opportunities: rows });
+}));
+
+router.post('/opportunities', auth.requireSession, wrap(async (req, res) => {
+  const o = req.body || {};
+  if (!o.title && !o.solicitation_number) throw auth.httpError(400, 'Nothing to save.');
+
+  // Upsert: saving a notice already in the pipeline refreshes its details and
+  // its score without moving the card or creating a second one.
+  const { rows } = await db.query(
+    `INSERT INTO gg_opportunities
+       (workspace_id, notice_id, solicitation_number, title, agency, naics, set_aside,
+        due_date, city, state, ui_link, score, recommendation, raw)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+     ON CONFLICT (workspace_id, COALESCE(notice_id, solicitation_number, title))
+     DO UPDATE SET
+       title = EXCLUDED.title, agency = EXCLUDED.agency, naics = EXCLUDED.naics,
+       set_aside = EXCLUDED.set_aside, due_date = EXCLUDED.due_date,
+       city = EXCLUDED.city, state = EXCLUDED.state, ui_link = EXCLUDED.ui_link,
+       score = COALESCE(EXCLUDED.score, gg_opportunities.score),
+       recommendation = COALESCE(EXCLUDED.recommendation, gg_opportunities.recommendation),
+       raw = EXCLUDED.raw, updated_at = NOW()
+     RETURNING *`,
+    [
+      req.workspace.id, o.notice_id || null, o.solicitation_number || null,
+      o.title || null, o.agency || null, o.solicitation_naics || o.naics || null,
+      o.solicitation_set_aside || o.set_aside || null,
+      o.solicitation_due_date || o.due_date || null,
+      o.place_of_performance_city || o.city || null,
+      o.place_of_performance_state || o.state || null,
+      o.ui_link || null,
+      numberOrNull(o.score), o.recommendation || null,
+      JSON.stringify(o),
+    ],
+  );
+  logEvent(req.workspace.id, 'saved_opportunity', { title: o.title || null });
+  res.json({ opportunity: rows[0] });
+}));
+
+router.patch('/opportunities/:id', auth.requireSession, wrap(async (req, res) => {
+  const status = String(req.body.status || '');
+  if (!STAGE_KEYS.includes(status)) {
+    throw auth.httpError(400, `Unknown stage — must be one of: ${STAGE_KEYS.join(', ')}`);
+  }
+  const { rows } = await db.query(
+    `UPDATE gg_opportunities SET status = $3, updated_at = NOW()
+      WHERE id = $1 AND workspace_id = $2 RETURNING *`,
+    [req.params.id, req.workspace.id, status],
+  );
+  if (!rows[0]) throw auth.httpError(404, 'Not found.');
+  res.json({ opportunity: rows[0] });
+}));
+
+router.delete('/opportunities/:id', auth.requireSession, wrap(async (req, res) => {
+  await db.query('DELETE FROM gg_opportunities WHERE id = $1 AND workspace_id = $2',
+    [req.params.id, req.workspace.id]);
+  res.json({ ok: true });
 }));
 
 // ── Errors ───────────────────────────────────────────────────────────────────

@@ -26,6 +26,32 @@
   // comes back with the visitor. Prefilled, never auto-run: re-searching on
   // every page load would spend their SAM.gov quota without being asked.
   var QUERY_KEY = 'bca_go_no_go_last_query';
+  // The last feed, kept with it. Coming back to a bookmarked page and finding
+  // your results gone — having spent a SAM.gov call to get them — is the kind
+  // of small loss that stops people returning. Restored, never re-fetched.
+  var RESULTS_KEY = 'bca_go_no_go_last_results';
+  // Ten to a page: enough to scan without scrolling past the sidebar's own
+  // content, and short enough that the Go/No-Go button is always near.
+  var PAGE_SIZE = 10;
+
+  function loadCachedResults() {
+    try {
+      var raw = localStorage.getItem(RESULTS_KEY);
+      var parsed = raw ? JSON.parse(raw) : null;
+      return Array.isArray(parsed) && parsed.length ? parsed : null;
+    } catch (e) {
+      return null;   // corrupt or oversized entry: treat as no cache
+    }
+  }
+
+  function cacheResults(results) {
+    try {
+      localStorage.setItem(RESULTS_KEY, JSON.stringify(results || []));
+    } catch (e) {
+      // Quota exceeded (private browsing, or a very large page of notices).
+      // The feed still works for this session; it just won't survive a reload.
+    }
+  }
 
   var S = {
     booting: true,
@@ -46,10 +72,15 @@
     step: null,          // 'country' | 'apikey' — set only while setting up
 
     // Workspace
+    view: 'feed',        // 'feed' = live SAM.gov search | 'pipeline' = what they kept
+    opportunities: [],   // saved, with a stage each
+    stages: [],          // stage list from the API, so the two never disagree
+    profileOpen: false,  // the header's profile/settings panel
     query: localStorage.getItem(QUERY_KEY) || '',
-    results: null,       // null = not searched yet
+    results: loadCachedResults(),   // last feed, restored across reloads
     openId: null,        // which result the score panel is describing
     scoreFor: null,      // its title, shown at the top of that panel
+    page: 0,             // which page of the feed is showing
     scoring: false,      // the panel's own loading state, separate from busy
     score: null,
     detailsOpen: false,
@@ -142,6 +173,10 @@
           if (body.profile && body.profile.country_code) S.country = body.profile.country_code;
           S.booting = false;
           render();
+          // The pipeline count sits in the view switch, so it has to be known
+          // before the first paint settles — fetched after render, not before,
+          // so the page appears immediately either way.
+          loadOpportunities();
         }).catch(function () {
           // Expired or revoked token: fall back to sign-up, no error banner —
           // being asked to sign in again is not an error worth alarming anyone.
@@ -202,6 +237,7 @@
     // Straight to the step that is actually missing.
     S.step = S.readiness && S.readiness.can_search ? null : 'country';
     render();
+    loadOpportunities();
   }
 
   /** Called by Google Identity Services with a signed ID token. */
@@ -262,12 +298,13 @@
   function search() {
     S.query = val('gg-q');
     if (S.query) localStorage.setItem(QUERY_KEY, S.query);
-    S.busy = true; S.error = null; S.openId = null; S.score = null; S.scoreFor = null; render();
+    S.busy = true; S.error = null; S.openId = null; S.score = null; S.scoreFor = null; S.page = 0; render();
 
     api('/search?q=' + encodeURIComponent(S.query))
       .then(function (body) {
         S.busy = false;
         S.results = body.results || [];
+        cacheResults(S.results);
         render();
       })
       .catch(function (e) { S.results = []; fail(e); });
@@ -298,6 +335,72 @@
       })
       .catch(function (e) { S.scoring = false; S.openId = null; S.scoreFor = null; fail(e); });
   }
+
+  // ── Pipeline ───────────────────────────────────────────────────────────────
+
+  function loadOpportunities() {
+    return api('/opportunities')
+      .then(function (body) {
+        S.opportunities = body.opportunities || [];
+        S.stages = body.stages || [];
+        render();
+      })
+      .catch(function () { /* an empty pipeline is the normal first state */ });
+  }
+
+  /** Keep a notice. Carries the score across when one has just been run, so a
+   *  card arrives in the pipeline already carrying its verdict. */
+  function saveOpportunity(index) {
+    var r = S.results[index];
+    var id = r.notice_id || r.solicitation_number || String(index);
+    var body = JSON.parse(JSON.stringify(r));
+    if (S.openId === id && S.score) {
+      body.score = S.score.overall_score;
+      body.recommendation = S.score.recommendation;
+    }
+    api('/opportunities', { method: 'POST', body: body })
+      .then(function () {
+        S.notice = 'Saved to your pipeline.';
+        render();
+        setTimeout(function () { S.notice = null; render(); }, 2500);
+        return loadOpportunities();
+      })
+      .catch(fail);
+  }
+
+  function isSaved(r, i) {
+    var key = r.notice_id || r.solicitation_number || r.title || String(i);
+    return S.opportunities.some(function (o) {
+      return (o.notice_id && o.notice_id === r.notice_id) ||
+             (o.solicitation_number && o.solicitation_number === r.solicitation_number) ||
+             (o.title && o.title === r.title) || String(o.id) === key;
+    });
+  }
+
+  function moveOpportunity(id, direction) {
+    var opp = S.opportunities.filter(function (o) { return String(o.id) === String(id); })[0];
+    if (!opp) return;
+    var at = S.stages.map(function (s) { return s.key; }).indexOf(opp.status);
+    var next = S.stages[at + direction];
+    if (!next) return;
+
+    // Move the card immediately and reconcile after: waiting on a round trip
+    // makes a board feel broken.
+    opp.status = next.key;
+    render();
+    api('/opportunities/' + id, { method: 'PATCH', body: { status: next.key } })
+      .then(loadOpportunities)
+      .catch(fail);
+  }
+
+  function removeOpportunity(id) {
+    S.opportunities = S.opportunities.filter(function (o) { return String(o.id) !== String(id); });
+    render();
+    api('/opportunities/' + id, { method: 'DELETE' }).then(loadOpportunities).catch(fail);
+  }
+
+  function setView(v) { S.view = v; S.error = null; render(); }
+  function toggleProfile() { S.profileOpen = !S.profileOpen; render(); }
 
   function saveProfile() {
     S.busy = true; S.error = null; render();
@@ -461,7 +564,11 @@
   function viewChecklist() {
     var r = S.readiness;
     if (!r) return '';
-    var items = ['api_key', 'naics', 'certifications', 'office', 'past_performance'];
+    // api_key is deliberately absent: it is mandatory and gates the workspace,
+    // so by the time this checklist is on screen it is always ticked — a chip
+    // that can only ever say "done" is noise. It lives in the profile panel,
+    // where it can be changed or removed.
+    var items = ['naics', 'certifications', 'office', 'past_performance'];
     return '<div class="gg-check" style="margin-bottom:18px">' + items.map(function (k) {
       var it = r[k];
       if (!it) return '';
@@ -474,6 +581,7 @@
   function viewResult(r, i) {
     var id = r.notice_id || r.solicitation_number || String(i);
     var open = S.openId === id;
+    var saved = isSaved(r, i);
     var meta = [
       r.agency,
       [r.place_of_performance_city, r.place_of_performance_state].filter(Boolean).join(', '),
@@ -493,10 +601,117 @@
         '</div>' +
         '<div class="gg-result-actions">' +
           (r.ui_link ? '<a class="gg-btn gg-btn--ghost gg-btn--small" href="' + esc(r.ui_link) + '" target="_blank" rel="noopener">SAM.gov ' + icon('gg-ext', 13) + '</a>' : '') +
+          '<button class="gg-btn gg-btn--ghost gg-btn--small" data-act="save" data-i="' + i + '"' +
+            (saved ? ' disabled' : '') + '>' + (saved ? 'In pipeline' : 'Save') + '</button>' +
           '<button class="gg-btn gg-btn--small' + (open ? ' gg-btn--ghost' : '') + '" data-act="analyse" data-i="' + i + '">' +
             (open ? 'Analysed →' : 'Go/No-Go') + '</button>' +
         '</div>' +
       '</div>' +
+    '</div>';
+  }
+
+  /** Who's signed in, top left — click for settings. */
+  function viewWho() {
+    var p = S.profile || {};
+    var name = p.company || p.name || p.email || '';
+    var initial = (name || '?').trim().charAt(0).toUpperCase();
+    return '<button class="gg-who' + (S.profileOpen ? ' is-open' : '') + '" data-act="profile" ' +
+      'aria-expanded="' + (S.profileOpen ? 'true' : 'false') + '" title="Your profile and settings">' +
+      '<span class="gg-who-avatar">' + esc(initial) + '</span>' +
+      '<span style="text-align:left">' +
+        '<span class="gg-who-name">' + esc(p.company || p.name || 'Your workspace') + '</span><br/>' +
+        '<span class="gg-who-sub">' + esc(p.email || '') + '</span>' +
+      '</span>' +
+      // The chevron is what makes this read as a menu rather than a label.
+      '<span class="gg-who-caret">' + icon('gg-caret', 14) + '</span>' +
+    '</button>';
+  }
+
+  /** The profile menu, in the shape every app uses: an identity card at the
+   *  top, then plain rows you can read down, then sign out at the bottom.
+   *  Anchored under the header button rather than centred, because it belongs
+   *  to that button. */
+  function viewProfilePanel() {
+    var p = S.profile || {};
+    var country = (S.config.countries || []).filter(function (c) { return c.code === (p.country_code || 'US'); })[0];
+    var used = S.usage || {};
+    var initial = (p.company || p.name || p.email || '?').trim().charAt(0).toUpperCase();
+
+    function item(iconId, label, value, act) {
+      var tag = act ? 'button' : 'div';
+      return '<' + tag + ' class="gg-menu-item"' + (act ? ' data-act="' + act + '"' : '') + '>' +
+        '<span class="gg-menu-icon">' + icon(iconId, 16) + '</span>' +
+        '<span class="gg-menu-label">' + esc(label) + '</span>' +
+        (value ? '<span class="gg-menu-value">' + esc(value) + '</span>' : '') +
+      '</' + tag + '>';
+    }
+
+    return '<div class="gg-menu-backdrop" data-act="profile-close">' +
+      '<div class="gg-menu" role="menu">' +
+        '<div class="gg-menu-card">' +
+          '<div class="gg-menu-avatar">' + esc(initial) + '</div>' +
+          '<div class="gg-menu-name">' + esc(p.company || p.name || 'Your workspace') + '</div>' +
+          '<div class="gg-menu-email">' + esc(p.email || '') + '</div>' +
+        '</div>' +
+
+        '<div class="gg-menu-list">' +
+          item('gg-key', (country ? country.portal : 'SAM.gov') + ' API key',
+               p.has_api_key ? '****' + (p.api_key_hint || '') : 'not connected', 'to-country') +
+          item('gg-globe', 'Country', country ? country.name : (p.country_code || 'US'), 'to-country') +
+          item('gg-building', 'Company profile', 'edit at left') +
+          item('gg-chart', 'Analyses today', (used.scores_today || 0) + ' / ' + (used.scores_limit || 40)) +
+          item('gg-chart', 'Searches today', (used.searches_today || 0) + ' / ' + (used.searches_limit || 60)) +
+          '<div class="gg-menu-sep"></div>' +
+          (p.has_api_key ? item('gg-lock', 'Remove API key', '', 'rm-key') : '') +
+          item('gg-out', 'Sign out', '', 'sign-out') +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  /** The capture pipeline — the app's stages, one column each. */
+  function viewBoard() {
+    var stages = S.stages.length ? S.stages : [{ key: 'under_review', label: 'Under Review' }];
+    return '<div class="gg-board">' + stages.map(function (stage, si) {
+      var cards = S.opportunities.filter(function (o) { return o.status === stage.key; });
+      return '<div class="gg-col">' +
+        '<div class="gg-col-head">' + esc(stage.label) +
+          '<span class="gg-col-count">' + cards.length + '</span></div>' +
+        '<div class="gg-col-body">' +
+          (cards.length ? cards.map(function (o) {
+            return '<div class="gg-card-mini">' +
+              '<div class="gg-card-mini-title">' + esc(o.title || o.solicitation_number || 'Untitled') + '</div>' +
+              '<div class="gg-card-mini-meta">' +
+                esc([o.agency, o.due_date ? 'due ' + o.due_date : null].filter(Boolean).join(' · ')) +
+              '</div>' +
+              '<div class="gg-card-mini-foot">' +
+                (o.score != null ? '<span class="gg-score-pill">' + o.score + '</span>' : '') +
+                '<button class="gg-move" data-act="move" data-id="' + o.id + '" data-dir="-1"' +
+                  (si === 0 ? ' disabled' : '') + ' title="Back a stage">←</button>' +
+                '<button class="gg-move" data-act="move" data-id="' + o.id + '" data-dir="1"' +
+                  (si === stages.length - 1 ? ' disabled' : '') + ' title="On a stage">→</button>' +
+                (o.ui_link ? '<a class="gg-move" href="' + esc(o.ui_link) + '" target="_blank" rel="noopener" ' +
+                  'style="text-decoration:none" title="View on SAM.gov">↗</a>' : '') +
+                '<button class="gg-row-x" style="margin-left:auto" data-act="rm-opp" data-id="' + o.id + '" ' +
+                  'aria-label="Remove">&times;</button>' +
+              '</div>' +
+            '</div>';
+          }).join('') : '<div class="gg-col-empty">Nothing here yet.</div>') +
+        '</div>' +
+      '</div>';
+    }).join('') + '</div>';
+  }
+
+  function viewPager(pages, from) {
+    if (pages <= 1) return '';
+    var shown = Math.min(from + PAGE_SIZE, S.results.length);
+    return '<div class="gg-pager">' +
+      '<button class="gg-btn gg-btn--ghost gg-btn--small" data-act="page" data-p="' + (S.page - 1) + '"' +
+        (S.page === 0 ? ' disabled' : '') + '>← Previous</button>' +
+      '<span class="gg-pager-info">' + (from + 1) + '–' + shown + ' of ' + S.results.length +
+        '<span class="gg-muted"> · page ' + (S.page + 1) + ' of ' + pages + '</span></span>' +
+      '<button class="gg-btn gg-btn--ghost gg-btn--small" data-act="page" data-p="' + (S.page + 1) + '"' +
+        (S.page >= pages - 1 ? ' disabled' : '') + '>Next →</button>' +
     '</div>';
   }
 
@@ -609,15 +824,10 @@
         '<button class="gg-btn gg-btn--small gg-btn--ghost gg-btn--block" data-act="add-pp">Add project</button>' +
       '</div>' +
 
-      '<div class="gg-side-block">' +
-        '<div class="gg-side-title">Connected account</div>' +
-        '<div style="font-size:13px;margin-bottom:8px">' +
-          (p.has_api_key ? 'SAM.gov key ****' + esc(p.api_key_hint || '') : 'No key connected') +
-        '</div>' +
-        '<button class="gg-btn gg-btn--link" data-act="to-country">Change</button>' +
-        (p.has_api_key ? '<button class="gg-btn gg-btn--link" style="margin-left:16px" data-act="rm-key">Remove</button>' : '') +
-      '</div>' +
     '</aside>';
+    // (The connected SAM.gov account moved to the profile panel in the header:
+    //  it is account settings, not an input to the score, and this sidebar is
+    //  only the latter.)
   }
 
   function field(id, label, value, placeholder) {
@@ -638,27 +848,52 @@
       body = '<div class="gg-card"><p class="gg-muted" style="margin:0">Nothing matched. SAM.gov searches the ' +
         'last 12 months of notices by title — try a broader word, or a 6-digit NAICS code.</p></div>';
     } else if (S.results) {
-      body = S.results.map(viewResult).join('');
+      var pages = Math.ceil(S.results.length / PAGE_SIZE);
+      if (S.page >= pages) S.page = 0;   // a shorter result set than last time
+      var from = S.page * PAGE_SIZE;
+      body = S.results.slice(from, from + PAGE_SIZE)
+        // The absolute index is what save/analyse look up, so pass it through
+        // rather than the index within the page.
+        .map(function (r, n) { return viewResult(r, from + n); }).join('') +
+        viewPager(pages, from);
     }
+
+    var isFeed = S.view === 'feed';
+    var centre = isFeed
+      ? '<div class="gg-card" style="margin-bottom:16px">' +
+          '<div class="gg-search">' +
+            '<input class="gg-input" id="gg-q" value="' + esc(S.query) + '" ' +
+              'placeholder="What do you build? e.g. roofing, HVAC, paving — or a NAICS or solicitation number"/>' +
+            '<button class="gg-btn" data-act="search"' + (S.busy ? ' disabled' : '') + '>' +
+              (S.busy ? '<span class="gg-spin"></span> Searching…' : icon('gg-search', 15) + ' Search') +
+            '</button>' +
+          '</div>' +
+        '</div>' + body
+      : (S.opportunities.length
+          ? viewBoard()
+          : '<div class="gg-card"><p class="gg-muted" style="margin:0">Your pipeline is empty. ' +
+            'Search the feed and press <strong>Save</strong> on anything worth tracking — ' +
+            'it stays here even after the notice closes on SAM.gov.</p></div>');
 
     // No link to the product app anywhere on this page — it stands on its own
     // as a free tool rather than as a funnel into a signup.
-    return '<div class="gg-wrap gg-wrap--wide">' +
+    return '<div class="gg-wrap gg-wrap--full">' +
       '<div class="gg-layout">' +
         viewSidebar() +
         '<main class="gg-main">' +
-          viewChecklist() +
-          messages() +
-          '<div class="gg-card" style="margin-bottom:16px">' +
-            '<div class="gg-search">' +
-              '<input class="gg-input" id="gg-q" value="' + esc(S.query) + '" ' +
-                'placeholder="What do you build? e.g. roofing, HVAC, paving — or a NAICS or solicitation number"/>' +
-              '<button class="gg-btn" data-act="search"' + (S.busy ? ' disabled' : '') + '>' +
-                (S.busy ? '<span class="gg-spin"></span> Searching…' : icon('gg-search', 15) + ' Search') +
-              '</button>' +
+          '<div class="gg-topbar">' +
+            viewChecklist() +
+            '<div class="gg-views">' +
+            '<button class="gg-view-btn' + (isFeed ? ' is-on' : '') + '" data-act="view" data-v="feed">' +
+              'Opportunity Feed' + (S.results ? '<span class="gg-view-count">' + S.results.length + '</span>' : '') +
+            '</button>' +
+            '<button class="gg-view-btn' + (isFeed ? '' : ' is-on') + '" data-act="view" data-v="pipeline">' +
+              'Pipeline<span class="gg-view-count">' + S.opportunities.length + '</span>' +
+            '</button>' +
             '</div>' +
           '</div>' +
-          body +
+          messages() +
+          centre +
         '</main>' +
         viewScorePanel() +
       '</div>' +
@@ -673,6 +908,7 @@
   function render() {
     var app = document.getElementById('gg-app');
     var head = document.getElementById('gg-head-right');
+    var headLeft = document.getElementById('gg-head-left');
 
     if (S.booting) {
       app.innerHTML = '<div class="gg-wrap"><div class="gg-skeleton">Loading…</div></div>';
@@ -684,17 +920,18 @@
       : S.step ? S.step
       : (S.readiness && S.readiness.can_search) ? 'workspace' : 'country';
 
-    // Signed out, the header carries no link at all: every exit from this page
-    // before the visitor has seen a result is a lost lead.
-    head.innerHTML = signedIn
-      ? (S.usage ? '<span class="gg-usage">' + S.usage.scores_today + '/' + S.usage.scores_limit + ' analyses today</span>' : '') +
-        '<button class="gg-btn gg-btn--link" data-act="sign-out">Sign out</button>'
+    // Identity on the left, usage on the right. Signed out, the header carries
+    // no link at all: every exit from this page before the visitor has seen a
+    // result is a lost lead.
+    if (headLeft) headLeft.innerHTML = signedIn ? viewWho() : '';
+    head.innerHTML = signedIn && S.usage
+      ? '<span class="gg-usage">' + S.usage.scores_today + '/' + S.usage.scores_limit + ' analyses today</span>'
       : '';
 
     if (stage === 'signup') app.innerHTML = viewSignUp();
     else if (stage === 'country') app.innerHTML = viewCountry();
     else if (stage === 'apikey') app.innerHTML = viewApiKey();
-    else app.innerHTML = viewWorkspace();
+    else app.innerHTML = viewWorkspace() + (S.profileOpen ? viewProfilePanel() : '');
 
     if (stage === 'signup' && !S.codeSent) mountGoogle();
   }
@@ -724,6 +961,22 @@
     else if (act === 'rm-key') removeKey();
     else if (act === 'search') { e.preventDefault(); search(); }
     else if (act === 'analyse') analyse(Number(el.getAttribute('data-i')));
+    else if (act === 'save') saveOpportunity(Number(el.getAttribute('data-i')));
+    else if (act === 'view') setView(el.getAttribute('data-v'));
+    else if (act === 'page') {
+      S.page = Number(el.getAttribute('data-p'));
+      render();
+      // Back to the top of the list — otherwise page 2 opens halfway down.
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    else if (act === 'move') moveOpportunity(el.getAttribute('data-id'), Number(el.getAttribute('data-dir')));
+    else if (act === 'rm-opp') removeOpportunity(el.getAttribute('data-id'));
+    else if (act === 'profile') toggleProfile();
+    // Only the backdrop itself closes, never a click that bubbled from inside
+    // the panel — otherwise pressing "Change" would shut the thing first.
+    else if (act === 'profile-close' && (el === e.target || el.tagName === 'BUTTON')) {
+      S.profileOpen = false; render();
+    }
     else if (act === 'details') toggleDetails();
     else if (act === 'save-profile') saveProfile();
     else if (act === 'add-pp') addPastPerformance();

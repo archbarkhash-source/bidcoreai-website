@@ -126,6 +126,38 @@ CREATE TABLE IF NOT EXISTS gg_past_performance (
 );
 CREATE INDEX IF NOT EXISTS gg_past_performance_workspace_idx ON gg_past_performance (workspace_id);
 
+-- Opportunities the visitor kept, and where each one has reached in their own
+-- capture pipeline. The notice itself is stored rather than re-fetched: a
+-- solicitation drops off SAM.gov's search window once it closes, and a pipeline
+-- that loses cards when that happens is worse than no pipeline.
+CREATE TABLE IF NOT EXISTS gg_opportunities (
+  id                  BIGSERIAL PRIMARY KEY,
+  workspace_id        BIGINT NOT NULL REFERENCES gg_workspaces(id) ON DELETE CASCADE,
+  notice_id           TEXT,
+  solicitation_number TEXT,
+  title               TEXT,
+  agency              TEXT,
+  naics               TEXT,
+  set_aside           TEXT,
+  due_date            TEXT,
+  city                TEXT,
+  state               TEXT,
+  ui_link             TEXT,
+  -- under_review | go_approved | capture_planning | proposal_development |
+  -- submitted | awarded | lost
+  status              TEXT NOT NULL DEFAULT 'under_review',
+  score               INTEGER,
+  recommendation      TEXT,
+  raw                 JSONB,
+  created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at          TIMESTAMPTZ
+);
+CREATE INDEX IF NOT EXISTS gg_opportunities_workspace_idx ON gg_opportunities (workspace_id);
+-- Saving the same notice twice is an update, not a duplicate card. COALESCE
+-- because a notice without an id still needs a stable key.
+CREATE UNIQUE INDEX IF NOT EXISTS gg_opportunities_unique_notice
+  ON gg_opportunities (workspace_id, COALESCE(notice_id, solicitation_number, title));
+
 -- Lead funnel, for following up with people who tried the free tool.
 CREATE TABLE IF NOT EXISTS gg_events (
   id           BIGSERIAL PRIMARY KEY,

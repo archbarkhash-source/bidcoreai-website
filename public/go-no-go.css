@@ -19,6 +19,9 @@
   --gg-soft: #F7F7F7;
   --gg-font: 'Segoe UI', system-ui, -apple-system, sans-serif;
   --gg-radius: 10px;
+  /* Header height. Everything sticky measures from this, so one change moves
+     the header, the frozen toolbar and both sidebars together. */
+  --gg-head-h: 63px;
 }
 
 .gg *, .gg *::before, .gg *::after { box-sizing: border-box; }
@@ -48,9 +51,15 @@
 .gg-head-right { margin-left: auto; display: flex; align-items: center; gap: 16px; }
 .gg-usage { font-size: 12.5px; color: var(--gg-grey); }
 
-/* ── Layout ── */
+/* ── Layout ──
+   Two widths on purpose. Sign-up and the setup steps stay narrow, because a
+   paragraph and a single form are unreadable stretched across a wide monitor.
+   The workspace does the opposite: three columns of dense data, so it takes
+   the whole screen and only stops at 1800px, past which the result list's line
+   lengths get uncomfortable. */
 .gg-wrap { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
 .gg-wrap--wide { max-width: 1100px; }
+.gg-wrap--full { max-width: 1800px; padding: 22px 26px 60px; }
 
 .gg-card {
   border: 1px solid var(--gg-line); border-radius: var(--gg-radius);
@@ -152,7 +161,7 @@ h3.gg-h3 { font-size: 15px; font-weight: 700; margin: 0 0 4px; }
    rather than buried under them. Sticky, so it stays put while a long list of
    opportunities scrolls. */
 .gg-layout { display: grid; grid-template-columns: 270px minmax(0, 1fr) 330px; gap: 18px; align-items: start; }
-.gg-side { position: sticky; top: 80px; max-height: calc(100vh - 100px); overflow-y: auto; }
+.gg-side { position: sticky; top: calc(var(--gg-head-h) + 16px); max-height: calc(100vh - var(--gg-head-h) - 32px); overflow-y: auto; }
 .gg-side .gg-field { margin-bottom: 12px; }
 .gg-side .gg-input { font-size: 13.5px; padding: 9px 11px; }
 .gg-side .gg-label { font-size: 12px; }
@@ -260,3 +269,112 @@ h3.gg-h3 { font-size: 15px; font-weight: 700; margin: 0 0 4px; }
 
 /* The result the score panel is currently describing. */
 .gg-result.is-selected { border-color: var(--gg-orange); border-width: 2px; padding: 17px 19px; }
+
+/* ── Feed / Pipeline switch ── */
+.gg-views { display: flex; gap: 8px; margin-bottom: 16px; }
+.gg-view-btn {
+  font-family: var(--gg-font); font-size: 14px; font-weight: 600; cursor: pointer;
+  padding: 9px 16px; border-radius: var(--gg-radius);
+  border: 1px solid var(--gg-line); background: #fff; color: var(--gg-grey);
+}
+.gg-view-btn.is-on { border-color: var(--gg-orange); color: var(--gg-orange); border-width: 2px; padding: 8px 15px; }
+.gg-view-count { font-weight: 700; margin-left: 6px; }
+
+/* ── Pipeline: one column per stage, scrolling sideways like the app's board ── */
+.gg-board { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; align-items: flex-start; }
+.gg-col { flex: 0 0 230px; border: 1px solid var(--gg-line); border-radius: var(--gg-radius); background: #fff; }
+.gg-col-head {
+  display: flex; align-items: center; gap: 8px; padding: 11px 13px;
+  border-bottom: 1px solid var(--gg-line); font-size: 12.5px; font-weight: 700;
+}
+.gg-col-count {
+  margin-left: auto; font-size: 11px; font-weight: 700; color: var(--gg-grey);
+  border: 1px solid var(--gg-line); border-radius: 999px; padding: 1px 8px; min-width: 24px; text-align: center;
+}
+.gg-col-body { padding: 10px; display: grid; gap: 8px; min-height: 60px; }
+.gg-col-empty { font-size: 12px; color: #AAA; padding: 6px 3px; }
+
+.gg-card-mini { border: 1px solid var(--gg-line); border-radius: 8px; padding: 10px 11px; }
+.gg-card-mini-title { font-size: 12.5px; font-weight: 600; line-height: 1.35; margin-bottom: 5px; }
+.gg-card-mini-meta { font-size: 11.5px; color: var(--gg-grey); margin-bottom: 8px; }
+.gg-card-mini-foot { display: flex; align-items: center; gap: 6px; }
+.gg-move {
+  font-family: var(--gg-font); font-size: 12px; line-height: 1; cursor: pointer;
+  border: 1px solid var(--gg-line); background: #fff; color: var(--gg-black);
+  border-radius: 6px; padding: 5px 8px;
+}
+.gg-move:hover:not(:disabled) { border-color: var(--gg-orange); color: var(--gg-orange); }
+.gg-move:disabled { opacity: .3; cursor: not-allowed; }
+.gg-score-pill {
+  font-size: 11px; font-weight: 700; border: 1px solid var(--gg-orange); color: var(--gg-orange);
+  border-radius: 999px; padding: 1px 7px;
+}
+
+/* ── Who's signed in, top left of the header ── */
+.gg-who { display: flex; align-items: center; gap: 9px; margin-left: 18px; padding-left: 18px; border-left: 1px solid var(--gg-line); }
+.gg-who-avatar {
+  width: 30px; height: 30px; border-radius: 999px; flex-shrink: 0;
+  background: var(--gg-orange); color: #fff; font-size: 13px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.gg-who-name { font-size: 13px; font-weight: 600; line-height: 1.25; }
+.gg-who-sub { font-size: 11.5px; color: var(--gg-grey); line-height: 1.25; }
+@media (max-width: 700px) { .gg-who { display: none; } }
+
+
+/* ── Frozen toolbar: setup checklist + Feed/Pipeline switch ──
+   These are controls, not content: scrolling a long result list should never
+   take the view switch off screen. Sits directly under the sticky header, with
+   a white backing so results pass behind it rather than through it. */
+.gg-topbar {
+  position: sticky; top: var(--gg-head-h); z-index: 15;
+  background: #fff; padding: 14px 0 10px; margin-top: -14px;
+  border-bottom: 1px solid var(--gg-line); margin-bottom: 16px;
+}
+.gg-topbar .gg-views { margin-bottom: 0; }
+.gg-topbar .gg-check { margin-bottom: 12px; }
+.gg-who-caret { display: flex; color: var(--gg-grey); transition: transform .18s; }
+.gg-who.is-open .gg-who-caret { transform: rotate(180deg); }
+
+/* ── Profile menu ──
+   Anchored under the header button it belongs to, not centred on the screen.
+   An identity card, a readable list, sign out last — the arrangement people
+   already know from every other account menu, so nobody has to learn it. */
+.gg-menu-backdrop { position: fixed; inset: 0; z-index: 50; }
+.gg-menu {
+  position: absolute; top: calc(var(--gg-head-h) + 6px); left: 24px;
+  width: 300px; background: #fff; border: 1px solid var(--gg-line);
+  border-radius: 14px; box-shadow: 0 12px 40px rgba(0,0,0,.16); overflow: hidden;
+}
+.gg-menu-card { text-align: center; padding: 22px 20px 18px; background: var(--gg-soft); }
+.gg-menu-avatar {
+  width: 56px; height: 56px; border-radius: 999px; margin: 0 auto 10px;
+  background: var(--gg-orange); color: #fff; font-size: 24px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.gg-menu-name { font-size: 15px; font-weight: 700; }
+.gg-menu-email { font-size: 12.5px; color: var(--gg-grey); word-break: break-all; }
+
+.gg-menu-list { padding: 8px; }
+.gg-menu-item {
+  display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+  padding: 9px 10px; border-radius: 8px; border: none; background: none;
+  font-family: var(--gg-font); font-size: 13.5px; color: var(--gg-black);
+}
+button.gg-menu-item { cursor: pointer; }
+button.gg-menu-item:hover { background: var(--gg-soft); }
+.gg-menu-icon { display: flex; color: var(--gg-grey); flex-shrink: 0; }
+.gg-menu-label { flex: 1; min-width: 0; }
+.gg-menu-value { font-size: 12.5px; color: var(--gg-grey); flex-shrink: 0; }
+.gg-menu-sep { height: 1px; background: var(--gg-line); margin: 8px 2px; }
+
+/* The header's profile button — plain, so it reads as identity not an action. */
+button.gg-who { border: none; background: none; cursor: pointer; font-family: var(--gg-font); color: var(--gg-black); }
+button.gg-who:hover { background: var(--gg-soft); border-radius: 8px; }
+
+/* ── Feed pager ── */
+.gg-pager {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 14px 4px 4px; margin-top: 4px; border-top: 1px solid var(--gg-line); flex-wrap: wrap;
+}
+.gg-pager-info { font-size: 13px; }
