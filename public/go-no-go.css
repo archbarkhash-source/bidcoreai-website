@@ -379,3 +379,5 @@ button.gg-who:hover { background: var(--gg-soft); border-radius: 8px; }
   padding: 14px 4px 4px; margin-top: 4px; border-top: 1px solid var(--gg-line); flex-wrap: wrap;
 }
 .gg-pager-info { font-size: 13px; }
+button.gg-chip { cursor: pointer; font-family: var(--gg-font); }
+button.gg-chip:hover { border-color: var(--gg-black); }

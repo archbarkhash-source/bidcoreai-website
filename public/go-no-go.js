@@ -33,6 +33,13 @@
   // Ten to a page: enough to scan without scrolling past the sidebar's own
   // content, and short enough that the Go/No-Go button is always near.
   var PAGE_SIZE = 10;
+  // Checklist chip -> the sidebar field that satisfies it.
+  var FIELD_FOR = {
+    naics: 'gg-naics',
+    certifications: 'gg-certs',
+    office: 'gg-office',
+    past_performance: 'gg-pp-title',
+  };
 
   function loadCachedResults() {
     try {
@@ -70,6 +77,11 @@
     // Setup
     country: 'US',
     step: null,          // 'country' | 'apikey' — set only while setting up
+    // True when the same screens are reached from the profile menu. They then
+    // drop the step rail and the first-run wording: changing a setting is not
+    // signing up again, and being shown "Step 2 of 3" while doing it suggests
+    // the workspace has been lost.
+    settingsMode: false,
 
     // Workspace
     view: 'feed',        // 'feed' = live SAM.gov search | 'pipeline' = what they kept
@@ -289,6 +301,7 @@
         adopt(body);
         S.busy = false;
         S.step = null;
+        S.settingsMode = false;
         S.notice = null;
         render();
       })
@@ -524,7 +537,7 @@
     var countries = S.config.countries || [];
     var selected = countries.filter(function (c) { return c.code === S.country; })[0];
 
-    return '<div class="gg-wrap">' + viewSteps(1) +
+    return '<div class="gg-wrap">' + (S.settingsMode ? '' : viewSteps(1)) +
       '<div class="gg-card">' +
         '<h2 class="gg-h2">Where do you bid?</h2>' +
         '<p class="gg-sub">This decides which procurement portal your API key belongs to.</p>' +
@@ -548,10 +561,22 @@
     var countries = S.config.countries || [];
     var portal = (countries.filter(function (c) { return c.code === S.country; })[0] || {}).portal || 'SAM.gov';
 
-    return '<div class="gg-wrap">' + viewSteps(2) +
+    return '<div class="gg-wrap">' + (S.settingsMode ? '' : viewSteps(2)) +
       '<div class="gg-card">' +
-        '<h2 class="gg-h2">Connect your ' + esc(portal) + ' API key</h2>' +
+        '<h2 class="gg-h2">' + (S.settingsMode ? esc(portal) + ' API key' : 'Connect your ' + esc(portal) + ' API key') + '</h2>' +
         '<p class="gg-sub">Searches run on your own key, so the results and the quota are yours.</p>' +
+        // In settings the country belongs here rather than on a screen of its
+        // own — changing either is one visit, not two.
+        (S.settingsMode
+          ? '<div class="gg-field"><label class="gg-label" for="gg-country">Country</label>' +
+            '<select class="gg-input" id="gg-country" data-act="pick-country">' +
+              (S.config.countries || []).map(function (c) {
+                return '<option value="' + esc(c.code) + '"' + (c.code === S.country ? ' selected' : '') + '' +
+                  (c.connected ? '' : ' disabled') + '>' + esc(c.name) + ' — ' + esc(c.portal) +
+                  (c.connected ? '' : ' (coming soon)') + '</option>';
+              }).join('') +
+            '</select></div>'
+          : '') +
         messages() +
         '<div class="gg-msg">' + icon('gg-lock', 14) + ' <strong>Where to find it:</strong> sign in at ' +
           '<a href="https://sam.gov" target="_blank" rel="noopener" style="color:var(--gg-orange)">sam.gov</a>' +
@@ -562,9 +587,12 @@
           '<input class="gg-input" id="gg-key" type="password" autocomplete="off" placeholder="Paste your ' + esc(portal) + ' API key"/>' +
         '</div>' +
         '<div style="display:flex;gap:10px">' +
-          '<button class="gg-btn gg-btn--ghost" data-act="to-country">Back</button>' +
+          (S.settingsMode
+            ? '<button class="gg-btn gg-btn--ghost" data-act="cancel-settings">Cancel</button>'
+            : '<button class="gg-btn gg-btn--ghost" data-act="to-country">Back</button>') +
           '<button class="gg-btn" style="flex:1" data-act="link-key"' + (S.busy ? ' disabled' : '') + '>' +
-            (S.busy ? '<span class="gg-spin"></span> Verifying…' : 'Connect and start ' + icon('gg-arrow', 15)) +
+            (S.busy ? '<span class="gg-spin"></span> Verifying…'
+              : (S.settingsMode ? 'Save key' : 'Connect and start ' + icon('gg-arrow', 15)))
           '</button>' +
         '</div>' +
       '</div>' +
@@ -589,8 +617,13 @@
       var it = r[k];
       if (!it) return '';
       var cls = it.complete ? 'is-done' : (it.blocking ? 'is-required' : '');
-      return '<span class="gg-chip ' + cls + '" title="' + esc(it.hint) + '">' +
-        '<span class="gg-chip-box"></span>' + esc(it.label) + '</span>';
+      // These tick themselves — the server recomputes readiness after every
+      // save. They look like checkboxes though, which invites a click, so the
+      // click does the one useful thing available: jumps to the field that
+      // would fill it.
+      return '<button class="gg-chip ' + cls + '" data-act="goto" data-field="' + esc(FIELD_FOR[k] || '') + '" ' +
+        'title="' + esc(it.hint) + (it.complete ? '' : ' (click to fill it in)') + '">' +
+        '<span class="gg-chip-box"></span>' + esc(it.label) + '</button>';
     }).join('') + '</div></div>';
   }
 
@@ -976,7 +1009,20 @@
     else if (act === 'sign-out') signOut();
     else if (act === 'country') chooseCountry(el.getAttribute('data-code'));
     else if (act === 'to-key') { S.step = 'apikey'; S.error = null; render(); focus('gg-key'); }
-    else if (act === 'to-country') { S.step = 'country'; S.error = null; render(); }
+    else if (act === 'to-country') {
+      // From the profile menu this is "change my key", so it opens the key
+      // screen directly — with the country selector on it — rather than
+      // walking the whole wizard again. During first-run setup it is still the
+      // country step.
+      var fromMenu = S.profileOpen;
+      S.profileOpen = false;
+      S.settingsMode = fromMenu;
+      S.step = fromMenu ? 'apikey' : 'country';
+      S.error = null;
+      render();
+      if (fromMenu) focus('gg-key');
+    }
+    else if (act === 'cancel-settings') { S.step = null; S.settingsMode = false; S.error = null; render(); }
     else if (act === 'link-key') { e.preventDefault(); linkKey(); }
     else if (act === 'rm-key') removeKey();
     else if (act === 'search') { e.preventDefault(); search(); }
@@ -991,6 +1037,13 @@
     }
     else if (act === 'move') moveOpportunity(el.getAttribute('data-id'), Number(el.getAttribute('data-dir')));
     else if (act === 'rm-opp') removeOpportunity(el.getAttribute('data-id'));
+    else if (act === 'goto') {
+      var target = document.getElementById(el.getAttribute('data-field'));
+      if (target) {
+        if (target.scrollIntoView) target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        target.focus();
+      }
+    }
     else if (act === 'profile') toggleProfile();
     // Only the backdrop itself closes, never a click that bubbled from inside
     // the panel — otherwise pressing "Change" would shut the thing first.
@@ -1001,6 +1054,16 @@
     else if (act === 'save-profile') saveProfile();
     else if (act === 'add-pp') addPastPerformance();
     else if (act === 'rm-pp') removePastPerformance(el.getAttribute('data-id'));
+  });
+
+  // The settings country picker is a <select>, which fires change rather than
+  // click, so the delegated click handler above never sees it.
+  document.addEventListener('change', function (e) {
+    if (e.target && e.target.id === 'gg-country') {
+      S.country = e.target.value;
+      render();
+      focus('gg-key');
+    }
   });
 
   // Every keystroke in a sidebar field goes into the draft. No render here —
