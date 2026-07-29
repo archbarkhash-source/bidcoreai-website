@@ -579,13 +579,19 @@
     // that can only ever say "done" is noise. It lives in the profile panel,
     // where it can be changed or removed.
     var items = ['naics', 'certifications', 'office', 'past_performance'];
-    return '<div class="gg-check" style="margin-bottom:18px">' + items.map(function (k) {
+    var missing = items.filter(function (k) { return r[k] && !r[k].complete; }).length;
+    return '<div class="gg-side-block">' +
+      '<div class="gg-side-title">Setup' +
+        (missing ? '<span class="gg-muted" style="font-weight:400;text-transform:none;letter-spacing:0"> — ' +
+          missing + ' left</span>' : '') +
+      '</div>' +
+      '<div class="gg-check">' + items.map(function (k) {
       var it = r[k];
       if (!it) return '';
       var cls = it.complete ? 'is-done' : (it.blocking ? 'is-required' : '');
       return '<span class="gg-chip ' + cls + '" title="' + esc(it.hint) + '">' +
         '<span class="gg-chip-box"></span>' + esc(it.label) + '</span>';
-    }).join('') + '</div>';
+    }).join('') + '</div></div>';
   }
 
   function viewResult(r, i) {
@@ -737,6 +743,10 @@
         'a score out of 100, what to watch, and the reason behind all 12 criteria.</div>';
     }
     return '<aside class="gg-side gg-card">' +
+      // The checklist belongs beside the verdict, not above the results: every
+      // unticked item is a reason the score below is less certain than it could
+      // be, so the two are read together.
+      viewChecklist() +
       '<div class="gg-side-title">Go/No-Go analysis</div>' + body +
     '</aside>';
   }
@@ -894,7 +904,6 @@
         viewSidebar() +
         '<main class="gg-main">' +
           '<div class="gg-topbar">' +
-            viewChecklist() +
             '<div class="gg-views">' +
             '<button class="gg-view-btn' + (isFeed ? ' is-on' : '') + '" data-act="view" data-v="feed">' +
               'Opportunity Feed' + (S.results ? '<span class="gg-view-count">' + S.results.length + '</span>' : '') +
