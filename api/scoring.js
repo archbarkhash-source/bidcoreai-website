@@ -1,13 +1,14 @@
 /**
  * api/scoring.js — Quick Go/No-Go, the free complimentary analysis.
  *
- * Twelve criteria, each 0-100, averaged into one score:
+ * Twelve criteria, each 0-100, combined into one weighted score:
  *
  *   NAICS · PSC · Project Magnitude · Distance from Office · Preferred State ·
  *   Preferred Agency · Contract Type · Set-Aside · Capability Match ·
  *   Bond Capacity · Past Performance · Bid Preparation Time
  *
- * Bands: 85-100 GO · 65-84 REVIEW · below 65 NO-GO.
+ * Bands come from the environment (see BANDS) — by default above 55 GO,
+ * 40-55 NOT SURE, below 40 NO-GO.
  *
  * Two conditions override the average outright, because both make the bid
  * legally impossible rather than merely unattractive: a due date that has
@@ -111,9 +112,10 @@ function scoreNaics(opportunityNaics, companyNaics) {
     return [75, `Same NAICS industry group (${code.slice(0, 4)}xx) as codes you hold.`];
   }
   if (mine.some((c) => c.slice(0, 2) === code.slice(0, 2))) {
-    return [55, `Same NAICS sector (${code.slice(0, 2)}) but a different industry group.`];
+    return [35, `Same NAICS sector (${code.slice(0, 2)}) but a different trade from the codes ` +
+      'you hold — sector 23 covers everything from roofing to bridges.'];
   }
-  return [25, `NAICS ${code} is outside the codes on file.`];
+  return [20, `NAICS ${code} is outside the codes on file.`];
 }
 
 function scorePsc(opportunityPsc, companyPsc) {
@@ -295,7 +297,82 @@ const RISK_TITLES = {
 };
 
 const status = (s) => (s >= 70 ? 'PASS' : s >= 40 ? 'REVIEW' : 'FAIL');
-const recommend = (s) => (s >= 85 ? 'GO' : s >= 65 ? 'REVIEW' : 'NO-GO');
+
+/**
+ * Where the verdict changes. Set from the environment rather than written into
+ * the code, because these are a judgement about how cautious the tool should
+ * be — not a fact about scoring — and that judgement will want revising once
+ * there is real usage to look at. Change them without a code edit:
+ *
+ *   GO_SCORE_MIN=55        above this  -> GO
+ *   NOT_SURE_SCORE_MIN=40  at or above -> NOT SURE   (below -> NO-GO)
+ *   UNKNOWN_RATIO=0.5      this share of criteria unscored -> NEEDS MORE INFO
+ *
+ * The defaults sit well below the product app's 85/65 on purpose: free
+ * visitors fill in a fraction of a real profile, so half their criteria rest
+ * at the neutral 50 and pull every average toward the middle. Judged on the
+ * paid bands, genuinely good opportunities would come back NO-GO.
+ */
+function numberFromEnv(name, fallback) {
+  const raw = Number(process.env[name]);
+  return Number.isFinite(raw) ? raw : fallback;
+}
+
+/**
+ * Not every criterion carries the same weight, and a straight average said so
+ * badly. Tested against a filled-in roofing contractor in Virginia, a plain
+ * mean returned GO for highway construction (90), a $40M job from a firm that
+ * caps at $5M (83), and a six-day deadline (90) — one disqualifying fact
+ * diluted by eleven comfortable ones.
+ *
+ * These are shares of the total; they are normalised at use, so they do not
+ * have to sum to exactly 1 and a criterion can be retuned on its own.
+ */
+const WEIGHTS = {
+  'NAICS Match': 18,          // what the work actually is
+  'Capability Match': 15,     // whether they do that work
+  'Set-Aside': 12,            // whether they may bid at all
+  'Bid Preparation Time': 12, // whether they can respond in time
+  'Distance from Office': 10, // what it costs to get there
+  'Project Magnitude': 10,    // whether it is their size of job
+  'Past Performance': 7,
+  'Bond Capacity': 6,
+  'Preferred State': 4,
+  'Contract Type': 3,
+  'Agency Match': 2,
+  'PSC Match': 1,             // a coarse code, and often absent
+};
+
+/**
+ * Criteria that cannot be averaged away. Score below the floor and the verdict
+ * is held at NOT SURE however well everything else did — a roofer is not a
+ * highway contractor because the paperwork suits them. 50 is exempt
+ * everywhere: it means "nothing on file", and an unknown must never be read as
+ * a fault.
+ */
+const CAPS = {
+  'NAICS Match': 40,
+  'Capability Match': 40,
+  'Project Magnitude': 40,
+  'Bid Preparation Time': 40,
+  'Bond Capacity': 30,
+  'Distance from Office': 30,
+};
+
+const BANDS = {
+  go: numberFromEnv('GO_SCORE_MIN', 55),
+  notSure: numberFromEnv('NOT_SURE_SCORE_MIN', 40),
+  unknownRatio: numberFromEnv('UNKNOWN_RATIO', 0.5),
+};
+
+const recommend = (s) =>
+  (s > BANDS.go ? 'GO' : s >= BANDS.notSure ? 'NOT SURE' : 'NO-GO');
+
+/** One sentence describing the current bands, so nothing has to restate them. */
+function bandsSummary() {
+  return `Above ${BANDS.go} GO \u00b7 ${BANDS.notSure}\u2013${BANDS.go} NOT SURE \u00b7 ` +
+    `below ${BANDS.notSure} NO-GO`;
+}
 
 /** Medium and High only, worst first, max 3. A 50 is "not on file", not a risk. */
 function buildRisks(matches) {
@@ -380,9 +457,13 @@ function computeQuickScore(opportunity, profile) {
 
   const matches = criteria.map(([title, [score, reason]]) => ({
     title, score, status: status(score), reason,
+    weight: WEIGHTS[title] || 1,
   }));
 
-  let overall = Math.round(matches.reduce((sum, m) => sum + m.score, 0) / matches.length);
+  const totalWeight = matches.reduce((sum, m) => sum + m.weight, 0);
+  matches.forEach((m) => { m.share = m.weight / totalWeight; });
+
+  let overall = Math.round(matches.reduce((sum, m) => sum + m.score * m.share, 0));
   let recommendation = recommend(overall);
   let overrideReason = null;
 
@@ -391,8 +472,20 @@ function computeQuickScore(opportunity, profile) {
   // NO-GO. That verdict would be a lie: nothing about the opportunity was
   // judged, only the absence of a profile. When half or more of the criteria
   // are "not on file", say so instead of pronouncing on the bid.
-  const unknowns = matches.filter((m) => m.score === 50).length;
-  const mostlyUnknown = unknowns >= matches.length / 2;
+  // Withholding a verdict is about how much of the DECISION is unknown, not how
+  // many rows are. Counting rows, someone who had filled in NAICS, capability,
+  // set-aside and state — 55% of the weight, and the four that matter most —
+  // still got "NEEDS MORE INFO" because seven light criteria were blank. Weight
+  // is what the score is made of, so weight is what has to be known.
+  const unknowns = matches.filter((m) => m.score === 50);
+  const unknownWeight = unknowns.reduce((sum, m) => sum + m.share, 0);
+  const mostlyUnknown = unknownWeight >= BANDS.unknownRatio;
+
+  // Anything that disqualifies on its own, held out of the average's reach.
+  // 50 is exempt: it is an unknown, not a failing.
+  const blockers = matches.filter(
+    (m) => CAPS[m.title] != null && m.score !== 50 && m.score < CAPS[m.title],
+  );
 
   if (daysRemaining != null && daysRemaining < 0) {
     overall = 0;
@@ -402,13 +495,26 @@ function computeQuickScore(opportunity, profile) {
     overall = 0;
     recommendation = 'NO-GO';
     overrideReason = setAside[1];
+  } else if (blockers.length && recommendation === 'GO') {
+    // Capped, not zeroed: this is "look closer", not "impossible" — the two
+    // overrides above are the impossible ones.
+    recommendation = 'NOT SURE';
+    overrideReason = blockers.length === 1
+      ? `${blockers[0].title} scores ${blockers[0].score}, too low to call this a GO on the ` +
+        `strength of the others: ${blockers[0].reason}`
+      : `${blockers.length} criteria are too low to call this a GO however well the rest did: ` +
+        blockers.map((b) => `${b.title} (${b.score})`).join(', ') + '.';
   } else if (mostlyUnknown) {
     // The two overrides above still win: an expired deadline and an ineligible
     // set-aside are facts about the opportunity, true no matter how little the
     // visitor has told us.
     recommendation = 'NEEDS MORE INFO';
-    overrideReason = `${unknowns} of the 12 criteria have nothing to score against yet. ` +
-      'Add your NAICS codes and certifications below and re-run this — the verdict will mean something.';
+    const heaviest = unknowns.slice().sort((a, b) => b.share - a.share)
+      .slice(0, 3).map((m) => m.title).join(', ');
+    overrideReason =
+      `${Math.round(unknownWeight * 100)}% of the score has nothing to weigh yet ` +
+      `(${unknowns.length} of ${matches.length} criteria, led by ${heaviest}). ` +
+      'Fill those in and re-run this — the verdict will mean something.';
   }
 
   const naicsCode = String(opportunity.solicitation_naics || '').trim();
@@ -433,6 +539,7 @@ function computeQuickScore(opportunity, profile) {
       preferred_bid_days: preferredDays,
     },
     matches,
+    weighted: true,
     risks: buildRisks(matches),
     suggestions: buildSuggestions(profile, matches),
     computed_at: new Date().toISOString(),
@@ -520,6 +627,7 @@ function isConstructionNaics(code, alsoAllow) {
 
 module.exports = {
   computeQuickScore, classifyContractType, isConstructionNaics,
+  BANDS, bandsSummary, WEIGHTS, CAPS,
   SET_ASIDE_CERTS, SET_ASIDE_OPTIONS, CONTRACT_TYPE_OPTIONS, STATE_OPTIONS,
   NAICS_OPTIONS,
 };

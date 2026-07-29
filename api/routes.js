@@ -20,7 +20,7 @@ const secretbox = require('./secretbox');
 const samgov = require('./samgov');
 const geocodeLib = require('./geocode');
 const {
-  computeQuickScore, isConstructionNaics,
+  computeQuickScore, isConstructionNaics, BANDS, bandsSummary,
   SET_ASIDE_OPTIONS, CONTRACT_TYPE_OPTIONS, STATE_OPTIONS, NAICS_OPTIONS,
 } = require('./scoring');
 
@@ -227,6 +227,8 @@ router.get('/config', (req, res) => {
     contract_types: CONTRACT_TYPE_OPTIONS,
     states: STATE_OPTIONS,
     naics: NAICS_OPTIONS,
+    // The page renders whatever these are rather than hardcoding a copy.
+    bands: { ...BANDS, summary: bandsSummary() },
     google_client_id: (process.env.GOOGLE_CLIENT_ID || '').trim() || null,
     app_url: process.env.APP_URL || 'https://app.bidcoreai.com',
     configured: db.isConfigured(),

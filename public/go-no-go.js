@@ -425,11 +425,23 @@
   /** How the score is arrived at, in the order someone reading a verdict
    *  wants it. Written once and shown in two places — the right sidebar while
    *  working, and Settings when reading up. */
-  var SCORING_TIPS = [
-    ['Twelve criteria, equal weight',
-     'NAICS, PSC, project size, distance, state, agency, contract type, set-aside, ' +
-     'capability, bonding, past performance and bid lead time. Each scores 0\u2013100 and is ' +
-     'worth 8.3% of the total.'],
+  /** The current bands, as the server reports them. Never a second copy of the
+   *  numbers — if the thresholds are retuned, every sentence on the page
+   *  follows without an edit. */
+  function bandsText() {
+    var b = S.config.bands;
+    return b && b.summary ? b.summary : 'GO / NOT SURE / NO-GO by score';
+  }
+
+  function scoringTips() { return [
+    ['Twelve criteria, weighted',
+     'What the work is (NAICS, 18%) and whether you do it (capability, 15%) count for most; ' +
+     'eligibility and time to respond come next; the code it is filed under counts for least. ' +
+     'Each scores 0\u2013100.'],
+    ['One bad criterion can hold a verdict back',
+     'A roofer is not a highway contractor because the paperwork suits them. If the work, your ' +
+     'capability, the size, the deadline or the bonding scores badly, the answer is held at ' +
+     'NOT SURE however well everything else did.'],
     ['85\u2013100 GO \u00b7 65\u201384 REVIEW \u00b7 below 65 NO-GO',
      'The band is the recommendation. Open the full calculation under any verdict to see ' +
      'exactly what each criterion contributed.'],
@@ -440,13 +452,15 @@
      'A deadline that has already passed, and a set-aside you do not hold. Both make the bid ' +
      'impossible rather than unattractive, so they score 0 outright instead of being averaged ' +
      'away by eleven good criteria.'],
-    ['Half unknown means no verdict',
-     'With most criteria unscored you get NEEDS MORE INFO instead of a recommendation. ' +
-     'Judging an empty profile is not judging the opportunity.'],
+    ['Half the weight unknown means no verdict',
+     'If most of what the score is made of has nothing to weigh, you get NEEDS MORE INFO ' +
+     'instead of a recommendation — judging an empty profile is not judging the ' +
+     'opportunity. Filling in the heavy criteria is what unlocks a real answer, not filling ' +
+     'in the most fields.'],
     ['What sharpens it fastest',
      'NAICS codes first \u2014 the largest single input. Then set-asides (they decide ' +
      'eligibility outright), your office address (distance), and one or two past projects.'],
-  ];
+  ]; }
 
   /** Getting a SAM.gov API key. Steps as they appear on sam.gov, because
    *  \u201cAccount Details\u201d is not where most people look first. */
@@ -1057,7 +1071,7 @@
 
         section('How the score works',
           '<ul class="gg-tips-list gg-tips-list--wide">' +
-            SCORING_TIPS.map(function (t) {
+            scoringTips().map(function (t) {
               return '<li><strong>' + t[0] + '</strong><br/><span class="gg-crit-why">' + t[1] +
                 '</span></li>';
             }).join('') +
@@ -1095,7 +1109,7 @@
         '<span class="gg-toggle-caret">' + icon('gg-caret', 14) + '</span>' +
       '</button>' +
       (S.tipsOpen
-        ? '<ul class="gg-tips-list">' + SCORING_TIPS.map(function (t) {
+        ? '<ul class="gg-tips-list">' + scoringTips().map(function (t) {
             return '<li><strong>' + t[0] + '</strong><br/><span class="gg-crit-why">' + t[1] + '</span></li>';
           }).join('') + '</ul>'
         : '') +
@@ -1179,12 +1193,14 @@
           }).join('') +
         '</select>' +
       '</label>' +
-      '<label class="gg-feed-ctl">Where' +
-        '<select class="gg-input gg-input--inline" id="gg-place">' +
+      '<label class="gg-feed-ctl">Location' +
+        '<select class="gg-input gg-input--inline gg-input--place" id="gg-place">' +
           '<option value=""' + (S.place ? '' : ' selected') + '>Anywhere</option>' +
           ((S.profile && (S.profile.states_served || []).length)
+            // A count, not the list: eight state codes made the dropdown wider
+            // than everything beside it, and the list is on screen already.
             ? '<option value="mine"' + (S.place === 'mine' ? ' selected' : '') + '>' +
-              'States I work in (' + S.profile.states_served.join(', ') + ')</option>'
+              'My states (' + S.profile.states_served.length + ')</option>'
             : '') +
           statesInFeed().map(function (st) {
             return '<option value="' + esc(st.key) + '"' + (S.place === st.key ? ' selected' : '') + '>' +
@@ -1315,7 +1331,8 @@
       });
 
       out += '<tr class="gg-calc-total"><td>Total</td><td class="gg-num"></td>' +
-        '<td class="gg-num">' + Math.round(running) + '</td></tr></tbody></table>';
+        '<td class="gg-num"></td><td class="gg-num">' + Math.round(running) + '</td></tr>' +
+      '</tbody></table>';
 
       if (overridden) {
         out += '<div class="gg-calc-head">The criteria average ' + Math.round(running) +
@@ -1325,7 +1342,7 @@
       }
 
       out += '<div class="gg-calc-head">50 means “nothing on file” — neutral, not bad. ' +
-        'Bands: 85–100 GO · 65–84 REVIEW · below 65 NO-GO.</div>';
+        'Bands: above 55 GO · 40–55 NOT SURE · below 40 NO-GO.</div>';
     }
     return out;
   }
@@ -1395,7 +1412,9 @@
         '<span class="gg-toggle-caret">' + icon('gg-caret', 14) + '</span>' +
       '</button>' +
       (chosen.length && !S.setAsideOpen
-        ? '<div class="gg-picker-summary">' + esc(chosen.join(', ')) + '</div>'
+        ? '<div class="gg-picker-summary">' +
+            chosen.map(function (v) { return '<span>' + esc(v) + '</span>'; }).join('') +
+          '</div>'
         : '') +
       (S.setAsideOpen ? '<div class="gg-ticks">' : '<div hidden>') +
         options.map(function (o) {
@@ -1426,7 +1445,9 @@
         '<span class="gg-toggle-caret">' + icon('gg-caret', 14) + '</span>' +
       '</button>' +
       (chosen.length && !S.naicsOpen
-        ? '<div class="gg-picker-summary">' + esc(chosen.join(', ')) + '</div>'
+        ? '<div class="gg-picker-summary">' +
+            chosen.map(function (v) { return '<span>' + esc(v) + '</span>'; }).join('') +
+          '</div>'
         : '') +
       (S.naicsOpen ? '<div class="gg-ticks">' : '<div hidden>') +
         options.map(function (o) {
@@ -1464,7 +1485,9 @@
           'bottom-right corner wider to see more per row.</div>'
         : '') +
       (chosen.length && !S.statesOpen
-        ? '<div class="gg-picker-summary">' + esc(chosen.join(', ')) + '</div>'
+        ? '<div class="gg-picker-summary">' +
+            chosen.map(function (v) { return '<span>' + esc(v) + '</span>'; }).join('') +
+          '</div>'
         : '') +
       (S.statesOpen ? '<div class="gg-ticks gg-ticks--cols">' : '<div hidden>') +
         options.map(function (o) {
@@ -1490,7 +1513,9 @@
         '<span class="gg-toggle-caret">' + icon('gg-caret', 14) + '</span>' +
       '</button>' +
       (chosen.length && !S.typesOpen
-        ? '<div class="gg-picker-summary">' + esc(chosen.join(', ')) + '</div>'
+        ? '<div class="gg-picker-summary">' +
+            chosen.map(function (v) { return '<span>' + esc(v) + '</span>'; }).join('') +
+          '</div>'
         : '') +
       (S.typesOpen ? '<div class="gg-ticks">' : '<div hidden>') +
         options.map(function (o) {

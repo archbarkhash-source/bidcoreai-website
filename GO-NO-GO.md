@@ -86,7 +86,23 @@ NAICS · PSC · Project Magnitude · Distance from Office · Preferred State ·
 Preferred Agency · Contract Type · Set-Aside · Capability Match · Bond Capacity ·
 Past Performance · Bid Preparation Time
 
-Bands: **85-100 GO · 65-84 REVIEW · below 65 NO-GO**.
+Bands are **set from the environment**, not written into the code — they are a
+judgement about how cautious the tool should be, and worth revising once there
+is real usage to look at:
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `GO_SCORE_MIN` | `55` | above this → **GO** |
+| `NOT_SURE_SCORE_MIN` | `40` | at or above → **NOT SURE**; below → **NO-GO** |
+| `UNKNOWN_RATIO` | `0.5` | this share of criteria unscored → **NEEDS MORE INFO** |
+
+The defaults sit well below the product app's 85/65 on purpose. A free visitor
+fills in a fraction of a real profile, so half their criteria rest at the
+neutral 50 and pull every average toward the middle; judged on the paid bands,
+genuinely good opportunities would come back NO-GO.
+
+The page renders whatever the server reports, so retuning these changes every
+sentence about them without a code edit.
 
 Three results override the average:
 
