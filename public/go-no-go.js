@@ -739,7 +739,9 @@
         '</div>' +
         '<div style="display:flex;gap:10px">' +
           (S.settingsMode
-            ? '<button class="gg-btn gg-btn--ghost" data-act="cancel-settings">Cancel</button>'
+            // Back to Settings, not out to the workspace: Cancel undoes the
+            // trip you just made, it does not abandon where you were.
+            ? '<button class="gg-btn gg-btn--ghost" data-act="back-to-settings">Cancel</button>'
             : '<button class="gg-btn gg-btn--ghost" data-act="to-country">Back</button>') +
           '<button class="gg-btn" data-act="link-key"' + (S.busy ? ' disabled' : '') + '>' +
             (S.busy ? '<span class="gg-spin"></span> Verifying…'
@@ -1422,6 +1424,7 @@
       if (fromMenu) focus('gg-key');
     }
     else if (act === 'cancel-settings') { S.step = null; S.settingsMode = false; S.error = null; render(); }
+    else if (act === 'back-to-settings') { S.step = 'settings'; S.settingsMode = false; S.error = null; render(); }
     else if (act === 'link-key') { e.preventDefault(); linkKey(); }
     else if (act === 'rm-key') removeKey();
     else if (act === 'search') { e.preventDefault(); search(); }
