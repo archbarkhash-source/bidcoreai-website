@@ -1886,7 +1886,7 @@
               'Pipeline<span class="gg-view-count">' + S.opportunities.length + '</span>' +
             '</button>' +
             '<button class="gg-view-btn' + (S.view === 'dashboard' ? ' is-on' : '') + '" ' +
-              'data-act="view" data-v="dashboard">Dashboard</button>' +
+              'data-act="view" data-v="dashboard">Overview</button>' +
             '</div>' +
           '</div>' +
           messages() +
