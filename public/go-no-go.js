@@ -522,6 +522,47 @@
     });
   }
 
+  /** Score an opportunity already in the pipeline. The notice was stored whole
+   *  when it was saved, so this needs no SAM.gov call — the same rubric runs
+   *  against the same fields, and the resulting verdict is written back onto
+   *  the card so the board shows it without re-running anything. */
+  function scoreSaved(id) {
+    var o = S.opportunities.filter(function (x) { return String(x.id) === String(id); })[0];
+    if (!o) return;
+
+    S.openId = 'saved-' + id;
+    S.score = null;
+    S.scoreFor = o.title || o.solicitation_number || null;
+    S.scoring = true;
+    S.error = null;
+    render();
+
+    var notice = o.raw && typeof o.raw === 'object' ? o.raw : {
+      title: o.title, agency: o.agency, solicitation_number: o.solicitation_number,
+      solicitation_naics: o.naics, solicitation_set_aside: o.set_aside,
+      solicitation_due_date: o.due_date,
+      place_of_performance_city: o.city, place_of_performance_state: o.state,
+      ui_link: o.ui_link,
+    };
+
+    api('/score', { method: 'POST', body: notice })
+      .then(function (body) {
+        S.scoring = false;
+        S.score = body.result;
+        adopt(body);
+        render();
+        // Keep the card's badge in step with the verdict just produced.
+        return api('/opportunities', {
+          method: 'POST',
+          body: Object.assign({}, notice, {
+            notice_id: o.notice_id, solicitation_number: o.solicitation_number,
+            score: body.result.overall_score, recommendation: body.result.recommendation,
+          }),
+        }).then(loadOpportunities);
+      })
+      .catch(function (e) { S.scoring = false; S.openId = null; S.scoreFor = null; fail(e); });
+  }
+
   function moveOpportunity(id, direction) {
     var opp = S.opportunities.filter(function (o) { return String(o.id) === String(id); })[0];
     if (!opp) return;
@@ -1076,13 +1117,20 @@
         '</div>' +
         '<div class="gg-col-body">' +
           (cards.length ? cards.map(function (o) {
-            return '<div class="gg-card-mini">' +
+            return '<div class="gg-card-mini' +
+              (S.openId === 'saved-' + o.id ? ' is-selected' : '') + '">' +
               '<div class="gg-card-mini-title">' + esc(o.title || o.solicitation_number || 'Untitled') + '</div>' +
               '<div class="gg-card-mini-meta">' +
                 esc([o.agency, o.due_date ? 'due ' + o.due_date : null].filter(Boolean).join(' · ')) +
               '</div>' +
               '<div class="gg-card-mini-foot">' +
-                (o.score != null ? '<span class="gg-score-pill">' + o.score + '</span>' : '') +
+                (o.score != null
+                  ? '<span class="gg-score-pill" title="' + esc(o.recommendation || '') + '">' +
+                    o.score + '</span>'
+                  : '') +
+                '<button class="gg-move gg-move--score" data-act="score-saved" data-id="' + o.id + '" ' +
+                  'title="' + (o.score != null ? 'Re-run the analysis' : 'Run the Go/No-Go analysis') + '">' +
+                  (o.score != null ? '↻' : 'Go/No-Go') + '</button>' +
                 '<button class="gg-move" data-act="move" data-id="' + o.id + '" data-dir="-1"' +
                   (si === 0 ? ' disabled' : '') + ' title="Back a stage">←</button>' +
                 '<button class="gg-move" data-act="move" data-id="' + o.id + '" data-dir="1"' +
@@ -1644,6 +1692,7 @@
     }
     else if (act === 'move') moveOpportunity(el.getAttribute('data-id'), Number(el.getAttribute('data-dir')));
     else if (act === 'rm-opp') removeOpportunity(el.getAttribute('data-id'));
+    else if (act === 'score-saved') scoreSaved(el.getAttribute('data-id'));
     else if (act === 'clear-stage') clearStage(el.getAttribute('data-stage'));
     else if (act === 'clear-feed') clearFeed();
     else if (act === 'dismiss') dismissResult(Number(el.getAttribute('data-i')));
