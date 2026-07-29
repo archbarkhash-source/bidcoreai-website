@@ -18,6 +18,11 @@
   --gg-line: #E4E4E4;
   --gg-soft: #F7F7F7;
   --gg-font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  /* The only colours on the page beyond the orange, and only for the verdict:
+     GO green, NO-GO red, anything undecided orange. A bid/no-bid answer is the
+     one thing here worth reading across a room. */
+  --gg-go: #16A34A;
+  --gg-nogo: #DC2626;
   --gg-radius: 10px;
   /* Header height. Everything sticky measures from this, so one change moves
      the header, the frozen toolbar and both sidebars together. */
@@ -213,10 +218,13 @@ h3.gg-h3 { font-size: 15px; font-weight: 700; margin: 0 0 4px; }
 .gg-verdict { display: flex; align-items: center; gap: 14px; margin: 18px 0 16px; flex-wrap: wrap; }
 .gg-verdict-badge {
   display: flex; align-items: center; gap: 12px; padding: 12px 18px; border-radius: var(--gg-radius);
-  border: 2px solid var(--gg-orange);
+  border: 2px solid var(--gg-orange); color: var(--gg-orange);
 }
-.gg-verdict-badge.is-go { background: var(--gg-orange); color: #fff; }
-.gg-verdict-badge.is-nogo { background: var(--gg-black); border-color: var(--gg-black); color: #fff; }
+.gg-verdict-badge.is-go { background: var(--gg-go); border-color: var(--gg-go); color: #fff; }
+.gg-verdict-badge.is-nogo { background: var(--gg-nogo); border-color: var(--gg-nogo); color: #fff; }
+/* Undecided keeps the outline treatment: it is not a verdict, and should not
+   look as settled as one. */
+.gg-verdict-badge .gg-verdict-label { opacity: .75; }
 .gg-verdict-score { font-size: 32px; font-weight: 800; line-height: 1; }
 .gg-verdict-label { font-size: 10.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; opacity: .7; }
 .gg-verdict-word { font-size: 17px; font-weight: 800; letter-spacing: -0.01em; }
@@ -313,6 +321,9 @@ h3.gg-h3 { font-size: 15px; font-weight: 700; margin: 0 0 4px; }
   font-size: 11px; font-weight: 700; border: 1px solid var(--gg-orange); color: var(--gg-orange);
   border-radius: 999px; padding: 1px 7px;
 }
+/* Pipeline badges follow the same code, so a board can be read at a glance. */
+.gg-score-pill.is-go { border-color: var(--gg-go); color: #fff; background: var(--gg-go); }
+.gg-score-pill.is-nogo { border-color: var(--gg-nogo); color: #fff; background: var(--gg-nogo); }
 
 /* ── Who's signed in, top left of the header ── */
 .gg-who { display: flex; align-items: center; gap: 9px; padding: 4px 8px 4px 12px; border-left: 1px solid var(--gg-line); }

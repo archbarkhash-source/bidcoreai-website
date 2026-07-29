@@ -1125,8 +1125,8 @@
               '</div>' +
               '<div class="gg-card-mini-foot">' +
                 (o.score != null
-                  ? '<span class="gg-score-pill" title="' + esc(o.recommendation || '') + '">' +
-                    o.score + '</span>'
+                  ? '<span class="gg-score-pill ' + verdictClass(o.recommendation) + '" ' +
+                    'title="' + esc(o.recommendation || '') + '">' + o.score + '</span>'
                   : '') +
                 '<button class="gg-move gg-move--score" data-act="score-saved" data-id="' + o.id + '" ' +
                   'title="' + (o.score != null ? 'Re-run the analysis' : 'Run the Go/No-Go analysis') + '">' +
@@ -1236,13 +1236,19 @@
     '</aside>';
   }
 
+  /** GO green, NO-GO red, anything else orange. REVIEW and NEEDS MORE INFO
+   *  share the orange outline deliberately: neither is a decision, and neither
+   *  should look as settled as one. */
+  function verdictClass(recommendation) {
+    var v = String(recommendation || '').toUpperCase();
+    if (v === 'GO') return 'is-go';
+    if (v === 'NO-GO' || v === 'NO GO') return 'is-nogo';
+    return '';
+  }
+
   function viewScore(s) {
-    // Three states, three shapes — filled orange, outlined, filled black — so
-    // GO, REVIEW and NO-GO are told apart at a glance without a second colour.
-    // Anything else (NEEDS MORE INFO) renders outlined: deliberately not a
-    // verdict, because it isn't one.
     var verdict = String(s.recommendation || '').toUpperCase();
-    var badgeClass = verdict === 'GO' ? 'is-go' : verdict === 'NO-GO' ? 'is-nogo' : '';
+    var badgeClass = verdictClass(verdict);
 
     var out = '<div class="gg-verdict">' +
       '<div class="gg-verdict-badge ' + badgeClass + '">' +
