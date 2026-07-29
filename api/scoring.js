@@ -33,6 +33,16 @@ const DEFAULT_PREFERRED_BID_DAYS = 20;
 // NAICS sector 23 (Construction). Enough to name a primary trade from the code
 // alone; anything outside sector 23 reports the bare code rather than guessing.
 const NAICS_TRADE_TITLES = {
+  236210: 'Industrial Building Construction',
+  237120: 'Oil and Gas Pipeline Construction',
+  237210: 'Land Subdivision',
+  238150: 'Glass and Glazing Contractors',
+  238170: 'Siding Contractors',
+  238190: 'Other Foundation, Structure, and Building Exterior Contractors',
+  238290: 'Other Building Equipment Contractors',
+  238340: 'Tile and Terrazzo Contractors',
+  238350: 'Finish Carpentry Contractors',
+  238390: 'Other Building Finishing Contractors',
   236115: 'New Single-Family Housing Construction',
   236116: 'New Multifamily Housing Construction',
   236220: 'Commercial and Institutional Building Construction',
@@ -486,7 +496,30 @@ const STATE_OPTIONS = [
   ['AS', 'American Samoa'], ['MP', 'Northern Mariana Islands'],
 ].map(([value, label]) => ({ value, label: `${label} (${value})` }));
 
+// Every NAICS in sector 23 that this page offers, labelled. Derived from the
+// trade titles above so one list cannot drift from the other.
+const NAICS_OPTIONS = Object.keys(NAICS_TRADE_TITLES)
+  .sort()
+  .map((code) => ({ value: String(code), label: `${code} — ${NAICS_TRADE_TITLES[code]}` }));
+
+/**
+ * Is this a construction opportunity?
+ *
+ * Sector 23 is the whole of Construction, so the prefix is the definition
+ * rather than a hand-kept list that would go stale. A contractor's own codes
+ * always pass too: someone holding 561210 (facilities support) or 811310
+ * (repair and maintenance) does federal construction work under those codes,
+ * and hiding their own trade would be absurd.
+ */
+function isConstructionNaics(code, alsoAllow) {
+  const naics = String(code || '').trim();
+  if (!naics) return false;
+  if (naics.startsWith('23')) return true;
+  return (alsoAllow || []).map(String).includes(naics);
+}
+
 module.exports = {
-  computeQuickScore, classifyContractType,
+  computeQuickScore, classifyContractType, isConstructionNaics,
   SET_ASIDE_CERTS, SET_ASIDE_OPTIONS, CONTRACT_TYPE_OPTIONS, STATE_OPTIONS,
+  NAICS_OPTIONS,
 };

@@ -20,7 +20,8 @@ const secretbox = require('./secretbox');
 const samgov = require('./samgov');
 const geocodeLib = require('./geocode');
 const {
-  computeQuickScore, SET_ASIDE_OPTIONS, CONTRACT_TYPE_OPTIONS, STATE_OPTIONS,
+  computeQuickScore, isConstructionNaics,
+  SET_ASIDE_OPTIONS, CONTRACT_TYPE_OPTIONS, STATE_OPTIONS, NAICS_OPTIONS,
 } = require('./scoring');
 
 const router = express.Router();
@@ -225,6 +226,7 @@ router.get('/config', (req, res) => {
     set_asides: SET_ASIDE_OPTIONS,
     contract_types: CONTRACT_TYPE_OPTIONS,
     states: STATE_OPTIONS,
+    naics: NAICS_OPTIONS,
     google_client_id: (process.env.GOOGLE_CLIENT_ID || '').trim() || null,
     app_url: process.env.APP_URL || 'https://app.bidcoreai.com',
     configured: db.isConfigured(),
@@ -444,8 +446,27 @@ router.get('/search', auth.requireSession, wrap(async (req, res) => {
   if (req.query.set_aside) params.setAside = String(req.query.set_aside).trim();
 
   const { results, total } = await samgov.search(params, key);
-  logEvent(req.workspace.id, 'search', { q, results: results.length });
-  res.json({ results, total, usage });
+
+  // This page is for construction bidding, so a notice outside that is noise —
+  // "HVAC training" and "facilities support services" match the same keywords
+  // and are not work a contractor bids. Sector 23 plus whatever codes this
+  // company actually holds; SAM.gov cannot express that filter itself, so it
+  // happens here.
+  const profile = await loadProfile(req.workspace.id);
+  const own = (profile.naics_codes || []).concat(
+    (profile.capabilities || []).flatMap((c) => c.naics_codes || []),
+  );
+  const construction = results.filter((r) => isConstructionNaics(r.solicitation_naics, own));
+
+  logEvent(req.workspace.id, 'search', {
+    q, results: construction.length, filtered_out: results.length - construction.length,
+  });
+  res.json({
+    results: construction,
+    total: construction.length,
+    filtered_out: results.length - construction.length,
+    usage,
+  });
 }));
 
 router.post('/score', auth.requireSession, wrap(async (req, res) => {

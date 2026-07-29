@@ -35,7 +35,7 @@
   var PAGE_SIZE = 10;
   // Checklist chip -> the sidebar field that satisfies it.
   var FIELD_FOR = {
-    naics: 'gg-naics',
+    naics: 'gg-naics-head',
     certifications: 'gg-set-asides',
     office: 'gg-office',
     past_performance: 'gg-pp-title',
@@ -100,6 +100,7 @@
     setAsideOpen: false, // the two tick lists start collapsed — they are long,
     typesOpen: false,    // and most visitors set them once
     statesOpen: false,
+    naicsOpen: false,
     sort: 'due',         // 'due' = soonest deadline first | 'none' = as SAM.gov returned
     scoring: false,      // the panel's own loading state, separate from busy
     score: null,
@@ -337,6 +338,7 @@
       .then(function (body) {
         S.busy = false;
         S.results = body.results || [];
+        S.filteredOut = body.filtered_out || 0;
         cacheResults(S.results);
         adopt(body);          // fresh usage counters
         render();
@@ -563,7 +565,7 @@
     api('/profile', {
       method: 'PUT',
       body: {
-        naics_codes: val('gg-naics'),
+        naics_codes: S.draft.naics || (S.profile && S.profile.naics_codes) || [],
         certifications: S.draft.certs || (S.profile && S.profile.certifications) || [],
         contract_types: S.draft.types || (S.profile && S.profile.contract_types) || [],
         min_bid_days: S.draft.lead != null ? S.draft.lead : (S.profile && S.profile.min_bid_days),
@@ -1006,7 +1008,10 @@
     return '<div class="gg-feed-head">' +
       '<span class="gg-muted">' + shown +
         (S.month ? ' due in ' + esc(monthLabel(S.month)) : ' opportunit' + (shown === 1 ? 'y' : 'ies')) +
-        (S.query ? ' for "' + esc(S.query) + '"' : '') + '</span>' +
+        (S.query ? ' for "' + esc(S.query) + '"' : '') +
+        (S.filteredOut
+          ? '<span class="gg-muted"> \u00b7 ' + S.filteredOut + ' non-construction hidden</span>'
+          : '') + '</span>' +
       '<label class="gg-feed-ctl">Due' +
         '<select class="gg-input gg-input--inline" id="gg-month">' +
           '<option value=""' + (S.month ? '' : ' selected') + '>All months</option>' +
@@ -1158,7 +1163,7 @@
       '<div class="gg-side-block">' +
         '<div class="gg-side-title">Your company</div>' +
         '<p class="gg-hint" style="margin:-6px 0 12px">The more of this we know, the more of the 12 criteria can score.</p>' +
-        field('gg-naics', 'NAICS codes you hold', (p.naics_codes || []).join(', '), '236220, 238160') +
+        naicsPicker(p) +
         setAsidePicker(p) +
         statePicker(p) +
         field('gg-office', 'Office address', p.office_address || '', '123 Main St, Richmond, VA') +
@@ -1226,6 +1231,38 @@
       '</div>' +
       '<div class="gg-hint">Only what you actually hold — an unheld set-aside makes a bid ineligible, ' +
         'so the score treats it as a hard NO-GO.</div>' +
+    '</div>';
+  }
+
+  /** The construction trades this company is coded for. A list, because the
+   *  score compares codes exactly and because most people know their trade by
+   *  name long before they know its number. */
+  function naicsPicker(p) {
+    var options = S.config.naics || [];
+    var chosen = S.draft.naics || p.naics_codes || [];
+    return '<div class="gg-field">' +
+      '<button class="gg-picker-head" data-act="toggle-naics" ' +
+        'aria-expanded="' + (S.naicsOpen ? 'true' : 'false') + '">' +
+        '<span class="gg-label" style="margin:0">NAICS codes you hold</span>' +
+        '<span class="gg-picker-count">' + (chosen.length ? chosen.length + ' selected' : 'none') + '</span>' +
+        '<span class="gg-toggle-caret">' + icon('gg-caret', 14) + '</span>' +
+      '</button>' +
+      (chosen.length && !S.naicsOpen
+        ? '<div class="gg-picker-summary">' + esc(chosen.join(', ')) + '</div>'
+        : '') +
+      (S.naicsOpen ? '<div class="gg-ticks">' : '<div hidden>') +
+        options.map(function (o) {
+          var on = chosen.indexOf(o.value) !== -1;
+          return '<label class="gg-tick' + (on ? ' is-on' : '') + '">' +
+            '<input type="checkbox" class="gg-naics" value="' + esc(o.value) + '"' +
+              (on ? ' checked' : '') + '/><span>' + esc(o.label) + '</span></label>';
+        }).join('') +
+      '</div>' +
+      (S.naicsOpen
+        ? '<div class="gg-hint">The single biggest input to the score. Codes outside ' +
+          'construction can still be typed into your SAM.gov profile — this list is the ' +
+          'sector 23 trades this page covers.</div>'
+        : '') +
     '</div>';
   }
 
@@ -1483,9 +1520,11 @@
     else if (act === 'toggle-setasides') { S.setAsideOpen = !S.setAsideOpen; render(); }
     else if (act === 'toggle-types') { S.typesOpen = !S.typesOpen; render(); }
     else if (act === 'toggle-states') { S.statesOpen = !S.statesOpen; render(); }
+    else if (act === 'toggle-naics') { S.naicsOpen = !S.naicsOpen; render(); }
     else if (act === 'goto') {
       var fieldId = el.getAttribute('data-field');
       if (fieldId === 'gg-set-asides' && !S.setAsideOpen) { S.setAsideOpen = true; render(); }
+      if (fieldId === 'gg-naics-head' && !S.naicsOpen) { S.naicsOpen = true; render(); }
       // The past-performance fields live in a collapsed section — open it
       // first, or the jump lands on nothing.
       if (fieldId === 'gg-pp-title' && !S.ppOpen) { S.ppOpen = true; render(); }
@@ -1521,6 +1560,14 @@
   document.addEventListener('change', function (e) {
     // Set-aside ticks live in the same draft as the text fields, so a
     // background re-render cannot silently untick them.
+    if (e.target && e.target.className === 'gg-naics') {
+      var codes = (S.draft.naics || (S.profile && S.profile.naics_codes) || []).slice();
+      var ni = codes.indexOf(e.target.value);
+      if (e.target.checked && ni === -1) codes.push(e.target.value);
+      if (!e.target.checked && ni !== -1) codes.splice(ni, 1);
+      S.draft.naics = codes;
+      return;
+    }
     if (e.target && e.target.className === 'gg-state') {
       var states = (S.draft.states || (S.profile && S.profile.states_served) || []).slice();
       var si = states.indexOf(e.target.value);
