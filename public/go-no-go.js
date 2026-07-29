@@ -1612,8 +1612,11 @@
     // No link to the product app anywhere on this page — it stands on its own
     // as a free tool rather than as a funnel into a signup.
     return '<div class="gg-wrap gg-wrap--full">' +
-      '<div class="gg-layout">' +
-        viewSidebar() +
+      // Pipeline drops the company sidebar: those fields tune a score, and a
+      // board is for moving work along. Eight stages in the middle third of
+      // the screen meant scrolling sideways to find your own cards.
+      '<div class="gg-layout' + (isFeed ? '' : ' gg-layout--board') + '">' +
+        (isFeed ? viewSidebar() : '') +
         '<main class="gg-main">' +
           '<div class="gg-topbar">' +
             '<div class="gg-views">' +

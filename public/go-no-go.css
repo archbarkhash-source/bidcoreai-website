@@ -574,3 +574,9 @@ button.gg-chip:hover { border-color: var(--gg-black); }
    means, and "74" beside "GO, review required" is the whole point. */
 .gg-card-mini-verdict { display: flex; align-items: center; gap: 7px; margin-bottom: 8px; flex-wrap: wrap; }
 .gg-card-mini-word { font-size: 11px; font-weight: 700; letter-spacing: .02em; }
+
+/* Pipeline: no company sidebar, so the board gets the space instead. */
+.gg-layout--board { grid-template-columns: minmax(0, 1fr) 330px; }
+@media (max-width: 860px) { .gg-layout--board { grid-template-columns: 1fr; } }
+/* Narrower columns as well — eight stages should be scannable, not a slideshow. */
+.gg-col { flex: 0 0 200px; }
