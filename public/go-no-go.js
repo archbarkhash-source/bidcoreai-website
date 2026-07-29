@@ -761,29 +761,16 @@
               : '') +
           '</div>') +
 
-        section('Company profile',
-          row('NAICS codes', (p.naics_codes || []).join(', ')) +
-          row('Certifications', (p.certifications || []).join(', ')) +
-          row('States served', (p.states_served || []).join(', ')) +
-          row('Office address', p.office_address) +
-          row('Bonding capacity', p.bonding_capacity ? '$' + Number(p.bonding_capacity).toLocaleString() : '') +
-          row('Job size', (p.project_value_min || p.project_value_max)
-            ? '$' + Number(p.project_value_min || 0).toLocaleString() + ' to $' +
-              Number(p.project_value_max || 0).toLocaleString()
-            : '') +
-          row('Past performance', (p.past_performance || []).length + ' project(s)') +
-          '<p class="gg-hint">These feed the score. Edit them in the left column of the workspace, ' +
-            'where they sit beside the results they explain.</p>' +
-          '<div class="gg-set-actions">' +
-            '<button class="gg-btn gg-btn--ghost gg-btn--small" data-act="cancel-settings">' +
-              'Edit in workspace</button>' +
-          '</div>') +
-
         section('Usage today',
           row('Searches', (used.searches_today || 0) + ' / ' + (used.searches_limit || 60)) +
           row('Analyses', (used.scores_today || 0) + ' / ' + (used.scores_limit || 40)) +
           '<p class="gg-hint">Both reset at midnight UTC. Searches spend your own ' + esc(portal) +
             ' quota, never a shared one.</p>') +
+
+        // Company profile is deliberately not repeated here. It is edited in
+        // the workspace's left column, beside the results it explains, and two
+        // views of the same fields would eventually disagree.
+
 
         '<section class="gg-set-signout">' +
           '<div>' +
