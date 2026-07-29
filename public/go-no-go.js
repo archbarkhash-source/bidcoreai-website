@@ -1279,6 +1279,10 @@
         '<span class="gg-picker-count">' + (chosen.length ? chosen.length + ' selected' : 'none') + '</span>' +
         '<span class="gg-toggle-caret">' + icon('gg-caret', 14) + '</span>' +
       '</button>' +
+      (S.statesOpen
+        ? '<div class="gg-hint" style="margin:0 0 6px">Drag the panel’s bottom-right corner ' +
+          'wider to see more per row.</div>'
+        : '') +
       (chosen.length && !S.statesOpen
         ? '<div class="gg-picker-summary">' + esc(chosen.join(', ')) + '</div>'
         : '') +

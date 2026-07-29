@@ -409,7 +409,12 @@ button.gg-chip:hover { border-color: var(--gg-black); }
    A fixed list rather than free text: the score compares these against what a
    notice requires, so the spelling has to match exactly. */
 .gg-ticks {
-  display: grid; gap: 2px; max-height: 190px; overflow-y: auto;
+  /* Columns fit themselves to whatever width the panel has been dragged to, so
+     widening it actually reveals more per row instead of just stretching one
+     column. No max-height: an inner scrollbar inside an already-scrolling
+     sidebar means two things to scroll and neither shows the whole list. */
+  display: grid; gap: 2px 10px;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
   border: 1px solid var(--gg-line); border-radius: var(--gg-radius); padding: 8px;
 }
 .gg-tick {
@@ -469,9 +474,10 @@ button.gg-chip:hover { border-color: var(--gg-black); }
   border: 1px solid var(--gg-line); border-radius: var(--gg-radius);
 }
 
-/* 56 states and territories is a long list — two columns, taller box. */
-.gg-ticks--cols { grid-template-columns: 1fr 1fr; max-height: 260px; }
-@media (max-width: 900px) { .gg-ticks--cols { grid-template-columns: 1fr 1fr 1fr; } }
+/* 56 states: narrower cells than the default, since "Virginia (VA)" is short.
+   At the sidebar's minimum width that is two columns; drag it wider and it
+   becomes three or four, with no scrollbar of its own at any width. */
+.gg-ticks--cols { grid-template-columns: repeat(auto-fill, minmax(125px, 1fr)); }
 
 /* ── How the score was arrived at ──
    The arithmetic, shown. A bid decision should not have to be taken on trust
@@ -495,9 +501,11 @@ button.gg-chip:hover { border-color: var(--gg-black); }
    and no fixed guess suits both. Bounded so neither can be dragged to nothing
    or squeeze the results out. */
 .gg-side {
+  /* Drag the bottom-right grip to widen. Worth doing when a long list is open:
+     the tick grids reflow to more columns as the panel grows. */
   resize: horizontal;
   min-width: 210px;
-  max-width: 560px;
+  max-width: 640px;
 }
 /* The grip only exists where the browser can draw it, which needs a scroll
    container — .gg-side already is one. */
