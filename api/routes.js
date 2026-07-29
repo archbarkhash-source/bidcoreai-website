@@ -19,7 +19,9 @@ const auth = require('./auth');
 const secretbox = require('./secretbox');
 const samgov = require('./samgov');
 const geocodeLib = require('./geocode');
-const { computeQuickScore } = require('./scoring');
+const {
+  computeQuickScore, SET_ASIDE_OPTIONS, CONTRACT_TYPE_OPTIONS, STATE_OPTIONS,
+} = require('./scoring');
 
 const router = express.Router();
 
@@ -84,7 +86,7 @@ function readiness(profile) {
     certifications: {
       complete: has(profile.certifications),
       blocking: false,
-      label: 'Certifications',
+      label: 'Set-asides',
       hint: 'Decides whether you can bid set-aside work at all.',
     },
     office: {
@@ -114,6 +116,7 @@ function publicProfile(profile) {
     states_served: profile.states_served || [],
     target_agencies: profile.target_agencies || [],
     certifications: profile.certifications || [],
+    contract_types: profile.contract_types || [],
     office_address: profile.office_address,
     bonding_capacity: profile.bonding_capacity,
     project_value_min: profile.project_value_min,
@@ -194,6 +197,10 @@ function logEvent(workspaceId, event, detail) {
 router.get('/config', (req, res) => {
   res.json({
     countries: COUNTRIES,
+    // The UI must offer exactly these strings — see SET_ASIDE_OPTIONS.
+    set_asides: SET_ASIDE_OPTIONS,
+    contract_types: CONTRACT_TYPE_OPTIONS,
+    states: STATE_OPTIONS,
     google_client_id: (process.env.GOOGLE_CLIENT_ID || '').trim() || null,
     app_url: process.env.APP_URL || 'https://app.bidcoreai.com',
     configured: db.isConfigured(),
@@ -271,6 +278,7 @@ router.put('/profile', auth.requireSession, wrap(async (req, res) => {
         states_served     = COALESCE($4::jsonb, states_served),
         target_agencies   = COALESCE($5::jsonb, target_agencies),
         certifications    = COALESCE($6::jsonb, certifications),
+        contract_types    = COALESCE($16::jsonb, contract_types),
         office_address    = COALESCE($7, office_address),
         office_lat        = CASE WHEN $7 IS NULL THEN office_lat ELSE $8 END,
         office_lng        = CASE WHEN $7 IS NULL THEN office_lng ELSE $9 END,
@@ -278,7 +286,8 @@ router.put('/profile', auth.requireSession, wrap(async (req, res) => {
         project_value_min = COALESCE($11, project_value_min),
         project_value_max = COALESCE($12, project_value_max),
         min_bid_days      = COALESCE($13, min_bid_days),
-        company           = COALESCE($14, company)
+        company           = COALESCE($14, company),
+        name              = COALESCE($15, name)
       WHERE id = $1`,
     [
       req.workspace.id,
@@ -294,6 +303,8 @@ router.put('/profile', auth.requireSession, wrap(async (req, res) => {
       numberOrNull(b.project_value_max),
       numberOrNull(b.min_bid_days),
       b.company ? String(b.company).slice(0, 255) : null,
+      b.name ? String(b.name).slice(0, 255) : null,
+      b.contract_types === undefined ? null : JSON.stringify(splitList(b.contract_types)),
     ],
   );
 
@@ -526,6 +537,19 @@ router.patch('/opportunities/:id', auth.requireSession, wrap(async (req, res) =>
   );
   if (!rows[0]) throw auth.httpError(404, 'Not found.');
   res.json({ opportunity: rows[0] });
+}));
+
+/** Empty one stage. A per-card delete loop would be several round trips and
+ *  could half-finish; this is one statement that either clears the column or
+ *  does not. */
+router.delete('/opportunities/stage/:status', auth.requireSession, wrap(async (req, res) => {
+  const status = String(req.params.status || '');
+  if (!STAGE_KEYS.includes(status)) throw auth.httpError(400, 'Unknown stage.');
+  const { rowCount } = await db.query(
+    'DELETE FROM gg_opportunities WHERE workspace_id = $1 AND status = $2',
+    [req.workspace.id, status],
+  );
+  res.json({ ok: true, removed: rowCount });
 }));
 
 router.delete('/opportunities/:id', auth.requireSession, wrap(async (req, res) => {

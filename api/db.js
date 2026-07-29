@@ -85,6 +85,7 @@ CREATE TABLE IF NOT EXISTS gg_workspaces (
   states_served      JSONB NOT NULL DEFAULT '[]'::jsonb,
   target_agencies    JSONB NOT NULL DEFAULT '[]'::jsonb,
   certifications     JSONB NOT NULL DEFAULT '[]'::jsonb,
+  contract_types     JSONB NOT NULL DEFAULT '[]'::jsonb,
   office_address     TEXT,
   office_lat         DOUBLE PRECISION,
   office_lng         DOUBLE PRECISION,
@@ -105,6 +106,9 @@ CREATE TABLE IF NOT EXISTS gg_workspaces (
 );
 
 CREATE INDEX IF NOT EXISTS gg_workspaces_session_idx ON gg_workspaces (session_token_hash);
+-- Added after the first release: CREATE TABLE IF NOT EXISTS skips an existing
+-- table entirely, so new columns need saying separately.
+ALTER TABLE gg_workspaces ADD COLUMN IF NOT EXISTS contract_types JSONB NOT NULL DEFAULT '[]'::jsonb;
 
 CREATE TABLE IF NOT EXISTS gg_capabilities (
   id           BIGSERIAL PRIMARY KEY,

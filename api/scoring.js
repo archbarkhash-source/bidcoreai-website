@@ -348,7 +348,7 @@ function computeQuickScore(opportunity, profile) {
 
   const value = opportunity.solicitation_value_estimate ?? null;
   const [contractType, contractTypeCanonical] = scoreContractType(
-    opportunity.solicitation_type, opportunity.title, profile.preferred_contract_types,
+    opportunity.solicitation_type, opportunity.title, profile.contract_types,
   );
   const [bidTime, daysRemaining] = scoreBidTime(opportunity.solicitation_due_date, preferredDays);
   const setAside = scoreSetAside(opportunity.solicitation_set_aside, profile.certifications);
@@ -429,4 +429,64 @@ function computeQuickScore(opportunity, profile) {
   };
 }
 
-module.exports = { computeQuickScore, classifyContractType, SET_ASIDE_CERTS };
+// The distinct set-asides a contractor can hold, in the exact spelling
+// scoreSetAside compares against. Exported so the UI offers these and only
+// these: free text was a silent scoring bug — someone typing "8a" does not
+// match "8(a)", so they were told they could not bid 8(a) work they were
+// eligible for.
+const SET_ASIDE_OPTIONS = [
+  { value: 'Small Business', label: 'Small Business' },
+  { value: '8(a)', label: '8(a) Business Development' },
+  { value: 'HUBZone', label: 'HUBZone' },
+  { value: 'SDVOSB', label: 'Service-Disabled Veteran-Owned (SDVOSB)' },
+  { value: 'VOSB', label: 'Veteran-Owned (VOSB)' },
+  { value: 'WOSB', label: 'Woman-Owned (WOSB)' },
+  { value: 'EDWOSB', label: 'Economically Disadvantaged Woman-Owned (EDWOSB)' },
+  { value: 'Indian Economic Enterprise', label: 'Indian Economic Enterprise (IEE)' },
+  { value: 'Indian Small Business Economic Enterprise', label: 'Indian Small Business (ISBEE)' },
+  { value: 'Buy Indian', label: 'Buy Indian' },
+  { value: 'Local Area Set-Aside', label: 'Local Area Set-Aside' },
+];
+
+// The contract types classifyContractType can produce. Offering exactly these
+// keeps "preferred contract types" comparable with what a notice is classified
+// as — the same reason the set-asides are a fixed list.
+const CONTRACT_TYPE_OPTIONS = [
+  { value: 'IFB', label: 'IFB — Invitation for Bid' },
+  { value: 'RFP', label: 'RFP — Request for Proposal' },
+  { value: 'RFQ', label: 'RFQ — Request for Quote' },
+  { value: 'IDIQ', label: 'IDIQ' },
+  { value: 'MATOC', label: 'MATOC' },
+  { value: 'SATOC', label: 'SATOC' },
+  { value: 'BPA', label: 'BPA — Blanket Purchase Agreement' },
+  { value: 'T&M', label: 'T&M — Time and Materials' },
+  { value: 'Sources Sought', label: 'Sources Sought' },
+  { value: 'Presolicitation', label: 'Presolicitation' },
+];
+
+// States and territories, by the two-letter code SAM.gov puts in a notice's
+// place of performance. Offered as a list for the same reason as the
+// set-asides: scoreState compares codes, so someone typing "Virginia" would be
+// told Virginia is outside the states they work in.
+const STATE_OPTIONS = [
+  ['AL', 'Alabama'], ['AK', 'Alaska'], ['AZ', 'Arizona'], ['AR', 'Arkansas'],
+  ['CA', 'California'], ['CO', 'Colorado'], ['CT', 'Connecticut'], ['DE', 'Delaware'],
+  ['DC', 'District of Columbia'], ['FL', 'Florida'], ['GA', 'Georgia'], ['HI', 'Hawaii'],
+  ['ID', 'Idaho'], ['IL', 'Illinois'], ['IN', 'Indiana'], ['IA', 'Iowa'],
+  ['KS', 'Kansas'], ['KY', 'Kentucky'], ['LA', 'Louisiana'], ['ME', 'Maine'],
+  ['MD', 'Maryland'], ['MA', 'Massachusetts'], ['MI', 'Michigan'], ['MN', 'Minnesota'],
+  ['MS', 'Mississippi'], ['MO', 'Missouri'], ['MT', 'Montana'], ['NE', 'Nebraska'],
+  ['NV', 'Nevada'], ['NH', 'New Hampshire'], ['NJ', 'New Jersey'], ['NM', 'New Mexico'],
+  ['NY', 'New York'], ['NC', 'North Carolina'], ['ND', 'North Dakota'], ['OH', 'Ohio'],
+  ['OK', 'Oklahoma'], ['OR', 'Oregon'], ['PA', 'Pennsylvania'], ['RI', 'Rhode Island'],
+  ['SC', 'South Carolina'], ['SD', 'South Dakota'], ['TN', 'Tennessee'], ['TX', 'Texas'],
+  ['UT', 'Utah'], ['VT', 'Vermont'], ['VA', 'Virginia'], ['WA', 'Washington'],
+  ['WV', 'West Virginia'], ['WI', 'Wisconsin'], ['WY', 'Wyoming'],
+  ['PR', 'Puerto Rico'], ['VI', 'U.S. Virgin Islands'], ['GU', 'Guam'],
+  ['AS', 'American Samoa'], ['MP', 'Northern Mariana Islands'],
+].map(([value, label]) => ({ value, label: `${label} (${value})` }));
+
+module.exports = {
+  computeQuickScore, classifyContractType,
+  SET_ASIDE_CERTS, SET_ASIDE_OPTIONS, CONTRACT_TYPE_OPTIONS, STATE_OPTIONS,
+};

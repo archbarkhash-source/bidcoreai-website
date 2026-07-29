@@ -36,7 +36,7 @@
   // Checklist chip -> the sidebar field that satisfies it.
   var FIELD_FOR = {
     naics: 'gg-naics',
-    certifications: 'gg-certs',
+    certifications: 'gg-set-asides',
     office: 'gg-office',
     past_performance: 'gg-pp-title',
   };
@@ -93,6 +93,14 @@
     openId: null,        // which result the score panel is describing
     scoreFor: null,      // its title, shown at the top of that panel
     page: 0,             // which page of the feed is showing
+    month: '',           // 'YYYY-MM' due-date filter, '' = every month
+    // Last dismissed row, held so it can be put back. One deep, like an email
+    // client: undo is for the mistake you just made, not a history.
+    undo: null,
+    setAsideOpen: false, // the two tick lists start collapsed — they are long,
+    typesOpen: false,    // and most visitors set them once
+    statesOpen: false,
+    sort: 'due',         // 'due' = soonest deadline first | 'none' = as SAM.gov returned
     scoring: false,      // the panel's own loading state, separate from busy
     score: null,
     detailsOpen: false,
@@ -107,6 +115,7 @@
     // add-once-and-forget, so it should not push the fields you edit often
     // below the fold.
     ppOpen: false,
+    editAccount: false,  // Settings > Account, in edit mode
 
     busy: false,
     error: null,
@@ -322,7 +331,7 @@
   function search() {
     S.query = val('gg-q');
     if (S.query) localStorage.setItem(QUERY_KEY, S.query);
-    S.busy = true; S.error = null; S.openId = null; S.score = null; S.scoreFor = null; S.page = 0; render();
+    S.busy = true; S.error = null; S.openId = null; S.score = null; S.scoreFor = null; S.page = 0; S.month = ''; render();
 
     api('/search?q=' + encodeURIComponent(S.query))
       .then(function (body) {
@@ -336,7 +345,8 @@
   }
 
   function analyse(index) {
-    var r = S.results[index];
+    var r = visibleResults()[index];
+    if (!r) return;
     var id = r.notice_id || r.solicitation_number || String(index);
     // Pressing the same one again clears the panel; pressing a different one
     // replaces it, so the panel always describes exactly one opportunity.
@@ -376,7 +386,8 @@
   /** Keep a notice. Carries the score across when one has just been run, so a
    *  card arrives in the pipeline already carrying its verdict. */
   function saveOpportunity(index) {
-    var r = S.results[index];
+    var r = visibleResults()[index];
+    if (!r) return;
     var id = r.notice_id || r.solicitation_number || String(index);
     var body = JSON.parse(JSON.stringify(r));
     if (S.openId === id && S.score) {
@@ -391,6 +402,46 @@
         return loadOpportunities();
       })
       .catch(fail);
+  }
+
+  var MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'];
+
+  /** 'YYYY-MM' -> 'August 2026'. */
+  function monthLabel(key) {
+    var bits = key.split('-');
+    return MONTH_NAMES[Number(bits[1]) - 1] + ' ' + bits[0];
+  }
+
+  /** Every month present in the current feed, earliest first, with counts. */
+  function monthsInFeed() {
+    var counts = {};
+    (S.results || []).forEach(function (r) {
+      var d = r.solicitation_due_date;
+      if (d && d.length >= 7) counts[d.slice(0, 7)] = (counts[d.slice(0, 7)] || 0) + 1;
+    });
+    return Object.keys(counts).sort().map(function (k) {
+      return { key: k, label: monthLabel(k), count: counts[k] };
+    });
+  }
+
+  /** What the feed actually shows: the month filter applied, then ordered by
+   *  deadline. Everything that acts on a row (save, analyse, paginate) works
+   *  off this same array, so an index never means two different things. */
+  function visibleResults() {
+    var rows = (S.results || []).filter(function (r) {
+      if (!S.month) return true;
+      return (r.solicitation_due_date || '').slice(0, 7) === S.month;
+    });
+    if (S.sort === 'due') {
+      rows = rows.slice().sort(function (a, b) {
+        // Undated notices last: a missing deadline is not an imminent one.
+        var da = a.solicitation_due_date || '9999-99-99';
+        var db = b.solicitation_due_date || '9999-99-99';
+        return da < db ? -1 : da > db ? 1 : 0;
+      });
+    }
+    return rows;
   }
 
   function isSaved(r, i) {
@@ -418,14 +469,94 @@
       .catch(fail);
   }
 
+  /** Empty a whole stage. Confirmed, because it removes work rather than a
+   *  single card, and named so the confirmation says which column. */
+  function clearStage(key) {
+    var stage = S.stages.filter(function (st) { return st.key === key; })[0];
+    var n = S.opportunities.filter(function (o) { return o.status === key; }).length;
+    if (!window.confirm('Remove all ' + n + ' opportunit' + (n === 1 ? 'y' : 'ies') +
+        ' from ' + (stage ? stage.label : key) + '? This cannot be undone.')) return;
+
+    S.opportunities = S.opportunities.filter(function (o) { return o.status !== key; });
+    render();
+    api('/opportunities/stage/' + encodeURIComponent(key), { method: 'DELETE' })
+      .then(loadOpportunities)
+      .catch(fail);
+  }
+
   function removeOpportunity(id) {
     S.opportunities = S.opportunities.filter(function (o) { return String(o.id) !== String(id); });
     render();
     api('/opportunities/' + id, { method: 'DELETE' }).then(loadOpportunities).catch(fail);
   }
 
+  /** Empty the feed. Purely local — the results and their cache are on this
+   *  machine, so nothing is re-requested and no SAM.gov quota is spent. Saved
+   *  opportunities are untouched; they live in the pipeline. */
+  function clearFeed() {
+    S.results = null;
+    S.undo = null;
+    S.page = 0;
+    S.openId = null;
+    S.score = null;
+    S.scoreFor = null;
+    try { localStorage.removeItem(RESULTS_KEY); } catch (e) { /* private mode */ }
+    render();
+  }
+
+  /** Drop one notice from the feed. Local only — nothing is deleted anywhere,
+   *  the row is simply not shown. Kept in S.undo so the next click can put it
+   *  back at the position it came from. */
+  function dismissResult(index) {
+    var row = visibleResults()[index];
+    if (!row) return;
+    var at = S.results.indexOf(row);
+    if (at === -1) return;
+
+    S.undo = { row: row, at: at, title: row.title || row.solicitation_number || 'That notice' };
+    S.results = S.results.slice(0, at).concat(S.results.slice(at + 1));
+    cacheResults(S.results);
+    if (S.openId === (row.notice_id || row.solicitation_number)) {
+      S.openId = null; S.score = null; S.scoreFor = null;
+    }
+    render();
+
+    // The offer expires, like every undo toast — but only if it is still the
+    // same one, so a second dismissal does not cancel the first's timer.
+    var mine = S.undo;
+    setTimeout(function () { if (S.undo === mine) { S.undo = null; render(); } }, 8000);
+  }
+
+  function undoDismiss() {
+    if (!S.undo) return;
+    var restored = S.undo;
+    S.results = S.results.slice(0, restored.at).concat([restored.row], S.results.slice(restored.at));
+    cacheResults(S.results);
+    S.undo = null;
+    render();
+  }
+
   function setView(v) { S.view = v; S.error = null; render(); }
   function toggleProfile() { S.profileOpen = !S.profileOpen; render(); }
+
+  /** Company and name only. Both go through the same profile endpoint as the
+   *  sidebar fields, so there is one write path for the workspace record. */
+  function saveAccount() {
+    S.busy = true; S.error = null; render();
+    api('/profile', {
+      method: 'PUT',
+      body: { company: val('gg-acct-company'), name: val('gg-acct-name') },
+    }).then(function (body) {
+      adopt(body);
+      delete S.draft['gg-acct-company'];
+      delete S.draft['gg-acct-name'];
+      S.editAccount = false;
+      S.busy = false;
+      S.notice = 'Account updated.';
+      render();
+      setTimeout(function () { S.notice = null; render(); }, 2500);
+    }).catch(fail);
+  }
 
   function saveProfile() {
     S.busy = true; S.error = null; render();
@@ -433,8 +564,10 @@
       method: 'PUT',
       body: {
         naics_codes: val('gg-naics'),
-        certifications: val('gg-certs'),
-        states_served: val('gg-states'),
+        certifications: S.draft.certs || (S.profile && S.profile.certifications) || [],
+        contract_types: S.draft.types || (S.profile && S.profile.contract_types) || [],
+        min_bid_days: S.draft.lead != null ? S.draft.lead : (S.profile && S.profile.min_bid_days),
+        states_served: S.draft.states || (S.profile && S.profile.states_served) || [],
         office_address: val('gg-office'),
         bonding_capacity: val('gg-bond'),
         project_value_min: val('gg-min'),
@@ -565,6 +698,7 @@
   function viewApiKey() {
     var countries = S.config.countries || [];
     var portal = (countries.filter(function (c) { return c.code === S.country; })[0] || {}).portal || 'SAM.gov';
+    var p = S.profile || {};
 
     return '<div class="gg-wrap">' + (S.settingsMode ? '' : viewSteps(2)) +
       '<div class="gg-card">' +
@@ -587,9 +721,21 @@
           '<a href="https://sam.gov" target="_blank" rel="noopener" style="color:var(--gg-orange)">sam.gov</a>' +
           ' → your name → <em>Account Details</em> → <em>API Key</em>. It is free.<br/>' +
           'Stored encrypted. We only ever show the last 4 characters.</div>' +
+        (p.has_api_key
+          // Show what is already stored before asking for a replacement — a
+          // blank box gives no way to tell whether the right key is on file.
+          ? '<div class="gg-prof-row" style="margin-bottom:14px">' +
+              '<span class="gg-muted">Current key:</span>' +
+              '<span><code>****' + esc(p.api_key_hint || '') + '</code></span>' +
+            '</div>'
+          : '') +
         '<div class="gg-field">' +
-          '<label class="gg-label" for="gg-key">API key</label>' +
-          '<input class="gg-input" id="gg-key" type="password" autocomplete="off" placeholder="Paste your ' + esc(portal) + ' API key"/>' +
+          '<label class="gg-label" for="gg-key">' +
+            (p.has_api_key ? 'New API key' : 'API key') + '</label>' +
+          '<input class="gg-input" id="gg-key" type="password" autocomplete="off" autofocus ' +
+            'placeholder="' + (p.has_api_key
+              ? 'Paste a new key to replace the one above'
+              : 'Paste your ' + esc(portal) + ' API key') + '" value=""/>' +
         '</div>' +
         '<div style="display:flex;gap:10px">' +
           (S.settingsMode
@@ -659,6 +805,8 @@
             (saved ? ' disabled' : '') + '>' + (saved ? 'In pipeline' : 'Save') + '</button>' +
           '<button class="gg-btn gg-btn--small' + (open ? ' gg-btn--ghost' : '') + '" data-act="analyse" data-i="' + i + '">' +
             (open ? 'Analysed →' : 'Go/No-Go') + '</button>' +
+          '<button class="gg-result-x" data-act="dismiss" data-i="' + i + '" ' +
+            'title="Remove from this feed" aria-label="Remove from this feed">&times;</button>' +
         '</div>' +
       '</div>' +
     '</div>';
@@ -726,8 +874,8 @@
     var used = S.usage || {};
 
     function row(label, value) {
-      return '<div class="gg-prof-row"><span class="gg-muted">' + esc(label) + '</span>' +
-        '<span>' + esc(value == null || value === '' ? '\u2014' : value) + '</span></div>';
+      return '<div class="gg-prof-row"><span class="gg-muted">' + esc(label) + ':</span>' +
+        '<span>' + esc(value == null || value === '' ? 'not set' : value) + '</span></div>';
     }
     function section(title, inner) {
       return '<section class="gg-set-section">' +
@@ -744,10 +892,25 @@
       messages() +
 
       '<div class="gg-card">' +
-        section('Account',
-          row('Email', p.email) +
-          row('Company', p.company) +
-          (p.name ? row('Name', p.name) : '')) +
+        section('Account', S.editAccount
+          // Email is not editable: it identifies the workspace, and changing it
+          // would mean moving the pipeline and key to a different one.
+          ? row('Email', p.email) +
+            '<div style="margin-top:14px">' +
+              field('gg-acct-company', 'Company', p.company || '', 'Acme Construction LLC') +
+              field('gg-acct-name', 'Your name', p.name || '', 'Jane Doe') +
+            '</div>' +
+            '<div class="gg-set-actions">' +
+              '<button class="gg-btn gg-btn--small" data-act="save-account"' +
+                (S.busy ? ' disabled' : '') + '>' + (S.busy ? 'Saving...' : 'Save') + '</button>' +
+              '<button class="gg-btn gg-btn--ghost gg-btn--small" data-act="cancel-account">Cancel</button>' +
+            '</div>'
+          : row('Email', p.email) +
+            row('Company', p.company) +
+            row('Name', p.name) +
+            '<div class="gg-set-actions">' +
+              '<button class="gg-btn gg-btn--ghost gg-btn--small" data-act="edit-account">Edit</button>' +
+            '</div>') +
 
         section('Procurement portal',
           row('Country', country ? country.name : (p.country_code || 'US')) +
@@ -791,7 +954,12 @@
       var cards = S.opportunities.filter(function (o) { return o.status === stage.key; });
       return '<div class="gg-col">' +
         '<div class="gg-col-head">' + esc(stage.label) +
-          '<span class="gg-col-count">' + cards.length + '</span></div>' +
+          '<span class="gg-col-count">' + cards.length + '</span>' +
+          (cards.length
+            ? '<button class="gg-col-clear" data-act="clear-stage" data-stage="' + esc(stage.key) + '" ' +
+              'title="Remove every card in ' + esc(stage.label) + '">Clear</button>'
+            : '') +
+        '</div>' +
         '<div class="gg-col-body">' +
           (cards.length ? cards.map(function (o) {
             return '<div class="gg-card-mini">' +
@@ -817,9 +985,48 @@
     }).join('') + '</div>';
   }
 
-  function viewPager(pages, from) {
+  /** Feed toolbar: how many, filtered by which month, in what order. Months
+   *  come from the results themselves, so the list only ever offers a month
+   *  that has something in it. */
+  /** The undo offer, bottom left, out of the way of everything. */
+  function viewUndo() {
+    if (!S.undo) return '';
+    return '<div class="gg-undo" role="status">' +
+      '<span>Removed <strong>' + esc(S.undo.title.slice(0, 48)) +
+        (S.undo.title.length > 48 ? '\u2026' : '') + '</strong></span>' +
+      '<button class="gg-undo-btn" data-act="undo">Undo</button>' +
+    '</div>';
+  }
+
+  function viewFeedBar() {
+    var months = monthsInFeed();
+    var shown = visibleResults().length;
+    return '<div class="gg-feed-head">' +
+      '<span class="gg-muted">' + shown +
+        (S.month ? ' due in ' + esc(monthLabel(S.month)) : ' opportunit' + (shown === 1 ? 'y' : 'ies')) +
+        (S.query ? ' for "' + esc(S.query) + '"' : '') + '</span>' +
+      '<label class="gg-feed-ctl">Due' +
+        '<select class="gg-input gg-input--inline" id="gg-month">' +
+          '<option value=""' + (S.month ? '' : ' selected') + '>All months</option>' +
+          months.map(function (m) {
+            return '<option value="' + esc(m.key) + '"' + (S.month === m.key ? ' selected' : '') + '>' +
+              esc(m.label) + ' (' + m.count + ')</option>';
+          }).join('') +
+        '</select>' +
+      '</label>' +
+      '<label class="gg-feed-ctl">Sort' +
+        '<select class="gg-input gg-input--inline" id="gg-sort">' +
+          '<option value="due"' + (S.sort === 'due' ? ' selected' : '') + '>Deadline, soonest</option>' +
+          '<option value="none"' + (S.sort === 'none' ? ' selected' : '') + '>As SAM.gov returned</option>' +
+        '</select>' +
+      '</label>' +
+      '<button class="gg-col-clear" data-act="clear-feed">Clear all</button>' +
+    '</div>';
+  }
+
+  function viewPager(pages, from, total) {
     if (pages <= 1) return '';
-    var shown = Math.min(from + PAGE_SIZE, S.results.length);
+    var shown = Math.min(from + PAGE_SIZE, total);
     return '<div class="gg-pager">' +
       '<button class="gg-btn gg-btn--ghost gg-btn--small" data-act="page" data-p="' + (S.page - 1) + '"' +
         (S.page === 0 ? ' disabled' : '') + '>← Previous</button>' +
@@ -920,12 +1127,14 @@
         '<div class="gg-side-title">Your company</div>' +
         '<p class="gg-hint" style="margin:-6px 0 12px">The more of this we know, the more of the 12 criteria can score.</p>' +
         field('gg-naics', 'NAICS codes you hold', (p.naics_codes || []).join(', '), '236220, 238160') +
-        field('gg-certs', 'Certifications', (p.certifications || []).join(', '), '8(a), HUBZone, SDVOSB') +
-        field('gg-states', 'States you work in', (p.states_served || []).join(', '), 'VA, MD, DC') +
+        setAsidePicker(p) +
+        statePicker(p) +
         field('gg-office', 'Office address', p.office_address || '', '123 Main St, Richmond, VA') +
         field('gg-bond', 'Bonding capacity ($)', p.bonding_capacity || '', '5000000') +
         field('gg-min', 'Smallest job you take ($)', p.project_value_min || '', '100000') +
         field('gg-max', 'Largest job you take ($)', p.project_value_max || '', '5000000') +
+        contractTypePicker(p) +
+        leadTimePicker(p) +
         '<button class="gg-btn gg-btn--small gg-btn--block" data-act="save-profile"' +
           (S.busy ? ' disabled' : '') + '>Save</button>' +
       '</div>' +
@@ -956,6 +1165,113 @@
     //  only the latter.)
   }
 
+  /** Which set-asides this company holds. A fixed list, not free text: the
+   *  rubric compares what is stored here against the certification a
+   *  solicitation requires, and "8a" is not "8(a)" — a typo silently cost
+   *  someone every 8(a) opportunity they were entitled to bid. */
+  function setAsidePicker(p) {
+    var options = S.config.set_asides || [];
+    var chosen = S.draft.certs || p.certifications || [];
+    return '<div class="gg-field">' +
+      '<button class="gg-picker-head" data-act="toggle-setasides" ' +
+        'aria-expanded="' + (S.setAsideOpen ? 'true' : 'false') + '">' +
+        '<span class="gg-label" style="margin:0">Set-asides you hold</span>' +
+        '<span class="gg-picker-count">' + (chosen.length ? chosen.length + ' selected' : 'none') + '</span>' +
+        '<span class="gg-toggle-caret">' + icon('gg-caret', 14) + '</span>' +
+      '</button>' +
+      (chosen.length && !S.setAsideOpen
+        ? '<div class="gg-picker-summary">' + esc(chosen.join(', ')) + '</div>'
+        : '') +
+      (S.setAsideOpen ? '<div class="gg-ticks">' : '<div hidden>') +
+        options.map(function (o) {
+          var on = chosen.indexOf(o.value) !== -1;
+          return '<label class="gg-tick' + (on ? ' is-on' : '') + '">' +
+            '<input type="checkbox" class="gg-cert" value="' + esc(o.value) + '"' +
+              (on ? ' checked' : '') + '/>' +
+            '<span>' + esc(o.label) + '</span>' +
+          '</label>';
+        }).join('') +
+      '</div>' +
+      '<div class="gg-hint">Only what you actually hold — an unheld set-aside makes a bid ineligible, ' +
+        'so the score treats it as a hard NO-GO.</div>' +
+    '</div>';
+  }
+
+  /** Where this company will travel to work. Codes, not names: scoreState
+   *  compares the two-letter code on the notice, so "Virginia" typed by hand
+   *  would read as a state you do not serve. */
+  function statePicker(p) {
+    var options = S.config.states || [];
+    var chosen = S.draft.states || p.states_served || [];
+    return '<div class="gg-field">' +
+      '<button class="gg-picker-head" data-act="toggle-states" ' +
+        'aria-expanded="' + (S.statesOpen ? 'true' : 'false') + '">' +
+        '<span class="gg-label" style="margin:0">States you work in</span>' +
+        '<span class="gg-picker-count">' + (chosen.length ? chosen.length + ' selected' : 'none') + '</span>' +
+        '<span class="gg-toggle-caret">' + icon('gg-caret', 14) + '</span>' +
+      '</button>' +
+      (chosen.length && !S.statesOpen
+        ? '<div class="gg-picker-summary">' + esc(chosen.join(', ')) + '</div>'
+        : '') +
+      (S.statesOpen ? '<div class="gg-ticks gg-ticks--cols">' : '<div hidden>') +
+        options.map(function (o) {
+          var on = chosen.indexOf(o.value) !== -1;
+          return '<label class="gg-tick' + (on ? ' is-on' : '') + '">' +
+            '<input type="checkbox" class="gg-state" value="' + esc(o.value) + '"' +
+              (on ? ' checked' : '') + '/><span>' + esc(o.label) + '</span></label>';
+        }).join('') +
+      '</div>' +
+    '</div>';
+  }
+
+  /** Which contract vehicles this company actually bids. Scored against the
+   *  type each notice is classified as. */
+  function contractTypePicker(p) {
+    var options = S.config.contract_types || [];
+    var chosen = S.draft.types || p.contract_types || [];
+    return '<div class="gg-field">' +
+      '<button class="gg-picker-head" data-act="toggle-types" ' +
+        'aria-expanded="' + (S.typesOpen ? 'true' : 'false') + '">' +
+        '<span class="gg-label" style="margin:0">Contract types you bid</span>' +
+        '<span class="gg-picker-count">' + (chosen.length ? chosen.length + ' selected' : 'none') + '</span>' +
+        '<span class="gg-toggle-caret">' + icon('gg-caret', 14) + '</span>' +
+      '</button>' +
+      (chosen.length && !S.typesOpen
+        ? '<div class="gg-picker-summary">' + esc(chosen.join(', ')) + '</div>'
+        : '') +
+      (S.typesOpen ? '<div class="gg-ticks">' : '<div hidden>') +
+        options.map(function (o) {
+          var on = chosen.indexOf(o.value) !== -1;
+          return '<label class="gg-tick' + (on ? ' is-on' : '') + '">' +
+            '<input type="checkbox" class="gg-ctype" value="' + esc(o.value) + '"' +
+              (on ? ' checked' : '') + '/><span>' + esc(o.label) + '</span></label>';
+        }).join('') +
+      '</div>' +
+      (S.typesOpen
+        ? '<div class="gg-hint">Leave all unticked and any recognised type scores as ' +
+          '"supported, no preference stated".</div>'
+        : '') +
+    '</div>';
+  }
+
+  /** How long before the due date this company needs to put a bid together.
+   *  Anything closer than this scores down, and an already-passed deadline is
+   *  an outright NO-GO. */
+  function leadTimePicker(p) {
+    var value = S.draft.lead != null ? S.draft.lead : (p.min_bid_days == null ? '' : String(p.min_bid_days));
+    var choices = ['', '7', '10', '14', '20', '30', '45'];
+    return '<div class="gg-field">' +
+      '<label class="gg-label" for="gg-lead">Days you need to bid</label>' +
+      '<select class="gg-input" id="gg-lead">' +
+        choices.map(function (d) {
+          return '<option value="' + d + '"' + (String(value) === d ? ' selected' : '') + '>' +
+            (d === '' ? 'Use the 20-day default' : d + ' days') + '</option>';
+        }).join('') +
+      '</select>' +
+      '<div class="gg-hint">A notice due sooner than this scores down on Bid Preparation Time.</div>' +
+    '</div>';
+  }
+
   function field(id, label, value, placeholder) {
     var shown = Object.prototype.hasOwnProperty.call(S.draft, id) ? S.draft[id] : value;
     return '<div class="gg-field">' +
@@ -976,21 +1292,27 @@
       body = '<div class="gg-card"><p class="gg-muted" style="margin:0">Nothing matched. SAM.gov searches the ' +
         'last 12 months of notices by title — try a broader word, or a 6-digit NAICS code.</p></div>';
     } else if (S.results) {
-      var pages = Math.ceil(S.results.length / PAGE_SIZE);
+      var rows = visibleResults();
+      var pages = Math.ceil(rows.length / PAGE_SIZE);
       if (S.page >= pages) S.page = 0;   // a shorter result set than last time
       var from = S.page * PAGE_SIZE;
-      body = S.results.slice(from, from + PAGE_SIZE)
+      body = (rows.length === 0
+        ? '<div class="gg-card"><p class="gg-muted" style="margin:0">Nothing due in ' +
+          esc(monthLabel(S.month)) + '. Choose another month, or All months.</p></div>'
+        : '') +
+        rows.slice(from, from + PAGE_SIZE)
         // The absolute index is what save/analyse look up, so pass it through
         // rather than the index within the page.
         .map(function (r, n) { return viewResult(r, from + n); }).join('') +
-        viewPager(pages, from);
+        viewPager(pages, from, rows.length);
     }
 
     var isFeed = S.view === 'feed';
     var centre = isFeed
       // The input carries its own border, so a card around it would be a box
       // inside a box for no gain.
-      ? '<div class="gg-search" style="margin-bottom:16px">' +
+      ? (S.results && S.results.length ? viewFeedBar() : '') +
+        '<div class="gg-search" style="margin-bottom:16px">' +
           '<input class="gg-input" id="gg-q" value="' + esc(S.query) + '" ' +
             'placeholder="What do you build? e.g. roofing, HVAC, paving — or a NAICS or solicitation number"/>' +
           '<button class="gg-btn" data-act="search"' + (S.busy ? ' disabled' : '') + '>' +
@@ -1024,6 +1346,7 @@
         '</main>' +
         viewScorePanel() +
       '</div>' +
+      viewUndo() +
       '<div class="gg-foot">Opportunity data comes from SAM.gov via your own API key. ' +
         'BidcoreAI is not affiliated with SAM.gov or any government agency.<br/>' +
         '© ' + new Date().getFullYear() + ' BidcoreAI · <a href="/">bidcoreai.com</a></div>' +
@@ -1113,8 +1436,16 @@
     }
     else if (act === 'move') moveOpportunity(el.getAttribute('data-id'), Number(el.getAttribute('data-dir')));
     else if (act === 'rm-opp') removeOpportunity(el.getAttribute('data-id'));
+    else if (act === 'clear-stage') clearStage(el.getAttribute('data-stage'));
+    else if (act === 'clear-feed') clearFeed();
+    else if (act === 'dismiss') dismissResult(Number(el.getAttribute('data-i')));
+    else if (act === 'undo') undoDismiss();
+    else if (act === 'toggle-setasides') { S.setAsideOpen = !S.setAsideOpen; render(); }
+    else if (act === 'toggle-types') { S.typesOpen = !S.typesOpen; render(); }
+    else if (act === 'toggle-states') { S.statesOpen = !S.statesOpen; render(); }
     else if (act === 'goto') {
       var fieldId = el.getAttribute('data-field');
+      if (fieldId === 'gg-set-asides' && !S.setAsideOpen) { S.setAsideOpen = true; render(); }
       // The past-performance fields live in a collapsed section — open it
       // first, or the jump lands on nothing.
       if (fieldId === 'gg-pp-title' && !S.ppOpen) { S.ppOpen = true; render(); }
@@ -1125,6 +1456,14 @@
       }
     }
     else if (act === 'toggle-pp') { S.ppOpen = !S.ppOpen; render(); }
+    else if (act === 'edit-account') { S.editAccount = true; render(); focus('gg-acct-company'); }
+    else if (act === 'cancel-account') {
+      S.editAccount = false;
+      delete S.draft['gg-acct-company'];
+      delete S.draft['gg-acct-name'];
+      render();
+    }
+    else if (act === 'save-account') saveAccount();
     else if (act === 'profile') toggleProfile();
     // Only the backdrop itself closes, never a click that bubbled from inside
     // the panel — otherwise pressing "Change" would shut the thing first.
@@ -1140,6 +1479,35 @@
   // The settings country picker is a <select>, which fires change rather than
   // click, so the delegated click handler above never sees it.
   document.addEventListener('change', function (e) {
+    // Set-aside ticks live in the same draft as the text fields, so a
+    // background re-render cannot silently untick them.
+    if (e.target && e.target.className === 'gg-state') {
+      var states = (S.draft.states || (S.profile && S.profile.states_served) || []).slice();
+      var si = states.indexOf(e.target.value);
+      if (e.target.checked && si === -1) states.push(e.target.value);
+      if (!e.target.checked && si !== -1) states.splice(si, 1);
+      S.draft.states = states;
+      return;
+    }
+    if (e.target && e.target.className === 'gg-ctype') {
+      var types = (S.draft.types || (S.profile && S.profile.contract_types) || []).slice();
+      var ti = types.indexOf(e.target.value);
+      if (e.target.checked && ti === -1) types.push(e.target.value);
+      if (!e.target.checked && ti !== -1) types.splice(ti, 1);
+      S.draft.types = types;
+      return;
+    }
+    if (e.target && e.target.id === 'gg-lead') { S.draft.lead = e.target.value; return; }
+    if (e.target && e.target.id === 'gg-month') { S.month = e.target.value; S.page = 0; render(); return; }
+    if (e.target && e.target.id === 'gg-sort') { S.sort = e.target.value; S.page = 0; render(); return; }
+    if (e.target && e.target.className === 'gg-cert') {
+      var current = (S.draft.certs || (S.profile && S.profile.certifications) || []).slice();
+      var at = current.indexOf(e.target.value);
+      if (e.target.checked && at === -1) current.push(e.target.value);
+      if (!e.target.checked && at !== -1) current.splice(at, 1);
+      S.draft.certs = current;
+      return;
+    }
     if (e.target && e.target.id === 'gg-country') {
       S.country = e.target.value;
       render();
