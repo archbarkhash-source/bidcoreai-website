@@ -625,6 +625,20 @@ router.delete('/opportunities/stage/:status', auth.requireSession, wrap(async (r
   res.json({ ok: true, removed: rowCount });
 }));
 
+/** Clear every card due in one month. One statement, so it either happens or
+ *  it does not — a per-card loop could stop half way and leave the board in a
+ *  state nobody asked for. */
+router.delete('/opportunities/month/:month', auth.requireSession, wrap(async (req, res) => {
+  const month = String(req.params.month || '');
+  if (!/^\d{4}-\d{2}$/.test(month)) throw auth.httpError(400, 'Month must look like 2026-08.');
+  const { rowCount } = await db.query(
+    `DELETE FROM gg_opportunities
+      WHERE workspace_id = $1 AND due_date LIKE $2 || '%'`,
+    [req.workspace.id, month],
+  );
+  res.json({ ok: true, removed: rowCount });
+}));
+
 router.delete('/opportunities/:id', auth.requireSession, wrap(async (req, res) => {
   await db.query('DELETE FROM gg_opportunities WHERE id = $1 AND workspace_id = $2',
     [req.params.id, req.workspace.id]);

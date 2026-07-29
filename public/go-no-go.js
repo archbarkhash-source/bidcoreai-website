@@ -99,6 +99,7 @@
     // a SCORING input — a distant opportunity should still be visible, just
     // scored down for distance, unless the visitor asks to hide it.
     place: '',
+    pipeMonth: '',       // 'YYYY-MM' filter over the board
     // Last dismissed row, held so it can be put back. One deep, like an email
     // client: undo is for the mistake you just made, not a history.
     undo: null,
@@ -631,6 +632,36 @@
       .catch(fail);
   }
 
+  /** Remove every card due in the selected month, across all stages. Named in
+   *  the confirmation, and counted, because this can take away work that was
+   *  deliberately advanced — unlike the automatic 30-day clear, which only
+   *  ever touches Under Review. */
+  function clearMonth() {
+    if (!S.pipeMonth) return;
+    var month = S.pipeMonth;
+    var doomed = S.opportunities.filter(function (o) {
+      return (o.due_date || '').slice(0, 7) === month;
+    });
+    if (!doomed.length) return;
+
+    var advanced = doomed.filter(function (o) { return o.status !== 'under_review'; }).length;
+    if (!window.confirm(
+      'Remove all ' + doomed.length + ' opportunit' + (doomed.length === 1 ? 'y' : 'ies') +
+      ' due in ' + monthLabel(month) + '?' +
+      (advanced ? '\n\n' + advanced + ' of them have been moved past Under Review.' : '') +
+      '\n\nThis cannot be undone.'
+    )) return;
+
+    S.opportunities = S.opportunities.filter(function (o) {
+      return (o.due_date || '').slice(0, 7) !== month;
+    });
+    S.pipeMonth = '';
+    render();
+    api('/opportunities/month/' + encodeURIComponent(month), { method: 'DELETE' })
+      .then(loadOpportunities)
+      .catch(fail);
+  }
+
   function removeOpportunity(id) {
     S.opportunities = S.opportunities.filter(function (o) { return String(o.id) !== String(id); });
     render();
@@ -1122,10 +1153,59 @@
   }
 
   /** The capture pipeline — the app's stages, one column each. */
+  /** Months present on the board, earliest first, with counts. */
+  function monthsInPipeline() {
+    var counts = {};
+    (S.opportunities || []).forEach(function (o) {
+      var d = o.due_date;
+      if (d && d.length >= 7) counts[d.slice(0, 7)] = (counts[d.slice(0, 7)] || 0) + 1;
+    });
+    return Object.keys(counts).sort().map(function (k) {
+      return { key: k, label: monthLabel(k), count: counts[k] };
+    });
+  }
+
+  /** The board's own toolbar: which month, and a way to clear it. */
+  function viewBoardBar() {
+    var months = monthsInPipeline();
+    var undated = (S.opportunities || []).filter(function (o) { return !o.due_date; }).length;
+    var shown = S.opportunities.filter(function (o) {
+      return !S.pipeMonth || (o.due_date || '').slice(0, 7) === S.pipeMonth;
+    }).length;
+
+    return '<div class="gg-feed-head">' +
+      '<span class="gg-muted">' + shown + ' in the pipeline' +
+        (S.pipeMonth ? ' due in ' + esc(monthLabel(S.pipeMonth)) : '') +
+        (!S.pipeMonth && undated ? ' \u00b7 ' + undated + ' with no deadline' : '') + '</span>' +
+      '<label class="gg-feed-ctl">Due' +
+        '<select class="gg-input gg-input--inline" id="gg-pipe-month">' +
+          '<option value=""' + (S.pipeMonth ? '' : ' selected') + '>All months</option>' +
+          months.map(function (m) {
+            return '<option value="' + esc(m.key) + '"' + (S.pipeMonth === m.key ? ' selected' : '') +
+              '>' + esc(m.label) + ' (' + m.count + ')</option>';
+          }).join('') +
+        '</select>' +
+      '</label>' +
+      (S.pipeMonth
+        ? '<button class="gg-col-clear" data-act="clear-month">Clear ' +
+          esc(monthLabel(S.pipeMonth)) + '</button>'
+        : '') +
+    '</div>';
+  }
+
   function viewBoard() {
     var stages = S.stages.length ? S.stages : [{ key: 'under_review', label: 'Under Review' }];
-    return '<div class="gg-board">' + stages.map(function (stage, si) {
-      var cards = S.opportunities.filter(function (o) { return o.status === stage.key; });
+    return viewBoardBar() + '<div class="gg-board">' + stages.map(function (stage, si) {
+      var cards = S.opportunities.filter(function (o) {
+        if (o.status !== stage.key) return false;
+        return !S.pipeMonth || (o.due_date || '').slice(0, 7) === S.pipeMonth;
+      // Soonest deadline at the top of every column: on a board, the next
+      // thing to act on should be the first thing seen. Undated last.
+      }).sort(function (a, b) {
+        var da = a.due_date || '9999-99-99';
+        var db = b.due_date || '9999-99-99';
+        return da < db ? -1 : da > db ? 1 : 0;
+      });
       return '<div class="gg-col">' +
         '<div class="gg-col-head">' + esc(stage.label) +
           (stage.expires
@@ -1762,6 +1842,7 @@
     else if (act === 'rm-opp') removeOpportunity(el.getAttribute('data-id'));
     else if (act === 'score-saved') scoreSaved(el.getAttribute('data-id'));
     else if (act === 'clear-stage') clearStage(el.getAttribute('data-stage'));
+    else if (act === 'clear-month') clearMonth();
     else if (act === 'clear-feed') clearFeed();
     else if (act === 'dismiss') dismissResult(Number(el.getAttribute('data-i')));
     else if (act === 'undo') undoDismiss();
@@ -1835,6 +1916,7 @@
     if (e.target && e.target.id === 'gg-lead') { S.draft.lead = e.target.value; return; }
     if (e.target && e.target.id === 'gg-month') { S.month = e.target.value; S.page = 0; render(); return; }
     if (e.target && e.target.id === 'gg-place') { S.place = e.target.value; S.page = 0; render(); return; }
+    if (e.target && e.target.id === 'gg-pipe-month') { S.pipeMonth = e.target.value; render(); return; }
     if (e.target && e.target.id === 'gg-sort') { S.sort = e.target.value; S.page = 0; render(); return; }
     if (e.target && e.target.className === 'gg-cert') {
       var current = (S.draft.certs || (S.profile && S.profile.certifications) || []).slice();
