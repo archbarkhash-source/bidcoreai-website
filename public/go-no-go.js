@@ -410,8 +410,8 @@
         S.stages = body.stages || [];
         if (body.expired) {
           // Say it rather than letting cards vanish silently.
-          S.notice = body.expired + ' analysed opportunit' + (body.expired === 1 ? 'y' : 'ies') +
-            ' cleared after 30 days.';
+          S.notice = body.expired + ' opportunit' + (body.expired === 1 ? 'y' : 'ies') +
+            ' cleared from Under Review after 30 days.';
           setTimeout(function () { S.notice = null; render(); }, 6000);
         }
         render();

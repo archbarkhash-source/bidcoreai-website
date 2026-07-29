@@ -507,14 +507,14 @@ router.post('/score', auth.requireSession, wrap(async (req, res) => {
 // The same stages the BidcoreAI app uses, so someone who later moves up isn't
 // learning a second vocabulary for the same thing.
 
-// How long a card may sit in triage before it clears itself. Only the first
-// stage expires: anything the visitor deliberately advanced is a commitment,
-// and deleting a commitment because a month passed would be indefensible.
-const ANALYSED_TTL_DAYS = Number(process.env.ANALYSED_TTL_DAYS) || 30;
+// How long a card may sit in the first stage before it clears itself. Only
+// that stage expires: anything the visitor deliberately advanced is a
+// commitment, and deleting a commitment because a month passed would be
+// indefensible.
+const REVIEW_TTL_DAYS = Number(process.env.REVIEW_TTL_DAYS) || 30;
 
 const STAGES = [
-  { key: 'analysed', label: 'Analysed', expires: ANALYSED_TTL_DAYS },
-  { key: 'under_review', label: 'Under Review' },
+  { key: 'under_review', label: 'Under Review', expires: REVIEW_TTL_DAYS },
   { key: 'go_approved', label: 'GO Approved' },
   { key: 'capture_planning', label: 'Capture Planning' },
   { key: 'proposal_development', label: 'Proposal Development' },
@@ -527,25 +527,33 @@ const STAGE_KEYS = STAGES.map((s) => s.key);
 router.get('/stages', (req, res) => res.json({ stages: STAGES }));
 
 /**
- * Clear out triage that was never acted on. Saving an opportunity to look at
- * later is cheap, so the Analysed column fills up with notices whose deadlines
- * have long gone; a board nobody trusts is a board nobody reads. Runs on read
- * rather than on a schedule — there is no scheduler here, and the only moment
- * anyone cares is when they are looking at it.
+ * Clear out review that was never acted on. Analysing an opportunity is cheap,
+ * so Under Review fills with notices whose deadlines have long gone, and a
+ * board nobody trusts is a board nobody reads. Runs on read rather than on a
+ * schedule — there is no scheduler here, and the only moment anyone cares is
+ * when they are looking at it.
  */
-async function expireAnalysed(workspaceId) {
+async function expireStale(workspaceId) {
+  // Rows written while a separate 'analysed' stage briefly existed would
+  // otherwise belong to no column at all, so they join the first one.
+  await db.query(
+    `UPDATE gg_opportunities SET status = 'under_review'
+      WHERE workspace_id = $1 AND status = 'analysed'`,
+    [workspaceId],
+  );
+
   const { rowCount } = await db.query(
     `DELETE FROM gg_opportunities
       WHERE workspace_id = $1
-        AND status = 'analysed'
+        AND status = 'under_review'
         AND COALESCE(updated_at, created_at) < NOW() - ($2 || ' days')::interval`,
-    [workspaceId, String(ANALYSED_TTL_DAYS)],
+    [workspaceId, String(REVIEW_TTL_DAYS)],
   );
   return rowCount;
 }
 
 router.get('/opportunities', auth.requireSession, wrap(async (req, res) => {
-  const expired = await expireAnalysed(req.workspace.id);
+  const expired = await expireStale(req.workspace.id);
   const { rows } = await db.query(
     `SELECT * FROM gg_opportunities WHERE workspace_id = $1
       ORDER BY COALESCE(updated_at, created_at) DESC`,
