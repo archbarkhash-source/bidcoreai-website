@@ -31,15 +31,12 @@ const router = express.Router();
 const MAX_SEARCHES_PER_DAY = 60;
 const MAX_SCORES_PER_DAY = 40;
 
-// Only the US has a live connector. The rest are listed so the choice is
-// honest — a visitor from Canada learns where they stand instead of pasting a
-// key into something that will never call it.
+// The US is the only country offered: SAM.gov is the only portal with a live
+// connector, and advertising the others as "coming soon" promised a date this
+// page cannot keep. The `connected` flag stays so a second portal can be added
+// here without touching the guards below.
 const COUNTRIES = [
   { code: 'US', name: 'United States', portal: 'SAM.gov', connected: true },
-  { code: 'CA', name: 'Canada', portal: 'CanadaBuys', connected: false },
-  { code: 'UK', name: 'United Kingdom', portal: 'Find a Tender', connected: false },
-  { code: 'AU', name: 'Australia', portal: 'AusTender', connected: false },
-  { code: 'IN', name: 'India', portal: 'GeM / CPPP', connected: false },
 ];
 
 const isConnectedCountry = (code) =>
@@ -66,10 +63,10 @@ async function loadProfile(workspaceId) {
  */
 function readiness(profile) {
   const has = (v) => Array.isArray(v) && v.length > 0;
-  // A key stored against a portal with no connector (Canada, UK…) must not
-  // count as "ready": there is nothing to search with it, and letting it
-  // unlock the workspace would send a CanadaBuys key to SAM.gov and produce a
-  // baffling rejection.
+  // A workspace still carrying a country this page no longer offers must not
+  // count as "ready": there is nothing to search with its key, and letting it
+  // unlock the workspace would send a foreign portal's key to SAM.gov and
+  // produce a baffling rejection.
   const usable = !!profile.api_key_encrypted && isConnectedCountry(profile.country_code);
   return {
     api_key: {
