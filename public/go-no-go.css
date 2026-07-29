@@ -311,7 +311,7 @@ h3.gg-h3 { font-size: 15px; font-weight: 700; margin: 0 0 4px; }
 }
 
 /* ── Who's signed in, top left of the header ── */
-.gg-who { display: flex; align-items: center; gap: 9px; margin-left: 18px; padding-left: 18px; border-left: 1px solid var(--gg-line); }
+.gg-who { display: flex; align-items: center; gap: 9px; padding: 4px 8px 4px 12px; border-left: 1px solid var(--gg-line); }
 .gg-who-avatar {
   width: 30px; height: 30px; border-radius: 999px; flex-shrink: 0;
   background: var(--gg-orange); color: #fff; font-size: 13px; font-weight: 700;
@@ -342,7 +342,8 @@ h3.gg-h3 { font-size: 15px; font-weight: 700; margin: 0 0 4px; }
    already know from every other account menu, so nobody has to learn it. */
 .gg-menu-backdrop { position: fixed; inset: 0; z-index: 50; }
 .gg-menu {
-  position: absolute; top: calc(var(--gg-head-h) + 6px); left: 24px;
+  /* Anchored to the right edge, under the button it belongs to. */
+  position: absolute; top: calc(var(--gg-head-h) + 6px); right: 24px;
   width: 300px; background: #fff; border: 1px solid var(--gg-line);
   border-radius: 14px; box-shadow: 0 12px 40px rgba(0,0,0,.16); overflow: hidden;
 }

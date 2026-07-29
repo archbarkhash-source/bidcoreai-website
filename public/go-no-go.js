@@ -85,6 +85,13 @@
     score: null,
     detailsOpen: false,
 
+    // What is typed into the sidebar right now. The page re-renders wholesale
+    // on every state change, which recreates those inputs — without this, a
+    // background refresh landing mid-sentence would wipe what you were typing,
+    // and the fields would snap back to the last saved values. Cleared on a
+    // successful save, when the server's copy becomes the truth again.
+    draft: {},
+
     busy: false,
     error: null,
     notice: null,
@@ -417,6 +424,9 @@
       },
     }).then(function (body) {
       adopt(body);
+      // The saved profile is now authoritative, so drop the drafts and let the
+      // sidebar redraw from it — which is also the confirmation that it stuck.
+      S.draft = {};
       S.busy = false;
       S.notice = 'Saved.';
       render();
@@ -831,9 +841,11 @@
   }
 
   function field(id, label, value, placeholder) {
+    var shown = Object.prototype.hasOwnProperty.call(S.draft, id) ? S.draft[id] : value;
     return '<div class="gg-field">' +
       '<label class="gg-label" for="' + id + '">' + esc(label) + '</label>' +
-      '<input class="gg-input" id="' + id + '" value="' + esc(value) + '" placeholder="' + esc(placeholder) + '"/>' +
+      '<input class="gg-input" id="' + id + '" value="' + esc(shown == null ? '' : shown) + '" ' +
+        'placeholder="' + esc(placeholder) + '"/>' +
     '</div>';
   }
 
@@ -908,7 +920,6 @@
   function render() {
     var app = document.getElementById('gg-app');
     var head = document.getElementById('gg-head-right');
-    var headLeft = document.getElementById('gg-head-left');
 
     if (S.booting) {
       app.innerHTML = '<div class="gg-wrap"><div class="gg-skeleton">Loading…</div></div>';
@@ -920,12 +931,12 @@
       : S.step ? S.step
       : (S.readiness && S.readiness.can_search) ? 'workspace' : 'country';
 
-    // Identity on the left, usage on the right. Signed out, the header carries
-    // no link at all: every exit from this page before the visitor has seen a
-    // result is a lost lead.
-    if (headLeft) headLeft.innerHTML = signedIn ? viewWho() : '';
-    head.innerHTML = signedIn && S.usage
-      ? '<span class="gg-usage">' + S.usage.scores_today + '/' + S.usage.scores_limit + ' analyses today</span>'
+    // Usage then the account menu, top right — where every app puts it.
+    // Signed out the header carries nothing at all: every exit from this page
+    // before the visitor has seen a result is a lost lead.
+    head.innerHTML = signedIn
+      ? (S.usage ? '<span class="gg-usage">' + S.usage.scores_today + '/' + S.usage.scores_limit + ' analyses today</span>' : '') +
+        viewWho()
       : '';
 
     if (stage === 'signup') app.innerHTML = viewSignUp();
@@ -981,6 +992,16 @@
     else if (act === 'save-profile') saveProfile();
     else if (act === 'add-pp') addPastPerformance();
     else if (act === 'rm-pp') removePastPerformance(el.getAttribute('data-id'));
+  });
+
+  // Every keystroke in a sidebar field goes into the draft. No render here —
+  // re-rendering on input would move the caret; this only has to survive a
+  // render triggered by something else.
+  document.addEventListener('input', function (e) {
+    var el = e.target;
+    if (el && el.id && el.id.indexOf('gg-') === 0 && el.tagName === 'INPUT') {
+      S.draft[el.id] = el.value;
+    }
   });
 
   // Enter submits whichever field the visitor is in — on a page this small,
