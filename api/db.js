@@ -136,11 +136,17 @@ CREATE TABLE IF NOT EXISTS gg_events (
 );
 `;
 
+/** Apply the schema on any client/pool — used by the pool below and by
+ *  api/check-db.js, so the diagnostic proves the same statements the app runs. */
+async function ensureSchemaOn(clientOrPool) {
+  await clientOrPool.query(SCHEMA);
+}
+
 async function ensureSchema() {
   if (schemaReady) return true;
   const p = getPool();
   if (!p) return false;
-  await p.query(SCHEMA);
+  await ensureSchemaOn(p);
   schemaReady = true;
   return true;
 }
@@ -163,4 +169,4 @@ async function one(text, params) {
   return rows[0] || null;
 }
 
-module.exports = { query, one, getPool, isConfigured, ensureSchema };
+module.exports = { query, one, getPool, isConfigured, ensureSchema, ensureSchemaOn };

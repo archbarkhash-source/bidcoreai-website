@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "check": "node --check server.js && node --check api/routes.js && node --check api/auth.js && node --check api/db.js && node --check api/samgov.js && node --check api/scoring.js && node --check api/secretbox.js && node --check api/geocode.js && node --check public/go-no-go.js"
+    "check": "node --check server.js && node --check api/routes.js && node --check api/auth.js && node --check api/db.js && node --check api/samgov.js && node --check api/scoring.js && node --check api/secretbox.js && node --check api/geocode.js && node --check public/go-no-go.js && node --check api/check-db.js",
+    "db:check": "node api/check-db.js"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
