@@ -54,7 +54,7 @@ function isConfigured() {
  * no billing: the only identity here is "someone who verified an email".
  */
 const SCHEMA = `
-CREATE TABLE IF NOT EXISTS workspaces (
+CREATE TABLE IF NOT EXISTS gg_workspaces (
   id                 BIGSERIAL PRIMARY KEY,
   email              TEXT NOT NULL UNIQUE,
   company            TEXT,
@@ -104,32 +104,32 @@ CREATE TABLE IF NOT EXISTS workspaces (
   created_at         TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS workspaces_session_idx ON workspaces (session_token_hash);
+CREATE INDEX IF NOT EXISTS gg_workspaces_session_idx ON gg_workspaces (session_token_hash);
 
-CREATE TABLE IF NOT EXISTS capabilities (
+CREATE TABLE IF NOT EXISTS gg_capabilities (
   id           BIGSERIAL PRIMARY KEY,
-  workspace_id BIGINT NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
+  workspace_id BIGINT NOT NULL REFERENCES gg_workspaces(id) ON DELETE CASCADE,
   title        TEXT NOT NULL,
   naics_codes  JSONB NOT NULL DEFAULT '[]'::jsonb,
   created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-CREATE INDEX IF NOT EXISTS capabilities_workspace_idx ON capabilities (workspace_id);
+CREATE INDEX IF NOT EXISTS gg_capabilities_workspace_idx ON gg_capabilities (workspace_id);
 
-CREATE TABLE IF NOT EXISTS past_performance (
+CREATE TABLE IF NOT EXISTS gg_past_performance (
   id             BIGSERIAL PRIMARY KEY,
-  workspace_id   BIGINT NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
+  workspace_id   BIGINT NOT NULL REFERENCES gg_workspaces(id) ON DELETE CASCADE,
   title          TEXT NOT NULL,
   agency         TEXT,
   naics_code     TEXT,
   contract_value DOUBLE PRECISION,
   created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-CREATE INDEX IF NOT EXISTS past_performance_workspace_idx ON past_performance (workspace_id);
+CREATE INDEX IF NOT EXISTS gg_past_performance_workspace_idx ON gg_past_performance (workspace_id);
 
 -- Lead funnel, for following up with people who tried the free tool.
-CREATE TABLE IF NOT EXISTS go_no_go_events (
+CREATE TABLE IF NOT EXISTS gg_events (
   id           BIGSERIAL PRIMARY KEY,
-  workspace_id BIGINT REFERENCES workspaces(id) ON DELETE CASCADE,
+  workspace_id BIGINT REFERENCES gg_workspaces(id) ON DELETE CASCADE,
   event        TEXT NOT NULL,
   detail       JSONB,
   created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()

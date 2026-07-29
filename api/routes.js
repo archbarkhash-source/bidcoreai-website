@@ -50,9 +50,9 @@ const numberOrNull = (v) => (v === '' || v == null || Number.isNaN(Number(v)) ? 
 const wrap = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 
 async function loadProfile(workspaceId) {
-  const ws = await db.one('SELECT * FROM workspaces WHERE id = $1', [workspaceId]);
-  const caps = await db.query('SELECT * FROM capabilities WHERE workspace_id = $1 ORDER BY id DESC', [workspaceId]);
-  const perf = await db.query('SELECT * FROM past_performance WHERE workspace_id = $1 ORDER BY id DESC', [workspaceId]);
+  const ws = await db.one('SELECT * FROM gg_workspaces WHERE id = $1', [workspaceId]);
+  const caps = await db.query('SELECT * FROM gg_capabilities WHERE workspace_id = $1 ORDER BY id DESC', [workspaceId]);
+  const perf = await db.query('SELECT * FROM gg_past_performance WHERE workspace_id = $1 ORDER BY id DESC', [workspaceId]);
   return { ...ws, capabilities: caps.rows, past_performance: perf.rows };
 }
 
@@ -144,7 +144,7 @@ async function bumpUsage(workspace, column, limit, label) {
     );
   }
   await db.query(
-    `UPDATE workspaces
+    `UPDATE gg_workspaces
         SET usage_day = $2::date,
             searches_today = CASE WHEN usage_day = $2::date THEN searches_today ELSE 0 END + $3,
             scores_today   = CASE WHEN usage_day = $2::date THEN scores_today   ELSE 0 END + $4
@@ -174,7 +174,7 @@ async function decryptedKey(workspace) {
 function logEvent(workspaceId, event, detail) {
   // Lead telemetry. Deliberately fire-and-forget: an analytics insert must
   // never fail the request the visitor actually asked for.
-  db.query('INSERT INTO go_no_go_events (workspace_id, event, detail) VALUES ($1, $2, $3)',
+  db.query('INSERT INTO gg_events (workspace_id, event, detail) VALUES ($1, $2, $3)',
     [workspaceId || null, event, detail ? JSON.stringify(detail) : null])
     .catch((e) => console.warn('[go-no-go] event log failed:', e.message));
 }
@@ -255,7 +255,7 @@ router.put('/profile', auth.requireSession, wrap(async (req, res) => {
   }
 
   await db.query(
-    `UPDATE workspaces SET
+    `UPDATE gg_workspaces SET
         naics_codes       = COALESCE($2::jsonb, naics_codes),
         psc_codes         = COALESCE($3::jsonb, psc_codes),
         states_served     = COALESCE($4::jsonb, states_served),
@@ -295,7 +295,7 @@ router.post('/capabilities', auth.requireSession, wrap(async (req, res) => {
   const title = String(req.body.title || '').trim();
   if (!title) throw auth.httpError(400, 'Give the capability a name.');
   await db.query(
-    'INSERT INTO capabilities (workspace_id, title, naics_codes) VALUES ($1, $2, $3::jsonb)',
+    'INSERT INTO gg_capabilities (workspace_id, title, naics_codes) VALUES ($1, $2, $3::jsonb)',
     [req.workspace.id, title.slice(0, 200), JSON.stringify(splitList(req.body.naics_codes))],
   );
   const profile = await loadProfile(req.workspace.id);
@@ -303,7 +303,7 @@ router.post('/capabilities', auth.requireSession, wrap(async (req, res) => {
 }));
 
 router.delete('/capabilities/:id', auth.requireSession, wrap(async (req, res) => {
-  await db.query('DELETE FROM capabilities WHERE id = $1 AND workspace_id = $2', [req.params.id, req.workspace.id]);
+  await db.query('DELETE FROM gg_capabilities WHERE id = $1 AND workspace_id = $2', [req.params.id, req.workspace.id]);
   const profile = await loadProfile(req.workspace.id);
   res.json({ profile: publicProfile(profile), readiness: readiness(profile) });
 }));
@@ -312,7 +312,7 @@ router.post('/past-performance', auth.requireSession, wrap(async (req, res) => {
   const title = String(req.body.title || '').trim();
   if (!title) throw auth.httpError(400, 'Give the project a name.');
   await db.query(
-    `INSERT INTO past_performance (workspace_id, title, agency, naics_code, contract_value)
+    `INSERT INTO gg_past_performance (workspace_id, title, agency, naics_code, contract_value)
      VALUES ($1, $2, $3, $4, $5)`,
     [
       req.workspace.id, title.slice(0, 200),
@@ -326,7 +326,7 @@ router.post('/past-performance', auth.requireSession, wrap(async (req, res) => {
 }));
 
 router.delete('/past-performance/:id', auth.requireSession, wrap(async (req, res) => {
-  await db.query('DELETE FROM past_performance WHERE id = $1 AND workspace_id = $2', [req.params.id, req.workspace.id]);
+  await db.query('DELETE FROM gg_past_performance WHERE id = $1 AND workspace_id = $2', [req.params.id, req.workspace.id]);
   const profile = await loadProfile(req.workspace.id);
   res.json({ profile: publicProfile(profile), readiness: readiness(profile) });
 }));
@@ -344,7 +344,7 @@ router.put('/api-key', auth.requireSession, wrap(async (req, res) => {
   if (!meta.connected) {
     // Stored but honestly labelled: no connector exists to verify it against.
     await db.query(
-      `UPDATE workspaces SET country_code = $2, api_key_encrypted = $3, api_key_hint = $4,
+      `UPDATE gg_workspaces SET country_code = $2, api_key_encrypted = $3, api_key_hint = $4,
               api_key_status = 'no_connector', api_key_checked_at = NOW() WHERE id = $1`,
       [req.workspace.id, country, secretbox.encrypt(apiKey), secretbox.hint(apiKey)],
     );
@@ -365,7 +365,7 @@ router.put('/api-key', auth.requireSession, wrap(async (req, res) => {
   }
 
   await db.query(
-    `UPDATE workspaces SET country_code = $2, api_key_encrypted = $3, api_key_hint = $4,
+    `UPDATE gg_workspaces SET country_code = $2, api_key_encrypted = $3, api_key_hint = $4,
             api_key_status = 'ok', api_key_checked_at = NOW() WHERE id = $1`,
     [req.workspace.id, country, secretbox.encrypt(apiKey), secretbox.hint(apiKey)],
   );
@@ -377,7 +377,7 @@ router.put('/api-key', auth.requireSession, wrap(async (req, res) => {
 
 router.delete('/api-key', auth.requireSession, wrap(async (req, res) => {
   await db.query(
-    `UPDATE workspaces SET api_key_encrypted = NULL, api_key_hint = NULL,
+    `UPDATE gg_workspaces SET api_key_encrypted = NULL, api_key_hint = NULL,
             api_key_status = NULL, api_key_checked_at = NULL WHERE id = $1`,
     [req.workspace.id],
   );

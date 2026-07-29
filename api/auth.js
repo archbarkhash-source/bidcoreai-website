@@ -85,11 +85,11 @@ async function sendCodeEmail(to, code) {
 // ── Workspace + session ──────────────────────────────────────────────────────
 
 async function findOrCreateWorkspace(email, { company, source } = {}) {
-  const existing = await db.one('SELECT * FROM workspaces WHERE email = $1', [email]);
+  const existing = await db.one('SELECT * FROM gg_workspaces WHERE email = $1', [email]);
   if (existing) {
     if (company || source) {
       await db.query(
-        `UPDATE workspaces
+        `UPDATE gg_workspaces
             SET company = COALESCE($2, company),
                 source  = COALESCE(source, $3)
           WHERE id = $1`,
@@ -99,7 +99,7 @@ async function findOrCreateWorkspace(email, { company, source } = {}) {
     return existing;
   }
   return db.one(
-    `INSERT INTO workspaces (email, company, source) VALUES ($1, $2, $3) RETURNING *`,
+    `INSERT INTO gg_workspaces (email, company, source) VALUES ($1, $2, $3) RETURNING *`,
     [email, company || null, source || null],
   );
 }
@@ -107,7 +107,7 @@ async function findOrCreateWorkspace(email, { company, source } = {}) {
 async function issueSession(workspaceId, provider) {
   const token = crypto.randomBytes(32).toString('base64url');
   await db.query(
-    `UPDATE workspaces
+    `UPDATE gg_workspaces
         SET session_token_hash = $2,
             session_expires_at = NOW() + ($3 || ' days')::interval,
             auth_provider      = $4,
@@ -129,7 +129,7 @@ async function requireSession(req, res, next) {
     if (!token) throw httpError(401, 'Sign in to use the free workspace.');
 
     const hash = sha256(token);
-    const ws = await db.one('SELECT * FROM workspaces WHERE session_token_hash = $1', [hash]);
+    const ws = await db.one('SELECT * FROM gg_workspaces WHERE session_token_hash = $1', [hash]);
     // The indexed lookup is the fast path; this is the constant-time comparison
     // that actually authorises.
     if (!ws || !safeEqual(ws.session_token_hash, hash)) {
@@ -143,7 +143,7 @@ async function requireSession(req, res, next) {
     // every visit pushes the window out again. Someone who keeps using it is
     // never signed out; someone who stops is, 30 days later.
     await db.query(
-      `UPDATE workspaces
+      `UPDATE gg_workspaces
           SET last_seen_at = NOW(),
               session_expires_at = NOW() + ($2 || ' days')::interval
         WHERE id = $1`,
@@ -181,7 +181,7 @@ async function requestCode({ email, company, source }) {
 
   const code = String(crypto.randomInt(0, 1000000)).padStart(6, '0');
   await db.query(
-    `UPDATE workspaces
+    `UPDATE gg_workspaces
         SET code_hash = $2,
             code_expires_at = NOW() + ($3 || ' minutes')::interval,
             code_attempts = 0,
@@ -196,7 +196,7 @@ async function requestCode({ email, company, source }) {
 
 async function verifyCode({ email, code }) {
   const addr = normalizeEmail(email);
-  const ws = await db.one('SELECT * FROM workspaces WHERE email = $1', [addr]);
+  const ws = await db.one('SELECT * FROM gg_workspaces WHERE email = $1', [addr]);
   if (!ws || !ws.code_hash) throw httpError(400, 'Request a code first.');
   if (ws.code_expires_at && new Date(ws.code_expires_at) < new Date()) {
     throw httpError(400, 'That code has expired — request a new one.');
@@ -205,13 +205,13 @@ async function verifyCode({ email, code }) {
     throw httpError(429, 'Too many attempts — request a new code.');
   }
 
-  await db.query('UPDATE workspaces SET code_attempts = code_attempts + 1 WHERE id = $1', [ws.id]);
+  await db.query('UPDATE gg_workspaces SET code_attempts = code_attempts + 1 WHERE id = $1', [ws.id]);
   if (!safeEqual(ws.code_hash, sha256(String(code).trim()))) {
     throw httpError(400, "That code isn't right.");
   }
 
   const token = await issueSession(ws.id, 'email');
-  return { token, workspace: await db.one('SELECT * FROM workspaces WHERE id = $1', [ws.id]) };
+  return { token, workspace: await db.one('SELECT * FROM gg_workspaces WHERE id = $1', [ws.id]) };
 }
 
 let googleClient = null;
@@ -252,16 +252,16 @@ async function googleSignIn({ credential, source }) {
   // business accounts, absent on personal gmail.
   const ws = await findOrCreateWorkspace(addr, { company: payload.hd || null, source });
   if (payload.name) {
-    await db.query('UPDATE workspaces SET name = COALESCE(name, $2) WHERE id = $1', [ws.id, payload.name]);
+    await db.query('UPDATE gg_workspaces SET name = COALESCE(name, $2) WHERE id = $1', [ws.id, payload.name]);
   }
 
   const token = await issueSession(ws.id, 'google');
-  return { token, workspace: await db.one('SELECT * FROM workspaces WHERE id = $1', [ws.id]) };
+  return { token, workspace: await db.one('SELECT * FROM gg_workspaces WHERE id = $1', [ws.id]) };
 }
 
 async function signOut(workspaceId) {
   await db.query(
-    'UPDATE workspaces SET session_token_hash = NULL, session_expires_at = NULL WHERE id = $1',
+    'UPDATE gg_workspaces SET session_token_hash = NULL, session_expires_at = NULL WHERE id = $1',
     [workspaceId],
   );
 }
