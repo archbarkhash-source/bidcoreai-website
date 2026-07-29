@@ -94,6 +94,11 @@
     scoreFor: null,      // its title, shown at the top of that panel
     page: 0,             // which page of the feed is showing
     month: '',           // 'YYYY-MM' due-date filter, '' = every month
+    // Place-of-performance filter: '' every state, 'mine' the states on the
+    // profile, or a single code. Separate from the profile's states, which are
+    // a SCORING input — a distant opportunity should still be visible, just
+    // scored down for distance, unless the visitor asks to hide it.
+    place: '',
     // Last dismissed row, held so it can be put back. One deep, like an email
     // client: undo is for the mistake you just made, not a history.
     undo: null,
@@ -101,6 +106,7 @@
     typesOpen: false,    // and most visitors set them once
     statesOpen: false,
     naicsOpen: false,
+    tipsOpen: false,
     sort: 'due',         // 'due' = soonest deadline first | 'none' = as SAM.gov returned
     scoring: false,      // the panel's own loading state, separate from busy
     score: null,
@@ -225,6 +231,16 @@
       });
   }
 
+  /** Re-read the workspace: profile, readiness and today's counters. Used
+   *  wherever the page shows a figure that changes while you work. */
+  function refresh() {
+    if (!S.token) return Promise.resolve();
+    return api('/me').then(function (body) {
+      adopt(body);
+      render();
+    }).catch(function () { /* a failed refresh must not disturb the view */ });
+  }
+
   // ── Sign-up ────────────────────────────────────────────────────────────────
 
   function sendCode() {
@@ -332,7 +348,7 @@
   function search() {
     S.query = val('gg-q');
     if (S.query) localStorage.setItem(QUERY_KEY, S.query);
-    S.busy = true; S.error = null; S.openId = null; S.score = null; S.scoreFor = null; S.page = 0; S.month = ''; render();
+    S.busy = true; S.error = null; S.openId = null; S.score = null; S.scoreFor = null; S.page = 0; S.month = ''; S.place = ''; render();
 
     api('/search?q=' + encodeURIComponent(S.query))
       .then(function (body) {
@@ -406,6 +422,44 @@
       .catch(fail);
   }
 
+  /** How the score is arrived at, in the order someone reading a verdict
+   *  wants it. Written once and shown in two places — the right sidebar while
+   *  working, and Settings when reading up. */
+  var SCORING_TIPS = [
+    ['Twelve criteria, equal weight',
+     'NAICS, PSC, project size, distance, state, agency, contract type, set-aside, ' +
+     'capability, bonding, past performance and bid lead time. Each scores 0\u2013100 and is ' +
+     'worth 8.3% of the total.'],
+    ['85\u2013100 GO \u00b7 65\u201384 REVIEW \u00b7 below 65 NO-GO',
+     'The band is the recommendation. Open the full calculation under any verdict to see ' +
+     'exactly what each criterion contributed.'],
+    ['50 means \u201cnothing on file\u201d',
+     'Not a bad score \u2014 an unknown. A criterion with nothing to compare against stays ' +
+     'neutral rather than counting against the opportunity.'],
+    ['Two things override the average',
+     'A deadline that has already passed, and a set-aside you do not hold. Both make the bid ' +
+     'impossible rather than unattractive, so they score 0 outright instead of being averaged ' +
+     'away by eleven good criteria.'],
+    ['Half unknown means no verdict',
+     'With most criteria unscored you get NEEDS MORE INFO instead of a recommendation. ' +
+     'Judging an empty profile is not judging the opportunity.'],
+    ['What sharpens it fastest',
+     'NAICS codes first \u2014 the largest single input. Then set-asides (they decide ' +
+     'eligibility outright), your office address (distance), and one or two past projects.'],
+  ];
+
+  /** Getting a SAM.gov API key. Steps as they appear on sam.gov, because
+   *  \u201cAccount Details\u201d is not where most people look first. */
+  var API_KEY_STEPS = [
+    'Sign in at sam.gov \u2014 a free personal account is enough. You do not need a UEI or an ' +
+      'active entity registration just to read opportunities.',
+    'Open the account menu with your name, top right, and choose Account Details.',
+    'Scroll to the API Key section and choose Request API Key (or Regenerate if one exists).',
+    'Re-enter your SAM.gov password when prompted \u2014 that is what reveals the key.',
+    'Copy the whole string. SAM.gov shows it once; if you lose it, regenerate rather than guess.',
+    'Paste it here. It is stored encrypted and only its last four characters are ever displayed.',
+  ];
+
   var MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'];
 
@@ -427,13 +481,26 @@
     });
   }
 
+  /** Every state present in the current feed, with counts. */
+  function statesInFeed() {
+    var counts = {};
+    (S.results || []).forEach(function (r) {
+      var st = (r.place_of_performance_state || '').toUpperCase();
+      if (st) counts[st] = (counts[st] || 0) + 1;
+    });
+    return Object.keys(counts).sort().map(function (k) { return { key: k, count: counts[k] }; });
+  }
+
   /** What the feed actually shows: the month filter applied, then ordered by
    *  deadline. Everything that acts on a row (save, analyse, paginate) works
    *  off this same array, so an index never means two different things. */
   function visibleResults() {
+    var mine = (S.profile && S.profile.states_served) || [];
     var rows = (S.results || []).filter(function (r) {
-      if (!S.month) return true;
-      return (r.solicitation_due_date || '').slice(0, 7) === S.month;
+      if (S.month && (r.solicitation_due_date || '').slice(0, 7) !== S.month) return false;
+      if (!S.place) return true;
+      var st = (r.place_of_performance_state || '').toUpperCase();
+      return S.place === 'mine' ? mine.indexOf(st) !== -1 : st === S.place;
     });
     if (S.sort === 'due') {
       rows = rows.slice().sort(function (a, b) {
@@ -719,10 +786,18 @@
             '</select></div>'
           : '') +
         messages() +
-        '<div class="gg-msg">' + icon('gg-lock', 14) + ' <strong>Where to find it:</strong> sign in at ' +
-          '<a href="https://sam.gov" target="_blank" rel="noopener" style="color:var(--gg-orange)">sam.gov</a>' +
-          ' → your name → <em>Account Details</em> → <em>API Key</em>. It is free.<br/>' +
-          'Stored encrypted. We only ever show the last 4 characters.</div>' +
+        '<div class="gg-msg">' +
+          '<div style="display:flex;gap:8px;align-items:center;font-weight:600;margin-bottom:8px">' +
+            icon('gg-bulb', 15) + 'How to get one — it is free' +
+          '</div>' +
+          '<ol class="gg-steps-list">' +
+            API_KEY_STEPS.map(function (t) { return '<li>' + t + '</li>'; }).join('') +
+          '</ol>' +
+          '<div style="margin-top:10px">' +
+            '<a href="https://sam.gov" target="_blank" rel="noopener" ' +
+              'style="color:var(--gg-orange);font-weight:600">Open sam.gov ' + icon('gg-ext', 12) + '</a>' +
+          '</div>' +
+        '</div>' +
         (p.has_api_key
           // Show what is already stored before asking for a replacement — a
           // blank box gives no way to tell whether the right key is on file.
@@ -939,6 +1014,23 @@
         // views of the same fields would eventually disagree.
 
 
+        section('How the score works',
+          '<ul class="gg-tips-list gg-tips-list--wide">' +
+            SCORING_TIPS.map(function (t) {
+              return '<li><strong>' + t[0] + '</strong><br/><span class="gg-crit-why">' + t[1] +
+                '</span></li>';
+            }).join('') +
+          '</ul>') +
+
+        section('Getting a ' + esc(portal) + ' API key',
+          '<ol class="gg-steps-list">' +
+            API_KEY_STEPS.map(function (t) { return '<li>' + t + '</li>'; }).join('') +
+          '</ol>' +
+          '<div class="gg-set-actions">' +
+            '<a class="gg-btn gg-btn--ghost gg-btn--small" href="https://sam.gov/content/api-keys" ' +
+              'target="_blank" rel="noopener">Open SAM.gov API keys ' + icon('gg-ext', 13) + '</a>' +
+          '</div>') +
+
         '<section class="gg-set-signout">' +
           '<div>' +
             '<div style="font-weight:600;font-size:14px">Sign out</div>' +
@@ -948,6 +1040,24 @@
           '<button class="gg-btn gg-btn--ghost" data-act="sign-out">Sign out</button>' +
         '</section>' +
       '</div>' +
+    '</div>';
+  }
+
+  /** How scoring works, collapsed by default. Beneath the verdict rather than
+   *  above it: the answer first, the method for whoever wants it. */
+  function viewTips() {
+    return '<div class="gg-tips">' +
+      '<button class="gg-toggle gg-tips-head" data-act="toggle-tips" ' +
+        'aria-expanded="' + (S.tipsOpen ? 'true' : 'false') + '">' +
+        '<span class="gg-tips-bulb">' + icon('gg-bulb', 15) + '</span>' +
+        '<span>How the score works</span>' +
+        '<span class="gg-toggle-caret">' + icon('gg-caret', 14) + '</span>' +
+      '</button>' +
+      (S.tipsOpen
+        ? '<ul class="gg-tips-list">' + SCORING_TIPS.map(function (t) {
+            return '<li><strong>' + t[0] + '</strong><br/><span class="gg-crit-why">' + t[1] + '</span></li>';
+          }).join('') + '</ul>'
+        : '') +
     '</div>';
   }
 
@@ -1021,6 +1131,19 @@
           }).join('') +
         '</select>' +
       '</label>' +
+      '<label class="gg-feed-ctl">Where' +
+        '<select class="gg-input gg-input--inline" id="gg-place">' +
+          '<option value=""' + (S.place ? '' : ' selected') + '>Anywhere</option>' +
+          ((S.profile && (S.profile.states_served || []).length)
+            ? '<option value="mine"' + (S.place === 'mine' ? ' selected' : '') + '>' +
+              'States I work in (' + S.profile.states_served.join(', ') + ')</option>'
+            : '') +
+          statesInFeed().map(function (st) {
+            return '<option value="' + esc(st.key) + '"' + (S.place === st.key ? ' selected' : '') + '>' +
+              esc(st.key) + ' (' + st.count + ')</option>';
+          }).join('') +
+        '</select>' +
+      '</label>' +
       '<label class="gg-feed-ctl">Sort' +
         '<select class="gg-input gg-input--inline" id="gg-sort">' +
           '<option value="due"' + (S.sort === 'due' ? ' selected' : '') + '>Deadline, soonest</option>' +
@@ -1061,6 +1184,7 @@
       // be, so the two are read together.
       viewChecklist() +
       '<div class="gg-side-title">Go/No-Go analysis</div>' + body +
+      viewTips() +
     '</aside>';
   }
 
@@ -1280,8 +1404,10 @@
         '<span class="gg-toggle-caret">' + icon('gg-caret', 14) + '</span>' +
       '</button>' +
       (S.statesOpen
-        ? '<div class="gg-hint" style="margin:0 0 6px">Drag the panel’s bottom-right corner ' +
-          'wider to see more per row.</div>'
+        ? '<div class="gg-hint" style="margin:0 0 6px">These score the opportunity — they do ' +
+          'not filter the feed. Work outside them still appears, scored down for distance. Use ' +
+          '<strong>Where</strong> above the results to hide it. Drag this panel’s ' +
+          'bottom-right corner wider to see more per row.</div>'
         : '') +
       (chosen.length && !S.statesOpen
         ? '<div class="gg-picker-summary">' + esc(chosen.join(', ')) + '</div>'
@@ -1370,8 +1496,9 @@
       if (S.page >= pages) S.page = 0;   // a shorter result set than last time
       var from = S.page * PAGE_SIZE;
       body = (rows.length === 0
-        ? '<div class="gg-card"><p class="gg-muted" style="margin:0">Nothing due in ' +
-          esc(monthLabel(S.month)) + '. Choose another month, or All months.</p></div>'
+        ? '<div class="gg-card"><p class="gg-muted" style="margin:0">Nothing matches these ' +
+          'filters. Try Anywhere, or All months — the search itself covers the whole ' +
+          'country, so a state filter only narrows what came back.</p></div>'
         : '') +
         rows.slice(from, from + PAGE_SIZE)
         // The absolute index is what save/analyse look up, so pass it through
@@ -1525,6 +1652,7 @@
     else if (act === 'toggle-types') { S.typesOpen = !S.typesOpen; render(); }
     else if (act === 'toggle-states') { S.statesOpen = !S.statesOpen; render(); }
     else if (act === 'toggle-naics') { S.naicsOpen = !S.naicsOpen; render(); }
+    else if (act === 'toggle-tips') { S.tipsOpen = !S.tipsOpen; render(); }
     else if (act === 'goto') {
       var fieldId = el.getAttribute('data-field');
       if (fieldId === 'gg-set-asides' && !S.setAsideOpen) { S.setAsideOpen = true; render(); }
@@ -1590,6 +1718,7 @@
     }
     if (e.target && e.target.id === 'gg-lead') { S.draft.lead = e.target.value; return; }
     if (e.target && e.target.id === 'gg-month') { S.month = e.target.value; S.page = 0; render(); return; }
+    if (e.target && e.target.id === 'gg-place') { S.place = e.target.value; S.page = 0; render(); return; }
     if (e.target && e.target.id === 'gg-sort') { S.sort = e.target.value; S.page = 0; render(); return; }
     if (e.target && e.target.className === 'gg-cert') {
       var current = (S.draft.certs || (S.profile && S.profile.certifications) || []).slice();

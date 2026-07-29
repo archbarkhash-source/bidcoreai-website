@@ -523,3 +523,13 @@ button.gg-chip:hover { border-color: var(--gg-black); }
   /* Stacked on a phone, a horizontal drag has nothing to give. */
   .gg-side { resize: none; max-width: none; }
 }
+
+/* ── Tips ── */
+.gg-tips { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--gg-line); }
+.gg-tips-head { font-size: 13px; font-weight: 700; gap: 9px; }
+.gg-tips-bulb { display: flex; color: var(--gg-orange); }
+.gg-tips-list { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 12px; }
+.gg-tips-list li { font-size: 12.5px; line-height: 1.5; }
+.gg-tips-list--wide li { font-size: 13.5px; }
+.gg-steps-list { margin: 0; padding-left: 20px; display: grid; gap: 7px; font-size: 13px; line-height: 1.5; }
+.gg-steps-list li { padding-left: 2px; }
