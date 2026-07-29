@@ -100,6 +100,8 @@
     // scored down for distance, unless the visitor asks to hide it.
     place: '',
     pipeMonth: '',       // 'YYYY-MM' filter over the board
+    period: 'month',     // dashboard grain: 'month' | 'year'
+    hoverBar: null,      // which bar the pointer is on
     // Last dismissed row, held so it can be put back. One deep, like an email
     // client: undo is for the mistake you just made, not a history.
     undo: null,
@@ -1193,6 +1195,157 @@
     '</div>';
   }
 
+  /**
+   * Pipeline totals, grouped by deadline.
+   *
+   * Cards with no deadline are counted in the totals but cannot sit in a
+   * period — dropping them silently would make the bars disagree with the
+   * board, so they are reported separately instead.
+   */
+  function pipelineSummary() {
+    var byPeriod = {};
+    var undated = 0;
+    var scored = [];
+    var awarded = 0;
+    var lost = 0;
+
+    (S.opportunities || []).forEach(function (o) {
+      if (o.status === 'awarded') awarded++;
+      if (o.status === 'lost') lost++;
+      if (typeof o.score === 'number') scored.push(o.score);
+
+      var d = o.due_date || '';
+      if (d.length < 7) { undated++; return; }
+      var key = S.period === 'year' ? d.slice(0, 4) : d.slice(0, 7);
+      var row = byPeriod[key] || (byPeriod[key] = { key: key, count: 0, awarded: 0, lost: 0, scores: [] });
+      row.count++;
+      if (o.status === 'awarded') row.awarded++;
+      if (o.status === 'lost') row.lost++;
+      if (typeof o.score === 'number') row.scores.push(o.score);
+    });
+
+    var periods = Object.keys(byPeriod).sort().map(function (k) {
+      var r = byPeriod[k];
+      r.label = S.period === 'year' ? k : monthLabel(k);
+      r.avg = r.scores.length
+        ? Math.round(r.scores.reduce(function (a, b) { return a + b; }, 0) / r.scores.length)
+        : null;
+      return r;
+    });
+
+    var decided = awarded + lost;
+    return {
+      periods: periods,
+      undated: undated,
+      total: (S.opportunities || []).length,
+      awarded: awarded,
+      lost: lost,
+      // Only meaningful once something has been decided; shown as "—" until then
+      // rather than as a confident 0%.
+      winRate: decided ? Math.round((awarded / decided) * 100) : null,
+      avgScore: scored.length
+        ? Math.round(scored.reduce(function (a, b) { return a + b; }, 0) / scored.length)
+        : null,
+      scoredCount: scored.length,
+    };
+  }
+
+  function tile(label, value, note, tone) {
+    return '<div class="gg-tile' + (tone ? ' is-' + tone : '') + '">' +
+      '<div class="gg-tile-value">' + esc(String(value)) + '</div>' +
+      '<div class="gg-tile-label">' + esc(label) + '</div>' +
+      (note ? '<div class="gg-tile-note">' + esc(note) + '</div>' : '') +
+    '</div>';
+  }
+
+  /**
+   * One bar per period, one series, one hue — so no legend is needed and the
+   * title says what is being counted. Values sit above the bars rather than
+   * inside them: the brand orange is 2.78:1 on white, which is below the 3:1
+   * a mark needs to carry meaning on its own, so the numbers and the table
+   * below are what actually convey the data. The bars rank it at a glance.
+   */
+  function viewDashboard() {
+    var d = pipelineSummary();
+
+    if (!d.total) {
+      return '<div class="gg-card"><p class="gg-muted" style="margin:0">Nothing in the pipeline yet. ' +
+        'Analyse an opportunity from the feed and it will appear here.</p></div>';
+    }
+
+    var max = d.periods.reduce(function (m, r) { return Math.max(m, r.count); }, 0) || 1;
+
+    var chart = d.periods.length
+      ? '<div class="gg-chart" role="img" aria-label="Opportunities by deadline">' +
+          d.periods.map(function (r, i) {
+            var pct = Math.round((r.count / max) * 100);
+            return '<div class="gg-bar-slot' + (S.hoverBar === i ? ' is-hover' : '') + '" ' +
+              'data-act="bar" data-i="' + i + '" tabindex="0">' +
+              '<div class="gg-bar-value">' + r.count + '</div>' +
+              '<div class="gg-bar-track">' +
+                '<div class="gg-bar" style="height:' + Math.max(pct, 2) + '%"></div>' +
+              '</div>' +
+              '<div class="gg-bar-label">' + esc(r.label.replace(' 20', '\u2019')) + '</div>' +
+              (S.hoverBar === i
+                ? '<div class="gg-bar-tip">' +
+                    '<strong>' + esc(r.label) + '</strong><br/>' +
+                    r.count + ' opportunit' + (r.count === 1 ? 'y' : 'ies') +
+                    (r.avg != null ? '<br/>average score ' + r.avg : '') +
+                    (r.awarded ? '<br/>' + r.awarded + ' awarded' : '') +
+                    (r.lost ? '<br/>' + r.lost + ' lost' : '') +
+                  '</div>'
+                : '') +
+            '</div>';
+          }).join('') +
+        '</div>'
+      : '<p class="gg-muted" style="margin:0 0 16px">No deadlines on file to chart yet.</p>';
+
+    // The table is not an extra — it is what makes the chart legible to anyone
+    // the colour or the bar heights fail, and it carries the detail the bars
+    // deliberately leave out.
+    var table = d.periods.length
+      ? '<table class="gg-calc" style="margin-top:20px"><thead><tr>' +
+          '<th>' + (S.period === 'year' ? 'Year' : 'Month') + '</th>' +
+          '<th class="gg-num">Tracked</th><th class="gg-num">Awarded</th>' +
+          '<th class="gg-num">Lost</th><th class="gg-num">Avg score</th>' +
+        '</tr></thead><tbody>' +
+          d.periods.map(function (r) {
+            return '<tr><td>' + esc(r.label) + '</td>' +
+              '<td class="gg-num">' + r.count + '</td>' +
+              '<td class="gg-num">' + (r.awarded || '\u2014') + '</td>' +
+              '<td class="gg-num">' + (r.lost || '\u2014') + '</td>' +
+              '<td class="gg-num">' + (r.avg != null ? r.avg : '\u2014') + '</td></tr>';
+          }).join('') +
+        '</tbody></table>'
+      : '';
+
+    return '<div class="gg-dash-head">' +
+        '<div class="gg-views" style="margin:0">' +
+          ['month', 'year'].map(function (g) {
+            return '<button class="gg-view-btn' + (S.period === g ? ' is-on' : '') + '" ' +
+              'data-act="period" data-p="' + g + '">' + (g === 'month' ? 'Monthly' : 'Yearly') + '</button>';
+          }).join('') +
+        '</div>' +
+        '<span class="gg-muted" style="font-size:12.5px">Grouped by response deadline' +
+          (d.undated ? ' \u00b7 ' + d.undated + ' with no deadline' : '') + '</span>' +
+      '</div>' +
+
+      '<div class="gg-tiles">' +
+        tile('In pipeline', d.total, d.scoredCount + ' scored') +
+        tile('Awarded', d.awarded, null, 'go') +
+        tile('Lost', d.lost, null, 'nogo') +
+        tile('Win rate', d.winRate == null ? '\u2014' : d.winRate + '%',
+          d.winRate == null ? 'nothing decided yet' : d.awarded + ' of ' + (d.awarded + d.lost)) +
+        tile('Average score', d.avgScore == null ? '\u2014' : d.avgScore,
+          d.avgScore == null ? 'nothing scored yet' : 'across ' + d.scoredCount) +
+      '</div>' +
+
+      '<div class="gg-card" style="margin-top:16px">' +
+        '<div class="gg-side-title">Opportunities by deadline</div>' +
+        chart + table +
+      '</div>';
+  }
+
   function viewBoard() {
     var stages = S.stages.length ? S.stages : [{ key: 'under_review', label: 'Under Review' }];
     return viewBoardBar() + '<div class="gg-board">' + stages.map(function (stage, si) {
@@ -1685,7 +1838,7 @@
     }
 
     var isFeed = S.view === 'feed';
-    var centre = isFeed
+    var centre = S.view === 'dashboard' ? viewDashboard() : isFeed
       // The input carries its own border, so a card around it would be a box
       // inside a box for no gain.
       ? (S.results && S.results.length ? viewFeedBar() : '') +
@@ -1728,9 +1881,12 @@
             '<button class="gg-view-btn' + (isFeed ? ' is-on' : '') + '" data-act="view" data-v="feed">' +
               'Opportunity Feed' + (S.results ? '<span class="gg-view-count">' + S.results.length + '</span>' : '') +
             '</button>' +
-            '<button class="gg-view-btn' + (isFeed ? '' : ' is-on') + '" data-act="view" data-v="pipeline">' +
+            '<button class="gg-view-btn' + (S.view === 'pipeline' ? ' is-on' : '') + '" ' +
+              'data-act="view" data-v="pipeline">' +
               'Pipeline<span class="gg-view-count">' + S.opportunities.length + '</span>' +
             '</button>' +
+            '<button class="gg-view-btn' + (S.view === 'dashboard' ? ' is-on' : '') + '" ' +
+              'data-act="view" data-v="dashboard">Dashboard</button>' +
             '</div>' +
           '</div>' +
           messages() +
@@ -1843,6 +1999,8 @@
     else if (act === 'score-saved') scoreSaved(el.getAttribute('data-id'));
     else if (act === 'clear-stage') clearStage(el.getAttribute('data-stage'));
     else if (act === 'clear-month') clearMonth();
+    else if (act === 'period') { S.period = el.getAttribute('data-p'); S.hoverBar = null; render(); }
+    else if (act === 'bar') { S.hoverBar = Number(el.getAttribute('data-i')); render(); }
     else if (act === 'clear-feed') clearFeed();
     else if (act === 'dismiss') dismissResult(Number(el.getAttribute('data-i')));
     else if (act === 'undo') undoDismiss();
@@ -1936,6 +2094,19 @@
   // Every keystroke in a sidebar field goes into the draft. No render here —
   // re-rendering on input would move the caret; this only has to survive a
   // render triggered by something else.
+  // Per-bar hover tooltip. Delegated like everything else, and mouseout clears
+  // it so a tooltip never outlives the pointer.
+  document.addEventListener('mouseover', function (e) {
+    var slot = e.target.closest && e.target.closest('[data-act="bar"]');
+    var next = slot ? Number(slot.getAttribute('data-i')) : null;
+    if (next !== S.hoverBar) { S.hoverBar = next; render(); }
+  });
+
+  document.addEventListener('focusin', function (e) {
+    var slot = e.target.closest && e.target.closest('[data-act="bar"]');
+    if (slot) { S.hoverBar = Number(slot.getAttribute('data-i')); render(); }
+  });
+
   document.addEventListener('input', function (e) {
     var el = e.target;
     if (el && el.id && el.id.indexOf('gg-') === 0 && el.tagName === 'INPUT') {

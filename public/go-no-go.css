@@ -23,6 +23,10 @@
      one thing here worth reading across a room. */
   --gg-go: #16A34A;
   --gg-nogo: #DC2626;
+  /* Note for later: pastel fills were tried and measured — as a series set
+     they fail even the normal-vision floor (ΔE 12), meaning full-colour
+     readers cannot tell pastel green from pastel red apart. If they come back,
+     they can only be surfaces, never the thing carrying the meaning. */
   --gg-radius: 10px;
   /* Header height. Everything sticky measures from this, so one change moves
      the header, the frozen toolbar and both sidebars together. */
@@ -586,4 +590,52 @@ button.gg-chip:hover { border-color: var(--gg-black); }
 .gg-eg {
   background: none; border: none; padding: 0; cursor: pointer; font-family: var(--gg-font);
   font-size: 12.5px; font-weight: 600; color: var(--gg-orange); text-decoration: underline;
+}
+
+/* ══ Dashboard ══════════════════════════════════════════════════════════
+   One series, one hue, no legend — the title says what is counted. The bars
+   rank the months at a glance; the values above them and the table below
+   carry the actual numbers, because the brand orange is 2.78:1 on white and a
+   mark that low must not be the only thing conveying data. */
+.gg-dash-head { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; flex-wrap: wrap; }
+
+.gg-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.gg-tile { border: 1px solid var(--gg-line); border-radius: var(--gg-radius); padding: 16px; }
+.gg-tile-value { font-size: 28px; font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; }
+/* Status colour on the number only, and never alone: the label beneath it
+   always says which state this is. */
+.gg-tile.is-go .gg-tile-value { color: var(--gg-go); }
+.gg-tile.is-nogo .gg-tile-value { color: var(--gg-nogo); }
+.gg-tile-label { font-size: 12.5px; font-weight: 600; margin-top: 4px; }
+.gg-tile-note { font-size: 11.5px; color: var(--gg-grey); margin-top: 2px; }
+
+.gg-chart {
+  display: flex; align-items: flex-end; gap: 2px;   /* 2px surface gap between bars */
+  height: 200px; margin: 8px 0 4px; overflow-x: auto; padding-top: 20px;
+  /* A recessive baseline, so the bars are measured from something. */
+  border-bottom: 1px solid var(--gg-line);
+}
+.gg-bar-slot {
+  position: relative; flex: 1 1 44px; min-width: 44px; max-width: 90px;
+  display: flex; flex-direction: column; height: 100%; cursor: default; outline: none;
+}
+.gg-bar-value { font-size: 12px; font-weight: 700; text-align: center; margin-bottom: 4px; }
+.gg-bar-track { flex: 1; display: flex; align-items: flex-end; }
+.gg-bar {
+  width: 100%; background: var(--gg-orange);
+  /* Rounded data-end, square against the baseline it is measured from. */
+  border-radius: 4px 4px 0 0;
+  transition: opacity .12s;
+}
+.gg-bar-slot.is-hover .gg-bar { opacity: .75; }
+.gg-bar-slot:focus-visible .gg-bar { outline: 2px solid var(--gg-black); outline-offset: 2px; }
+.gg-bar-label {
+  font-size: 11px; color: var(--gg-grey); text-align: center; margin-top: 6px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.gg-bar-tip {
+  position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+  background: var(--gg-black); color: #fff; font-size: 12px; line-height: 1.45;
+  padding: 8px 10px; border-radius: 8px; white-space: nowrap; z-index: 5;
+  box-shadow: 0 6px 20px rgba(0,0,0,.2); pointer-events: none;
 }
