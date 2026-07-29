@@ -68,7 +68,41 @@ Without SMTP configured, the 6-digit code is printed to the terminal:
 
 `npm run check` syntax-checks every file the page depends on.
 
-## Deployment (Vercel)
+## Deployment
+
+The app is a plain Express server that reads `PORT` from the environment, so
+nothing in it is host-specific. It runs on Vercel and Render from the same
+repo; only the place you set the environment variables differs.
+
+### Running both at once — read this first
+
+`SECRET_KEY` **must be identical on both hosts**, and so must `DATABASE_URL`.
+`SECRET_KEY` derives the key that encrypts visitors' SAM.gov API keys, so a
+workspace whose key was saved on one host cannot be decrypted by the other —
+the visitor would be asked to add their key again, and asked again every time
+traffic moved between hosts. One database, two front doors, one secret.
+
+### Which host should hold the domain
+
+* **Vercel** — no cold start. A public page that takes the best part of a
+  minute to answer the first visit of the hour has already lost that visitor.
+* **Render** — free and starter instances sleep after 15 minutes idle and take
+  roughly 30–60s to wake. Good as a warm standby or a staging URL; poor as the
+  front door for an ad campaign unless on a plan that does not sleep.
+
+A sensible arrangement is Vercel on the public domain and Render running the
+same code at its own URL, ready to take over by a DNS change.
+
+### Render
+
+`render.yaml` in the repo root is a blueprint: **New → Blueprint** in the Render
+dashboard, point it at this repo, and fill in the variables marked `sync: false`.
+Or configure a Web Service by hand — build `npm ci`, start `npm start`.
+
+Remember to add the Render URL to the Google console's **Authorised JavaScript
+origins**, or "Continue with Google" fails there with `origin_mismatch`.
+
+### Vercel
 
 `vercel.json` routes every request through `server.js` as a Node function, so
 the existing marketing pages and this one deploy together, unchanged.

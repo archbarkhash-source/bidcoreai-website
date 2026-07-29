@@ -1,0 +1,85 @@
+# Render blueprint for the BidcoreAI website (marketing pages + /go-no-go).
+#
+# The same repo already deploys to Vercel; this runs it on Render as well.
+# Nothing in the code is host-specific — it is an Express app that reads PORT
+# from the environment — so the only difference between the two is where the
+# environment variables are set.
+#
+# ── If you run BOTH at once, read this ─────────────────────────────────────
+# SECRET_KEY must be IDENTICAL on Render and Vercel. It derives the key that
+# encrypts visitors' SAM.gov API keys, so a workspace whose key was saved on
+# one host cannot be decrypted by the other: the visitor would be told to add
+# their key again, and would keep being told that every time the two hosts
+# alternated. DATABASE_URL must match for the same reason — one database, two
+# front doors.
+services:
+  - type: web
+    name: bidcoreai-website
+    runtime: node
+    plan: starter          # free sleeps after 15 min idle; see the note below
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      # ── The free Go/No-Go workspace ────────────────────────────────────
+      # The Bidcoreai-Webopp Neon connection string (pooled — host contains
+      # "-pooler"). Same value as Vercel.
+      - key: DATABASE_URL
+        sync: false
+      # Encrypts stored SAM.gov keys. MUST equal the value on Vercel.
+      - key: SECRET_KEY
+        sync: false
+      # Optional: enables "Continue with Google". Add this host's URL to the
+      # Google console's Authorised JavaScript origins or the button will fail
+      # with origin_mismatch.
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      # How long an untouched card sits in Under Review before clearing.
+      - key: REVIEW_TTL_DAYS
+        value: "30"
+
+      # ── Verdict bands (see api/scoring.js) ─────────────────────────────
+      - key: GO_SCORE_MIN
+        value: "85"
+      - key: GO_REVIEW_SCORE_MIN
+        value: "65"
+      - key: NOT_SURE_SCORE_MIN
+        value: "40"
+
+      # ── Email: the 6-digit access code, and the contact form ───────────
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM_EMAIL
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "465"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: SMTP_FROM_NAME
+        value: BidcoreAI
+      - key: TO_EMAIL
+        sync: false
+
+      # Where "create an account" links point.
+      - key: APP_URL
+        value: https://app.bidcoreai.com
+
+      - key: NODE_VERSION
+        value: "20"
+
+# ── Which host should serve bidcoreai.com ─────────────────────────────────
+# Only one of them can hold the domain. Points worth weighing:
+#
+#   Vercel   — no cold start. A public lead-gen page that takes 50 seconds to
+#              answer on the first visit of the hour has lost the visitor.
+#   Render   — free/starter instances sleep after 15 minutes idle and take
+#              ~30-60s to wake. Fine as a warm standby or for a staging URL;
+#              poor as the front door for an ad campaign unless on a paid plan
+#              that does not sleep.
+#
+# A reasonable arrangement: Vercel serves the public domain, Render runs the
+# same code on its own URL as a fallback you can switch DNS to.
