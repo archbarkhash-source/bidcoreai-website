@@ -472,3 +472,36 @@ button.gg-chip:hover { border-color: var(--gg-black); }
 /* 56 states and territories is a long list — two columns, taller box. */
 .gg-ticks--cols { grid-template-columns: 1fr 1fr; max-height: 260px; }
 @media (max-width: 900px) { .gg-ticks--cols { grid-template-columns: 1fr 1fr 1fr; } }
+
+/* ── How the score was arrived at ──
+   The arithmetic, shown. A bid decision should not have to be taken on trust
+   from a single number. */
+.gg-calc-head { font-size: 12px; color: var(--gg-grey); line-height: 1.5; margin: 12px 0 8px; }
+.gg-calc { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.gg-calc th {
+  text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .05em;
+  color: var(--gg-grey); font-weight: 700; padding: 0 0 6px; border-bottom: 1px solid var(--gg-line);
+}
+.gg-calc td { padding: 8px 0; border-bottom: 1px solid var(--gg-line); vertical-align: top; }
+.gg-calc .gg-num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; padding-left: 10px; }
+.gg-calc tr.is-weak .gg-num { color: var(--gg-orange); font-weight: 700; }
+.gg-calc tr.is-neutral td { color: var(--gg-grey); }
+.gg-calc-total td { font-weight: 800; border-bottom: none; padding-top: 10px; }
+
+/* ── Resizable side panels ──
+   Both side columns get a drag grip in their bottom-right corner (CSS resize),
+   so the split between profile, results and analysis is the reader's to set —
+   a long solicitation title and a long list of states want different widths,
+   and no fixed guess suits both. Bounded so neither can be dragged to nothing
+   or squeeze the results out. */
+.gg-side {
+  resize: horizontal;
+  min-width: 210px;
+  max-width: 560px;
+}
+/* The grip only exists where the browser can draw it, which needs a scroll
+   container — .gg-side already is one. */
+@media (max-width: 860px) {
+  /* Stacked on a phone, a horizontal drag has nothing to give. */
+  .gg-side { resize: none; max-width: none; }
+}

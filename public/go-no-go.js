@@ -1102,17 +1102,47 @@
     }
 
     out += '<button class="gg-btn gg-btn--link" style="margin-top:16px" data-act="details">' +
-      (S.detailsOpen ? 'Hide' : 'Show') + ' all 12 criteria</button>';
+      (S.detailsOpen ? 'Hide' : 'Show') + ' the full calculation</button>';
 
     if (S.detailsOpen && s.matches) {
-      out += '<div style="margin-top:10px">';
+      // Every criterion carries the same weight — the overall is their mean.
+      // Showing the arithmetic matters more here than in a paid tool: a number
+      // with no visible derivation is not one anyone will bet a bid on.
+      var share = 100 / s.matches.length;
+      var overridden = !!s.override_reason && s.overall_score === 0;
+
+      out += '<div class="gg-calc-head">Each of the ' + s.matches.length + ' criteria is worth ' +
+        share.toFixed(1) + '% of the score — contribution is its score × ' +
+        share.toFixed(1) + '%.</div>';
+
+      out += '<table class="gg-calc"><thead><tr>' +
+        '<th>Criterion</th><th class="gg-num">Score</th><th class="gg-num">Adds</th>' +
+      '</tr></thead><tbody>';
+
+      var running = 0;
       s.matches.forEach(function (m) {
-        out += '<div class="gg-crit ' + (m.score < 50 ? 'is-weak' : '') + '">' +
-          '<span class="gg-crit-score">' + m.score + '</span>' +
-          '<span><span class="gg-crit-name">' + esc(m.title) + '</span><br/>' +
-          '<span class="gg-crit-why">' + esc(m.reason) + '</span></span></div>';
+        var adds = m.score * share / 100;
+        running += adds;
+        out += '<tr class="' + (m.score < 50 ? 'is-weak' : m.score === 50 ? 'is-neutral' : '') + '">' +
+          '<td><span class="gg-crit-name">' + esc(m.title) + '</span><br/>' +
+            '<span class="gg-crit-why">' + esc(m.reason) + '</span></td>' +
+          '<td class="gg-num">' + m.score + '</td>' +
+          '<td class="gg-num">' + adds.toFixed(1) + '</td>' +
+        '</tr>';
       });
-      out += '</div>';
+
+      out += '<tr class="gg-calc-total"><td>Total</td><td class="gg-num"></td>' +
+        '<td class="gg-num">' + Math.round(running) + '</td></tr></tbody></table>';
+
+      if (overridden) {
+        out += '<div class="gg-calc-head">The criteria average ' + Math.round(running) +
+          ', but this scores 0: an expired deadline, or a set-aside you do not hold, makes the ' +
+          'bid impossible rather than merely unattractive — so it overrides the average ' +
+          'instead of being averaged into it.</div>';
+      }
+
+      out += '<div class="gg-calc-head">50 means “nothing on file” — neutral, not bad. ' +
+        'Bands: 85–100 GO · 65–84 REVIEW · below 65 NO-GO.</div>';
     }
     return out;
   }
@@ -1408,7 +1438,14 @@
     else if (act === 'sign-out') signOut();
     else if (act === 'country') chooseCountry(el.getAttribute('data-code'));
     else if (act === 'to-key') { S.step = 'apikey'; S.error = null; render(); focus('gg-key'); }
-    else if (act === 'open-settings') { S.profileOpen = false; S.step = 'settings'; S.error = null; render(); }
+    else if (act === 'open-settings') {
+      S.profileOpen = false; S.step = 'settings'; S.error = null;
+      render();
+      // Settings reports usage, so fetch the current figures rather than
+      // showing whatever was true when the page was opened. Rendering first
+      // keeps it instant; the numbers correct themselves a moment later.
+      refresh();
+    }
     else if (act === 'edit-key') { S.settingsMode = true; S.step = 'apikey'; S.error = null; render(); focus('gg-key'); }
     else if (act === 'to-country') {
       // From the profile menu this is "change my key", so it opens the key

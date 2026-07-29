@@ -134,11 +134,35 @@ function publicProfile(profile) {
   };
 }
 
+/**
+ * Today's counters, as Postgres sees them.
+ *
+ * This was previously computed in JavaScript by comparing usage_day against
+ * `new Date().toISOString()`. node-pg hands back a DATE as a Date at LOCAL
+ * midnight, so converting it to an ISO string shifts it a day in any timezone
+ * ahead of UTC — the comparison never matched, and /me reported 0 while the
+ * counter was genuinely climbing. The database already knows what day it is;
+ * asking it removes the class of bug rather than the instance.
+ */
+async function currentUsage(workspaceId) {
+  const row = await db.one(
+    `SELECT CASE WHEN usage_day = CURRENT_DATE THEN searches_today ELSE 0 END AS searches,
+            CASE WHEN usage_day = CURRENT_DATE THEN scores_today   ELSE 0 END AS scores
+       FROM gg_workspaces WHERE id = $1`,
+    [workspaceId],
+  );
+  return {
+    searches_today: row ? Number(row.searches) : 0,
+    searches_limit: MAX_SEARCHES_PER_DAY,
+    scores_today: row ? Number(row.scores) : 0,
+    scores_limit: MAX_SCORES_PER_DAY,
+  };
+}
+
 /** Bump a daily counter, resetting it lazily on the first call of a new day. */
 async function bumpUsage(workspace, column, limit, label) {
-  const today = new Date().toISOString().slice(0, 10);
-  const sameDay = workspace.usage_day && new Date(workspace.usage_day).toISOString().slice(0, 10) === today;
-  const used = sameDay ? workspace[column] || 0 : 0;
+  const live = await currentUsage(workspace.id);
+  const used = column === 'searches_today' ? live.searches_today : live.scores_today;
 
   if (used >= limit) {
     throw auth.httpError(
@@ -151,12 +175,12 @@ async function bumpUsage(workspace, column, limit, label) {
   // watched them sit at 0 while spending their allowance.
   const { rows } = await db.query(
     `UPDATE gg_workspaces
-        SET usage_day = $2::date,
-            searches_today = CASE WHEN usage_day = $2::date THEN searches_today ELSE 0 END + $3,
-            scores_today   = CASE WHEN usage_day = $2::date THEN scores_today   ELSE 0 END + $4
+        SET usage_day = CURRENT_DATE,
+            searches_today = CASE WHEN usage_day = CURRENT_DATE THEN searches_today ELSE 0 END + $2,
+            scores_today   = CASE WHEN usage_day = CURRENT_DATE THEN scores_today   ELSE 0 END + $3
       WHERE id = $1
       RETURNING searches_today, scores_today`,
-    [workspace.id, today, column === 'searches_today' ? 1 : 0, column === 'scores_today' ? 1 : 0],
+    [workspace.id, column === 'searches_today' ? 1 : 0, column === 'scores_today' ? 1 : 0],
   );
   return {
     searches_today: rows[0] ? rows[0].searches_today : 0,
@@ -244,17 +268,10 @@ router.post('/sign-out', auth.requireSession, wrap(async (req, res) => {
 
 router.get('/me', auth.requireSession, wrap(async (req, res) => {
   const profile = await loadProfile(req.workspace.id);
-  const today = new Date().toISOString().slice(0, 10);
-  const sameDay = profile.usage_day && new Date(profile.usage_day).toISOString().slice(0, 10) === today;
   res.json({
     profile: publicProfile(profile),
     readiness: readiness(profile),
-    usage: {
-      searches_today: sameDay ? profile.searches_today : 0,
-      searches_limit: MAX_SEARCHES_PER_DAY,
-      scores_today: sameDay ? profile.scores_today : 0,
-      scores_limit: MAX_SCORES_PER_DAY,
-    },
+    usage: await currentUsage(req.workspace.id),
   });
 }));
 
