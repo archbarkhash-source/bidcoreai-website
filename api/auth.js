@@ -166,6 +166,9 @@ async function requireSession(req, res, next) {
 async function requestCode({ email, company, source }) {
   const addr = normalizeEmail(email);
   if (!addr || !addr.includes('@')) throw httpError(400, 'Enter a valid email address.');
+  // Company is required on this path. The client checks it too, but the client
+  // is not the authority — a lead with no company name is barely a lead.
+  if (!String(company || '').trim()) throw httpError(400, 'Enter your company name.');
 
   const ws = await findOrCreateWorkspace(addr, { company, source });
 

@@ -160,7 +160,11 @@
   function sendCode() {
     S.email = val('gg-email');
     S.company = val('gg-company');
-    if (!S.email) return;
+    // Both are required. Checked here so the visitor is told which field is
+    // missing before a request is made — the server enforces it too, since a
+    // client-side check is a courtesy, not a rule.
+    if (!S.email) { S.error = 'Enter your work email.'; render(); focus('gg-email'); return; }
+    if (!S.company) { S.error = 'Enter your company name.'; render(); focus('gg-company'); return; }
     S.busy = true; S.error = null; render();
 
     api('/request-code', { method: 'POST', body: { email: S.email, company: S.company } })
@@ -350,7 +354,7 @@
           '<input class="gg-input" id="gg-email" type="email" placeholder="you@company.com" autocomplete="email" value="' + esc(S.email) + '"/>' +
         '</div>' +
         '<div class="gg-field">' +
-          '<label class="gg-label" for="gg-company">Company <span class="gg-muted" style="font-weight:400">(optional)</span></label>' +
+          '<label class="gg-label" for="gg-company">Company</label>' +
           '<input class="gg-input" id="gg-company" placeholder="Acme Construction LLC" value="' + esc(S.company) + '"/>' +
         '</div>' +
         '<button class="gg-btn gg-btn--block" data-act="send"' + (S.busy ? ' disabled' : '') + '>' +
@@ -373,8 +377,11 @@
         '<h2 class="gg-h2">' + (S.codeSent ? 'Check your email' : 'Start free') + '</h2>' +
         '<p class="gg-sub">' + (S.codeSent ? 'We sent a code to ' + esc(S.email) + '.' : 'Create your free workspace.') + '</p>' +
         messages() + form +
-        '<p class="gg-hint" style="margin-top:18px">Already have a BidcoreAI account? ' +
-          '<a href="' + esc(S.config.app_url) + '/login" style="color:var(--gg-orange)">Sign in to the app</a></p>' +
+        // No "sign in to the app" link here. Sitting under a sign-up form it
+        // reads as the way to sign in to THIS page, and sends people to the
+        // product's login screen instead — off the page entirely. The one
+        // outbound link lives at the bottom of the workspace, after they have
+        // something to be persuaded by.
       '</div>' +
     '</div></div>';
   }
@@ -621,7 +628,11 @@
         '<p class="gg-muted" style="margin:0;font-size:13.5px">A full account adds the capture pipeline, automatic ' +
         'solicitation-document import, amendment tracking, document-level deep Go/No-Go, compliance matrices and ' +
         'proposal drafting.</p></div>' +
-        '<a class="gg-btn" href="' + esc(S.config.app_url) + '/signup">Create your account ' + icon('gg-arrow', 15) + '</a>' +
+        // New tab, deliberately: the visitor keeps their workspace, their
+        // search and their analysis rather than losing all three to the
+        // product's login screen.
+        '<a class="gg-btn" href="' + esc(S.config.app_url) + '/signup" target="_blank" rel="noopener">' +
+          'Create your account ' + icon('gg-arrow', 15) + '</a>' +
       '</div>' +
       '<div class="gg-foot">Opportunity data comes from SAM.gov via your own API key. ' +
         'BidcoreAI is not affiliated with SAM.gov or any government agency.<br/>' +
@@ -645,10 +656,12 @@
       : S.step ? S.step
       : (S.readiness && S.readiness.can_search) ? 'workspace' : 'country';
 
+    // Signed out, the header carries no link at all: every exit from this page
+    // before the visitor has seen a result is a lost lead.
     head.innerHTML = signedIn
       ? (S.usage ? '<span class="gg-usage">' + S.usage.scores_today + '/' + S.usage.scores_limit + ' analyses today</span>' : '') +
         '<button class="gg-btn gg-btn--link" data-act="sign-out">Sign out</button>'
-      : '<a class="gg-btn gg-btn--ghost gg-btn--small" href="' + esc(S.config.app_url) + '/login">Sign in to the app</a>';
+      : '';
 
     if (stage === 'signup') app.innerHTML = viewSignUp();
     else if (stage === 'country') app.innerHTML = viewCountry();
