@@ -103,6 +103,10 @@
     // and the fields would snap back to the last saved values. Cleared on a
     // successful save, when the server's copy becomes the truth again.
     draft: {},
+    // Sidebar sections that are collapsed by default — past performance is
+    // add-once-and-forget, so it should not push the fields you edit often
+    // below the fold.
+    ppOpen: false,
 
     busy: false,
     error: null,
@@ -300,9 +304,9 @@
       .then(function (body) {
         adopt(body);
         S.busy = false;
-        S.step = null;
+        S.step = S.settingsMode ? 'settings' : null;
         S.settingsMode = false;
-        S.notice = null;
+        S.notice = S.step === 'settings' ? 'API key updated.' : null;
         render();
       })
       .catch(fail);
@@ -325,6 +329,7 @@
         S.busy = false;
         S.results = body.results || [];
         cacheResults(S.results);
+        adopt(body);          // fresh usage counters
         render();
       })
       .catch(function (e) { S.results = []; fail(e); });
@@ -350,7 +355,7 @@
       .then(function (body) {
         S.scoring = false;
         S.score = body.result;
-        if (body.readiness) S.readiness = body.readiness;
+        adopt(body);          // readiness + fresh usage counters
         render();
       })
       .catch(function (e) { S.scoring = false; S.openId = null; S.scoreFor = null; fail(e); });
@@ -676,13 +681,11 @@
     '</button>';
   }
 
-  /** The profile menu, in the shape every app uses: an identity card at the
-   *  top, then plain rows you can read down, then sign out at the bottom.
-   *  Anchored under the header button rather than centred, because it belongs
-   *  to that button. */
+  /** The account menu: identity, one way into Settings, sign out. Everything
+   *  adjustable lives on the Settings screen rather than as rows here — a
+   *  dropdown you have to read carefully is a dropdown doing too much. */
   function viewProfilePanel() {
     var p = S.profile || {};
-    var country = (S.config.countries || []).filter(function (c) { return c.code === (p.country_code || 'US'); })[0];
     var used = S.usage || {};
     var initial = (p.company || p.name || p.email || '?').trim().charAt(0).toUpperCase();
 
@@ -702,17 +705,74 @@
           '<div class="gg-menu-name">' + esc(p.company || p.name || 'Your workspace') + '</div>' +
           '<div class="gg-menu-email">' + esc(p.email || '') + '</div>' +
         '</div>' +
-
         '<div class="gg-menu-list">' +
-          item('gg-key', (country ? country.portal : 'SAM.gov') + ' API key',
-               p.has_api_key ? '****' + (p.api_key_hint || '') : 'not connected', 'to-country') +
-          item('gg-globe', 'Country', country ? country.name : (p.country_code || 'US'), 'to-country') +
-          item('gg-building', 'Company profile', 'edit at left') +
+          item('gg-settings', 'Settings', '', 'open-settings') +
           item('gg-chart', 'Analyses today', (used.scores_today || 0) + ' / ' + (used.scores_limit || 40)) +
-          item('gg-chart', 'Searches today', (used.searches_today || 0) + ' / ' + (used.searches_limit || 60)) +
           '<div class="gg-menu-sep"></div>' +
-          (p.has_api_key ? item('gg-lock', 'Remove API key', '', 'rm-key') : '') +
           item('gg-out', 'Sign out', '', 'sign-out') +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  /** Settings — everything about the account and its connected portal, on one
+   *  screen instead of scattered across a dropdown. */
+  function viewSettings() {
+    var p = S.profile || {};
+    var country = (S.config.countries || []).filter(function (c) { return c.code === (p.country_code || 'US'); })[0];
+    var portal = country ? country.portal : 'SAM.gov';
+    var used = S.usage || {};
+
+    function row(label, value) {
+      return '<div class="gg-prof-row"><span class="gg-muted">' + esc(label) + '</span>' +
+        '<span>' + esc(value == null || value === '' ? '—' : value) + '</span></div>';
+    }
+
+    return '<div class="gg-wrap">' +
+      '<div class="gg-card">' +
+        '<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">' +
+          '<h2 class="gg-h2" style="margin:0">Settings</h2>' +
+          '<button class="gg-btn gg-btn--ghost gg-btn--small" style="margin-left:auto" ' +
+            'data-act="cancel-settings">Back to workspace</button>' +
+        '</div>' +
+
+        messages() +
+
+        '<div class="gg-side-title">Account</div>' +
+        row('Email', p.email) +
+        row('Company', p.company) +
+        (p.name ? row('Name', p.name) : '') +
+
+        '<div class="gg-side-title" style="margin-top:26px">Procurement portal</div>' +
+        row('Country', country ? country.name : (p.country_code || 'US')) +
+        row(portal + ' API key', p.has_api_key ? '****' + (p.api_key_hint || '') : 'not connected') +
+        row('Verified', p.api_key_status === 'ok' ? 'yes' : 'not verified') +
+        '<div style="display:flex;gap:10px;margin-top:14px">' +
+          '<button class="gg-btn gg-btn--small" data-act="edit-key">' +
+            (p.has_api_key ? 'Change key or country' : 'Connect a key') + '</button>' +
+          (p.has_api_key ? '<button class="gg-btn gg-btn--ghost gg-btn--small" data-act="rm-key">Remove key</button>' : '') +
+        '</div>' +
+
+        '<div class="gg-side-title" style="margin-top:26px">Company profile</div>' +
+        row('NAICS codes', (p.naics_codes || []).join(', ')) +
+        row('Certifications', (p.certifications || []).join(', ')) +
+        row('States served', (p.states_served || []).join(', ')) +
+        row('Office address', p.office_address) +
+        row('Bonding capacity', p.bonding_capacity ? '$' + Number(p.bonding_capacity).toLocaleString() : '') +
+        row('Job size', (p.project_value_min || p.project_value_max)
+          ? '$' + Number(p.project_value_min || 0).toLocaleString() + ' – $' + Number(p.project_value_max || 0).toLocaleString()
+          : '') +
+        row('Past performance', (p.past_performance || []).length + ' project(s)') +
+        '<p class="gg-hint">These feed the score directly. Edit them in the left column of the ' +
+          'workspace, where they sit beside the results they explain.</p>' +
+
+        '<div class="gg-side-title" style="margin-top:26px">Usage today</div>' +
+        row('Searches', (used.searches_today || 0) + ' / ' + (used.searches_limit || 60)) +
+        row('Analyses', (used.scores_today || 0) + ' / ' + (used.scores_limit || 40)) +
+
+        '<div style="display:flex;gap:10px;margin-top:26px">' +
+          '<button class="gg-btn" data-act="cancel-settings">Back to workspace</button>' +
+          '<button class="gg-btn gg-btn--ghost" data-act="sign-out">Sign out</button>' +
         '</div>' +
       '</div>' +
     '</div>';
@@ -865,16 +925,23 @@
       '</div>' +
 
       '<div class="gg-side-block">' +
-        '<div class="gg-side-title">Past performance</div>' +
-        perf.map(function (r) {
-          return '<div class="gg-row" style="font-size:13px;padding:8px 10px"><span>' + esc(r.title) +
-            (r.agency ? '<br/><span class="gg-muted" style="font-size:12px">' + esc(r.agency) + '</span>' : '') +
-            '</span><button class="gg-row-x" data-act="rm-pp" data-id="' + r.id + '" aria-label="Remove">&times;</button></div>';
-        }).join('') +
-        field('gg-pp-title', 'Project', '', 'Barracks roof replacement') +
-        field('gg-pp-agency', 'Agency', '', 'USACE') +
-        field('gg-pp-value', 'Contract value ($)', '', '1200000') +
-        '<button class="gg-btn gg-btn--small gg-btn--ghost gg-btn--block" data-act="add-pp">Add project</button>' +
+        '<button class="gg-toggle gg-side-title" style="margin-bottom:' + (S.ppOpen ? '12px' : '0') + '" ' +
+          'data-act="toggle-pp" aria-expanded="' + (S.ppOpen ? 'true' : 'false') + '">' +
+          'Past performance' +
+          '<span class="gg-col-count">' + perf.length + '</span>' +
+          '<span class="gg-toggle-caret">' + icon('gg-caret', 14) + '</span>' +
+        '</button>' +
+        (S.ppOpen
+          ? perf.map(function (r) {
+              return '<div class="gg-row" style="font-size:13px;padding:8px 10px"><span>' + esc(r.title) +
+                (r.agency ? '<br/><span class="gg-muted" style="font-size:12px">' + esc(r.agency) + '</span>' : '') +
+                '</span><button class="gg-row-x" data-act="rm-pp" data-id="' + r.id + '" aria-label="Remove">&times;</button></div>';
+            }).join('') +
+            field('gg-pp-title', 'Project', '', 'Barracks roof replacement') +
+            field('gg-pp-agency', 'Agency', '', 'USACE') +
+            field('gg-pp-value', 'Contract value ($)', '', '1200000') +
+            '<button class="gg-btn gg-btn--small gg-btn--ghost gg-btn--block" data-act="add-pp">Add project</button>'
+          : '') +
       '</div>' +
 
     '</aside>';
@@ -982,6 +1049,7 @@
       : '';
 
     if (stage === 'signup') app.innerHTML = viewSignUp();
+    else if (stage === 'settings') app.innerHTML = viewSettings();
     else if (stage === 'country') app.innerHTML = viewCountry();
     else if (stage === 'apikey') app.innerHTML = viewApiKey();
     else app.innerHTML = viewWorkspace() + (S.profileOpen ? viewProfilePanel() : '');
@@ -1009,6 +1077,8 @@
     else if (act === 'sign-out') signOut();
     else if (act === 'country') chooseCountry(el.getAttribute('data-code'));
     else if (act === 'to-key') { S.step = 'apikey'; S.error = null; render(); focus('gg-key'); }
+    else if (act === 'open-settings') { S.profileOpen = false; S.step = 'settings'; S.error = null; render(); }
+    else if (act === 'edit-key') { S.settingsMode = true; S.step = 'apikey'; S.error = null; render(); focus('gg-key'); }
     else if (act === 'to-country') {
       // From the profile menu this is "change my key", so it opens the key
       // screen directly — with the country selector on it — rather than
@@ -1038,12 +1108,17 @@
     else if (act === 'move') moveOpportunity(el.getAttribute('data-id'), Number(el.getAttribute('data-dir')));
     else if (act === 'rm-opp') removeOpportunity(el.getAttribute('data-id'));
     else if (act === 'goto') {
-      var target = document.getElementById(el.getAttribute('data-field'));
+      var fieldId = el.getAttribute('data-field');
+      // The past-performance fields live in a collapsed section — open it
+      // first, or the jump lands on nothing.
+      if (fieldId === 'gg-pp-title' && !S.ppOpen) { S.ppOpen = true; render(); }
+      var target = document.getElementById(fieldId);
       if (target) {
         if (target.scrollIntoView) target.scrollIntoView({ block: 'center', behavior: 'smooth' });
         target.focus();
       }
     }
+    else if (act === 'toggle-pp') { S.ppOpen = !S.ppOpen; render(); }
     else if (act === 'profile') toggleProfile();
     // Only the backdrop itself closes, never a click that bubbled from inside
     // the panel — otherwise pressing "Change" would shut the thing first.

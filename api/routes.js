@@ -143,14 +143,24 @@ async function bumpUsage(workspace, column, limit, label) {
       `You've used all ${limit} free ${label} for today. They reset tomorrow — or create a BidcoreAI account for unlimited access.`,
     );
   }
-  await db.query(
+  // RETURNING the new totals so the caller can hand them straight back to the
+  // page. Without this the counters only refreshed on a reload, so a visitor
+  // watched them sit at 0 while spending their allowance.
+  const { rows } = await db.query(
     `UPDATE gg_workspaces
         SET usage_day = $2::date,
             searches_today = CASE WHEN usage_day = $2::date THEN searches_today ELSE 0 END + $3,
             scores_today   = CASE WHEN usage_day = $2::date THEN scores_today   ELSE 0 END + $4
-      WHERE id = $1`,
+      WHERE id = $1
+      RETURNING searches_today, scores_today`,
     [workspace.id, today, column === 'searches_today' ? 1 : 0, column === 'scores_today' ? 1 : 0],
   );
+  return {
+    searches_today: rows[0] ? rows[0].searches_today : 0,
+    searches_limit: MAX_SEARCHES_PER_DAY,
+    scores_today: rows[0] ? rows[0].scores_today : 0,
+    scores_limit: MAX_SCORES_PER_DAY,
+  };
 }
 
 async function decryptedKey(workspace) {
@@ -389,7 +399,7 @@ router.delete('/api-key', auth.requireSession, wrap(async (req, res) => {
 
 router.get('/search', auth.requireSession, wrap(async (req, res) => {
   const key = await decryptedKey(req.workspace);
-  await bumpUsage(req.workspace, 'searches_today', MAX_SEARCHES_PER_DAY, 'searches');
+  const usage = await bumpUsage(req.workspace, 'searches_today', MAX_SEARCHES_PER_DAY, 'searches');
 
   const q = String(req.query.q || '').trim();
   // One search box. A 6-digit number is a NAICS code, a longer alphanumeric
@@ -407,12 +417,12 @@ router.get('/search', auth.requireSession, wrap(async (req, res) => {
 
   const { results, total } = await samgov.search(params, key);
   logEvent(req.workspace.id, 'search', { q, results: results.length });
-  res.json({ results, total });
+  res.json({ results, total, usage });
 }));
 
 router.post('/score', auth.requireSession, wrap(async (req, res) => {
   await decryptedKey(req.workspace); // same gate as search: no key, no analysis
-  await bumpUsage(req.workspace, 'scores_today', MAX_SCORES_PER_DAY, 'Go/No-Go analyses');
+  const usage = await bumpUsage(req.workspace, 'scores_today', MAX_SCORES_PER_DAY, 'Go/No-Go analyses');
 
   const o = req.body || {};
   if (!o.title && !o.solicitation_number) {
@@ -439,7 +449,7 @@ router.post('/score', auth.requireSession, wrap(async (req, res) => {
     recommendation: result.recommendation,
   });
 
-  res.json({ result, readiness: readiness(profile) });
+  res.json({ result, readiness: readiness(profile), usage });
 }));
 
 // ── Capture pipeline ─────────────────────────────────────────────────────────
