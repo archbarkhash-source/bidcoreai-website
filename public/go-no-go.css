@@ -160,8 +160,12 @@ h3.gg-h3 { font-size: 15px; font-weight: 700; margin: 0 0 4px; }
    constantly ("why did it score that?"), so it belongs beside the results
    rather than buried under them. Sticky, so it stays put while a long list of
    opportunities scrolls. */
-.gg-layout { display: grid; grid-template-columns: 270px minmax(0, 1fr) 330px; gap: 18px; align-items: start; }
-.gg-side { position: sticky; top: calc(var(--gg-head-h) + 16px); max-height: calc(100vh - var(--gg-head-h) - 32px); overflow-y: auto; }
+.gg-layout { display: grid; grid-template-columns: 320px minmax(0, 1fr) 330px; gap: 18px; align-items: start; }
+.gg-side {
+  position: sticky; top: calc(var(--gg-head-h) + 16px);
+  max-height: calc(100vh - var(--gg-head-h) - 32px);
+  overflow-y: auto; overflow-x: hidden;
+}
 .gg-side .gg-field { margin-bottom: 12px; }
 .gg-side .gg-input { font-size: 13.5px; padding: 9px 11px; }
 .gg-side .gg-label { font-size: 12px; }
@@ -414,13 +418,19 @@ button.gg-chip:hover { border-color: var(--gg-black); }
      column. No max-height: an inner scrollbar inside an already-scrolling
      sidebar means two things to scroll and neither shows the whole list. */
   display: grid; gap: 2px 10px;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   border: 1px solid var(--gg-line); border-radius: var(--gg-radius); padding: 8px;
+  overflow-x: hidden;
 }
 .gg-tick {
   display: flex; align-items: flex-start; gap: 8px; font-size: 12.5px; line-height: 1.35;
   padding: 5px 6px; border-radius: 6px; cursor: pointer;
+  /* Grid items default to min-width:auto — the width of their longest
+     unbreakable word — so a long label pushed the grid wider than the panel
+     and produced a horizontal scrollbar. */
+  min-width: 0;
 }
+.gg-tick span { min-width: 0; overflow-wrap: anywhere; }
 .gg-tick:hover { background: var(--gg-soft); }
 .gg-tick.is-on { font-weight: 600; }
 .gg-tick input { margin-top: 2px; flex-shrink: 0; accent-color: var(--gg-orange); }
@@ -477,7 +487,7 @@ button.gg-chip:hover { border-color: var(--gg-black); }
 /* 56 states: narrower cells than the default, since "Virginia (VA)" is short.
    At the sidebar's minimum width that is two columns; drag it wider and it
    becomes three or four, with no scrollbar of its own at any width. */
-.gg-ticks--cols { grid-template-columns: repeat(auto-fill, minmax(125px, 1fr)); }
+.gg-ticks--cols { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
 
 /* ── How the score was arrived at ──
    The arithmetic, shown. A bid decision should not have to be taken on trust

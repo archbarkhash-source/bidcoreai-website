@@ -494,7 +494,7 @@ const STATE_OPTIONS = [
   ['WV', 'West Virginia'], ['WI', 'Wisconsin'], ['WY', 'Wyoming'],
   ['PR', 'Puerto Rico'], ['VI', 'U.S. Virgin Islands'], ['GU', 'Guam'],
   ['AS', 'American Samoa'], ['MP', 'Northern Mariana Islands'],
-].map(([value, label]) => ({ value, label: `${label} (${value})` }));
+].map(([value, label]) => ({ value, label: `${value} — ${label}` }));
 
 // Every NAICS in sector 23 that this page offers, labelled. Derived from the
 // trade titles above so one list cannot drift from the other.
