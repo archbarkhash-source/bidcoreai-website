@@ -668,16 +668,36 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
    headline. .ft-vis is taken out of flow, so the copy gets the full column. */
 .ft-hero{position:relative;overflow:hidden;background:var(--dk);padding:96px 24px 104px;border-bottom:1px solid var(--g200);min-height:560px;display:flex;align-items:center}
 .ft-hero-in{position:relative;z-index:2;max-width:660px;width:100%;margin:0 auto}
+/* Glass panel: it is what keeps the headline legible now the screenshot behind is
+   at 85% rather than 30%. backdrop-filter blurs whatever shows through, so the
+   image stays visible as texture without ever fighting the text. */
+.ft-hero-in>div:first-child{
+  position:relative;z-index:2;
+  padding:30px 32px;border-radius:20px;
+  /* .85, not less: a dark region of a screenshot showing through a thinner
+     panel drops body text to 2.4:1. At .85 the worst case is 4.59:1, which
+     clears AA, and the image still reads clearly around the panel. */
+  background:rgba(255,255,255,.85);
+  -webkit-backdrop-filter:blur(14px) saturate(1.25);
+          backdrop-filter:blur(14px) saturate(1.25);
+  border:1px solid rgba(255,255,255,.7);
+  box-shadow:0 1px 0 rgba(255,255,255,.8) inset,0 10px 40px -12px rgba(23,26,32,.10);
+}
+/* Without backdrop-filter the panel would be flat translucent white and the
+   image behind it would show through unblurred, so it goes more opaque. */
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .ft-hero-in>div:first-child{background:rgba(255,255,255,.94)}
+}
 
 .ft-vis{
   position:absolute;top:50%;right:-26%;transform:translateY(-50%);
-  width:120%;max-width:1100px;z-index:1;opacity:.30;pointer-events:none;
-  /* Capped at the narrowest screenshot in the set (1096px). Above this the
-     browser was upscaling the file and the UI in it went soft. */
-  /* It now runs well behind the headline, so the fade starts later and is
-     softer — the copy stays fully legible while the screenshot fills the band. */
-  -webkit-mask-image:linear-gradient(to right,transparent 14%,rgba(0,0,0,.25) 38%,#000 62%,#000 100%);
-          mask-image:linear-gradient(to right,transparent 14%,rgba(0,0,0,.25) 38%,#000 62%,#000 100%);
+  width:120%;max-width:1100px;z-index:1;pointer-events:none;
+  opacity:.85;
+  /* A light blur is what reads as glass; saturation pulled back so the UI in the
+     screenshot does not compete with the headline for attention. */
+  filter:blur(1.5px) saturate(.85) contrast(.95);
+  -webkit-mask-image:linear-gradient(to right,transparent 4%,rgba(0,0,0,.45) 26%,#000 58%,#000 100%);
+          mask-image:linear-gradient(to right,transparent 4%,rgba(0,0,0,.45) 26%,#000 58%,#000 100%);
 }
 /* Strip the card treatment — no frame, no shadow, no fill. */
 .ft-vis .slide-img-wrap{background:none;border:none;box-shadow:none;border-radius:0}
@@ -700,6 +720,7 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
 }
 @media(max-width:768px){
   .ft-hero{padding:44px 16px 48px}
+  .ft-hero-in>div:first-child{padding:22px 20px;border-radius:16px}
   /* Narrow enough that a background image behind the copy just muddies it. */
   .ft-vis{width:185%;right:-60%;opacity:.16}
   .ft-hero{min-height:auto;padding:44px 16px 48px}
