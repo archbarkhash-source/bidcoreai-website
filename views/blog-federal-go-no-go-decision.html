@@ -1,26 +1,40 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Contact Us – BidcoreAI</title>
-<meta name="description" content="Get in touch with BidcoreAI for demo requests, Pro plan pricing, takeoff service inquiries, federal bid support, or general questions."/>
-<link rel="canonical" href="https://www.bidcoreai.com/contact"/>
-<!-- Open Graph -->
-<meta property="og:title" content="Contact Us – BidcoreAI"/>
-<meta property="og:description" content="Get in touch with BidcoreAI for demo requests, Pro plan pricing, takeoff service inquiries, federal bid support, or general questions."/>
-<meta property="og:url" content="https://www.bidcoreai.com/contact"/>
-<meta property="og:type" content="website"/>
+<title>The federal Go/No-Go decision: what to check before you bid | BidcoreAI</title>
+<meta name="description" content="Most bid/no-bid calls are made on a deadline and a feeling. Here is the framework — twelve checks, in the order that saves the most time."/>
+<meta name="keywords" content="federal go no go, go no go decision federal contracting, bid no bid analysis, SAM.gov opportunity qualification, federal construction bidding, capture management"/>
+<link rel="canonical" href="https://www.bidcoreai.com/blog/federal-go-no-go-decision"/>
+<meta property="og:title" content="The federal Go/No-Go decision: what to check before you bid | BidcoreAI"/>
+<meta property="og:description" content="Most bid/no-bid calls are made on a deadline and a feeling. Here is the framework — twelve checks, in the order that saves the most time."/>
+<meta property="og:url" content="https://www.bidcoreai.com/blog/federal-go-no-go-decision"/>
+<meta property="og:type" content="article"/>
 <meta property="og:site_name" content="BidcoreAI"/>
-<!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:title" content="Contact Us – BidcoreAI"/>
-<meta name="twitter:description" content="Get in touch with BidcoreAI for demo requests, Pro plan pricing, takeoff service inquiries, federal bid support, or general questions."/>
+<meta name="twitter:title" content="The federal Go/No-Go decision: what to check before you bid | BidcoreAI"/>
+<meta name="twitter:description" content="Most bid/no-bid calls are made on a deadline and a feeling. Here is the framework — twelve checks, in the order that saves the most time."/>
 <link rel="icon" type="image/png" href="https://bidcoreai-assets.vercel.app/favicon.png"/>
 <link rel="stylesheet" href="../public/style.css"/>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "The federal Go/No-Go decision: what to check before you bid",
+  "description": "Most bid/no-bid calls are made on a deadline and a feeling. Here is the framework — twelve checks, in the order that saves the most time.",
+  "datePublished": "2026-07-30",
+  "dateModified": "2026-07-30",
+  "author": { "@type": "Organization", "name": "BidcoreAI", "url": "https://www.bidcoreai.com/" },
+  "publisher": {
+    "@type": "Organization", "name": "BidcoreAI",
+    "logo": { "@type": "ImageObject", "url": "https://bidcoreai-assets.vercel.app/logo.png" }
+  },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://www.bidcoreai.com/blog/federal-go-no-go-decision" }
+}
+</script>
 </head>
 <body>
-
 <!-- ══ INLINE SVG SYMBOLS ══ -->
 <svg style="display:none" xmlns="http://www.w3.org/2000/svg">
   <symbol id="ic-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
@@ -68,8 +82,8 @@
 </svg>
 
 <!-- ══════════ MOBILE MENU OVERLAY ══════════ -->
-<div class="mob-overlay" id="mob-overlay" onclick="closeMob()"></div>
-<nav class="mob-nav" id="mob-nav">
+<div class="mob-overlay" id="mob-overlay" onclick="closeMob()" style="display:none"></div>
+<nav class="mob-nav" id="mob-nav" style="transform:translateX(-100%)">
   <div class="mob-nav-head">
     <a class="logo-wrap" href="/">
       <img class="logo-img" src="https://bidcoreai-assets.vercel.app/logo.png" alt="BidcoreAI"
@@ -99,7 +113,6 @@
     <a class="mob-nl" href="/construction-estimating-services"><svg width="14" height="14"><use href="#ic-report"/></svg> Estimating Services</a>
     <div class="mob-nl-h">Company</div>
     <a class="mob-nl" href="/pricing"><svg width="14" height="14"><use href="#ic-tag"/></svg> Pricing</a>
-    <a class="mob-nl" href="/blog"><svg width="14" height="14"><use href="#ic-file"/></svg> Blog</a>
     <a class="mob-nl" href="/contact"><svg width="14" height="14"><use href="#ic-mail"/></svg> Contact</a>
     <a class="mob-nl" href="/feedback"><svg width="14" height="14"><use href="#ic-star"/></svg> Feedback</a>
   </div>
@@ -157,7 +170,7 @@
       </div>
 
       <div class="nl-drop">
-        <a class="nl nl-drop-t" id="nl-solutions" href="/solutions" aria-expanded="false" aria-haspopup="true">Solutions<svg width="10" height="10" class="nl-caret"><use href="#ic-caret"/></svg></a>
+        <a class="nl nl-drop-t on" id="nl-solutions" href="/solutions" aria-expanded="false" aria-haspopup="true">Solutions<svg width="10" height="10" class="nl-caret"><use href="#ic-caret"/></svg></a>
         <div class="nl-panel nl-panel--wide" role="menu">
           <div class="nl-panel-h">By who you are</div>
           <a class="nl-item" href="/solutions">
@@ -226,7 +239,7 @@
       </div>
 
       <a class="nl" id="nl-pricing" href="/pricing">Pricing</a>
-      <a class="nl on" id="nl-contact" href="/contact">Contact</a>
+      <a class="nl" id="nl-contact" href="/contact">Contact</a>
     </div>
     <div class="nav-cta">
       <button class="btn btn-gh btn-sm nav-demo" onclick="openModal('Book Live Demo')">Live Demo</button>
@@ -234,53 +247,65 @@
   </div>
 </nav>
 
-
-  <section style="background:var(--dk);padding:64px 24px 48px;text-align:center;position:relative;overflow:hidden">
-    <div style="position:absolute;inset:0;background:radial-gradient(ellipse 50% 50% at 50% 40%,rgba(224,154,50,.14) 0%,transparent 62%)"></div>
-    <div class="con" style="position:relative;z-index:2;max-width:600px">
-      <div class="eyebrow" style="justify-content:center"><svg width="12" height="12"><use href="#ic-mail"/></svg> Contact Us</div>
-      <h1 class="h1" style="font-size:clamp(26px,3.6vw,46px)">Get in Touch with<br><span style="color:var(--orange)">BidcoreAI</span></h1>
-      <p style="font-size:15.5px;color:var(--g600);line-height:1.72;margin-top:12px">Questions about the platform, enterprise pricing, the takeoff service, or federal bid support — we're here to help.</p>
+<!-- PAGE CONTENT -->
+<article class="bp">
+  <div class="bp-head">
+    <div class="con" style="max-width:760px">
+      <a class="bp-back" href="/blog"><svg width="13" height="13"><use href="#ic-caret"/></svg> All articles</a>
+      <div class="bp-meta"><span class="bp-tag">Federal Contracting</span><span>30 July 2026</span><span>9 min read</span></div>
+      <h1 class="h1" style="font-size:clamp(28px,3.4vw,42px)">The federal Go/No-Go decision: what to check before you bid</h1>
+      <p class="lead" style="margin-top:14px">Most bid/no-bid calls are made on a deadline and a feeling. Here is the framework — twelve checks, in the order that saves the most time.</p>
     </div>
-  </section>
-  <section style="padding:64px 24px">
-    <div class="con">
-      <div class="contact-grid contact-grid--solo rv">
-        <div class="rform-wrap" style="margin-top:0">
-          <div class="rform-title" style="font-size:18px">Send Us a Message</div>
-          <div class="rform-sub" style="margin-bottom:20px">We respond within 1 business day.</div>
-          <div id="ct-form-body">
-            <div class="fg2">
-              <div class="fg"><label>Name *</label><input type="text" id="ct-name" placeholder="Mike Rodriguez"/></div>
-              <div class="fg"><label>Email *</label><input type="email" id="ct-email" placeholder="mike@company.com"/></div>
-            </div>
-            <div class="fg2">
-              <div class="fg"><label>Company</label><input type="text" id="ct-co" placeholder="Rodriguez GC LLC"/></div>
-              <div class="fg"><label>Subject *</label>
-                <select id="ct-subj">
-                  <option value="">Select…</option>
-                  <option>Book a Demo</option><option>Takeoff Service Inquiry</option><option>Federal Bid Support</option><option>Enterprise / Team Plan</option><option>Technical Support</option><option>Other</option>
-                </select>
-              </div>
-            </div>
-            <div class="fg"><label>Message *</label><textarea id="ct-msg" rows="4" placeholder="Tell us how we can help…"></textarea></div>
-            <div class="ferr" id="ct-err">Please fill in all required fields.</div>
-            <button class="fsub" id="ct-btn" onclick="submitContact()">
-              <svg width="15" height="15"><use href="#ic-send"/></svg> Send Message
-            </button>
-            <div class="fnote">Sent directly to <strong>barkha@bidcoreai.com</strong> · No spam.</div>
-          </div>
-          <div class="f-success" id="ct-ok">
-            <div class="f-success-ico">✉️</div>
-            <div class="f-success-t">Message Sent!</div>
-            <div class="f-success-s">Your message has been delivered. We'll be in touch within 1 business day.</div>
-            <button class="btn btn-n" style="margin-top:16px" href="/">Back to Home</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
+  </div>
+  <div class="con bp-body">
+<p class="bp-lead">A federal bid costs real money to chase. Between reading the solicitation, pricing the work, chasing subcontractor quotes and writing the narrative, a mid-size construction bid absorbs days of senior time — the most expensive time in the company. Win rates on federal work sit low enough that chasing the wrong ones is the fastest way to lose a year.</p>
+<p>So the Go/No-Go decision matters more than the bid itself. Get it right and you spend your capacity on the third of opportunities you can actually win. Get it wrong and you write beautiful proposals for work that was never yours.</p>
+<p>What follows is the framework: twelve checks, ordered so the cheapest disqualifiers come first. The point of the ordering is that you should be able to kill a bad opportunity in ninety seconds, not after two days of work.</p>
+<h2>Kill it fast: the four checks that take a minute</h2>
+<p>Run these before anything else. Each one can end the conversation on its own, and none of them requires opening the specifications.</p>
+<h3>1. Set-aside eligibility</h3>
+<p>If the solicitation is set aside for 8(a), HUBZone, SDVOSB, WOSB or a small-business size standard you do not meet, you are not bidding it — no amount of capability changes that. Check the set-aside code first, every time. This is the single most common reason a contractor spends a day on work they were never eligible for.</p>
+<p>Two subtleties worth knowing. A total small-business set-aside still requires you to be small <em>under the NAICS code on that solicitation</em>, and the size standard varies by code — so being small on one is not being small on all. And a partial set-aside may leave an unrestricted portion you can bid.</p>
+<h3>2. NAICS and PSC codes</h3>
+<p>The NAICS code tells you what the agency thinks it is buying. If it is not in your registered set, treat that as a strong signal — not an absolute bar, but a reason to look hard at whether the scope actually matches what you do. The PSC code adds a second read on the same question.</p>
+<p>A mismatch here often means the scope has a component you are not set up for: a "construction" job that is mostly specialised abatement, or a renovation that is really a systems replacement.</p>
+<h3>3. Time remaining</h3>
+<p>Count the working days to the due date, then subtract what you actually need: site visit, subcontractor quotes back, pricing, narrative, internal review, submission buffer. For federal construction work, three weeks is tight and less than two is usually a decision to submit something weak.</p>
+<p>Be honest here rather than optimistic. A rushed bid is worse than no bid: it costs the same money and it teaches the agency that your pricing is unreliable.</p>
+<h3>4. Distance and geography</h3>
+<p>Distance from your nearest office drives mobilisation, supervision, per-diem and your ability to staff the job with people you trust. It also drives whether you have subcontractor coverage. A job 400 miles from your last project is a different business than one 40 miles out, even at identical scope.</p>
+<h2>Then the capacity checks</h2>
+<h3>5. Bonding capacity</h3>
+<p>Two questions, not one: can you bond this job, and what does bonding it do to your remaining capacity? A contract that consumes most of your aggregate limit has an opportunity cost — it may lock you out of two better opportunities that appear next month. Bonding capacity is a portfolio decision.</p>
+<h3>6. Project magnitude</h3>
+<p>Compare the estimated value against the largest job you have actually delivered. A contract several times your record is a red flag for the evaluators as much as for you — past performance is scored, and "we have never done one this big" is visible in the record whether or not you mention it.</p>
+<p>The reverse also matters. A job far below your normal size may not carry your overhead.</p>
+<h3>7. Contract type</h3>
+<p>Firm-fixed-price, IDIQ, cost-reimbursement and time-and-materials are different risk profiles and different cash-flow profiles. An IDIQ with a small guaranteed minimum is a business-development expense that may never convert. Fixed-price on a design you have not seen resolved is where estimating margin goes to die.</p>
+<h3>8. Capability match</h3>
+<p>Read the scope against what you self-perform versus what you would sub out. A bid where you self-perform very little is a bid where your margin is thin and your control is weak. There is nothing wrong with brokering work, but price it as brokering.</p>
+<h2>Then the competitive read</h2>
+<h3>9. Past performance relevance</h3>
+<p>Not "have we done work" but "have we done <em>this</em> work, at this size, for this kind of client, recently enough to cite". Federal evaluators want relevant and recent. Three similar projects in the last three years is a strong position; one loosely comparable job from six years ago is not.</p>
+<h3>10. Agency relationship</h3>
+<p>Have you worked for this agency, or this contracting office? An incumbent with good CPARS is hard to displace, and knowing whether one exists changes the calculation entirely. Look at the incumbent, the period of performance ending, and whether the requirement has genuinely changed.</p>
+<h3>11. Preferred state and market</h3>
+<p>States where you already hold licences, have subcontractor relationships and know the labour market are simply cheaper for you to work in. That is a real competitive advantage and should push a marginal opportunity to GO.</p>
+<h3>12. The documents themselves</h3>
+<p>Last, because it is the most expensive check: read the terms. Liquidated damages with no cap, unpriced allowances, missing finish schedules, an onerous flow-down, a specification that references a standard you cannot meet. Any one of these can turn a profitable-looking job into a loss.</p>
+<p>This is also where an RFI is worth more than a guess. If the scope is genuinely ambiguous, ask — and if the answer does not come before the deadline, that is information too.</p>
+<h2>Scoring it, rather than arguing about it</h2>
+<p>The value of a framework is that it turns an argument into a comparison. Score each criterion, weight them for how your business actually wins, and you get a number you can defend in a bid review — plus a record of why you passed, which is what stops the same debate happening again next quarter.</p>
+<p>Weighting matters more than precision. For most federal construction contractors, NAICS relevance, past-performance relevance and time remaining carry far more weight than, say, preferred state. Set the weights once, from your own win history, and stop re-litigating them per bid.</p>
+<p>Three bands are enough:</p>
+<ul><li><strong>GO</strong> — bid it, and staff it properly.</li><li><strong>REVIEW</strong> — one or two specific things need answering. Name them, give them a deadline, and decide when they come back.</li><li><strong>NO-GO</strong> — pass, and write down why.</li></ul>
+<p>That last part is the one most teams skip. A no-bid with a recorded reason is an asset: it tells you what to fix, and six months later it tells you whether the reason still applies.</p>
+<h2>The mistake underneath most bad calls</h2>
+<p>Almost every bad Go/No-Go decision comes from the same place: the decision gets made after the work has started. Someone reads the solicitation, gets interested, starts pricing — and by the time anyone asks whether the company should bid, two days are already spent and nobody wants to have wasted them.</p>
+<p>Run the four fast checks before anyone touches the estimate. That single discipline saves more time than any tool.</p>
+<div class="bp-cta"><div class="bp-cta-t">Score your next solicitation free</div><p class="bp-cta-x">BidcoreAI's Go/No-Go analyzer runs these twelve criteria against your company profile on live SAM.gov opportunities. It uses your own free SAM.gov API key, so the results and the quota are yours. No card.</p><a class="btn btn-p" href="/go-no-go"><svg width="15" height="15"><use href="#ic-check"/></svg> Try it free</a></div>
+  </div>
+</article>
 <!-- ════════ FOOTER ════════ -->
 <footer class="footer">
   <div class="ft-in">
@@ -409,24 +434,5 @@
 </div>
 
 <script src="../public/script.js"></script>
-
-<script>
-/* Local preview helper — rewrites clean URLs to .html when opened via file:// */
-if(window.location.protocol === 'file:'){
-  document.querySelectorAll('a[href]').forEach(function(a){
-    var h = a.getAttribute('href');
-    var map = {'/':' index.html','/solutions':'solutions.html','/pricing':'pricing.html','/go-no-go':'go-no-go.html',
-      '/takeoff-services':'services.html','/feedback':'feedback.html','/contact':'contact.html',
-      '/drywall-takeoff-services':'drywall-takeoff-services.html',
-      '/flooring-takeoff-services':'flooring-takeoff-services.html',
-      '/doors-windows-takeoff-services':'doors-windows-takeoff-services.html',
-      '/construction-takeoff-services':'construction-takeoff-services.html',
-      '/construction-estimating-services':'construction-estimating-services.html'
-    };
-    if(map[h]) a.setAttribute('href', map[h]);
-  });
-}
-</script>
-
 </body>
 </html>

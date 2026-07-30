@@ -1,26 +1,24 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Contact Us – BidcoreAI</title>
-<meta name="description" content="Get in touch with BidcoreAI for demo requests, Pro plan pricing, takeoff service inquiries, federal bid support, or general questions."/>
-<link rel="canonical" href="https://www.bidcoreai.com/contact"/>
-<!-- Open Graph -->
-<meta property="og:title" content="Contact Us – BidcoreAI"/>
-<meta property="og:description" content="Get in touch with BidcoreAI for demo requests, Pro plan pricing, takeoff service inquiries, federal bid support, or general questions."/>
-<meta property="og:url" content="https://www.bidcoreai.com/contact"/>
+<title>Blog — Federal Contracting and Preconstruction | BidcoreAI</title>
+<meta name="description" content="Practical writing on federal construction bidding: Go/No-Go decisions, SAM.gov opportunity qualification, takeoff, estimating and proposal work."/>
+<meta name="keywords" content="federal contracting blog, construction bidding blog, go no go, SAM.gov, preconstruction"/>
+<link rel="canonical" href="https://www.bidcoreai.com/blog"/>
+<meta property="og:title" content="Blog — Federal Contracting and Preconstruction | BidcoreAI"/>
+<meta property="og:description" content="Practical writing on federal construction bidding: Go/No-Go decisions, SAM.gov opportunity qualification, takeoff, estimating and proposal work."/>
+<meta property="og:url" content="https://www.bidcoreai.com/blog"/>
 <meta property="og:type" content="website"/>
 <meta property="og:site_name" content="BidcoreAI"/>
-<!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:title" content="Contact Us – BidcoreAI"/>
-<meta name="twitter:description" content="Get in touch with BidcoreAI for demo requests, Pro plan pricing, takeoff service inquiries, federal bid support, or general questions."/>
+<meta name="twitter:title" content="Blog — Federal Contracting and Preconstruction | BidcoreAI"/>
+<meta name="twitter:description" content="Practical writing on federal construction bidding: Go/No-Go decisions, SAM.gov opportunity qualification, takeoff, estimating and proposal work."/>
 <link rel="icon" type="image/png" href="https://bidcoreai-assets.vercel.app/favicon.png"/>
 <link rel="stylesheet" href="../public/style.css"/>
 </head>
 <body>
-
 <!-- ══ INLINE SVG SYMBOLS ══ -->
 <svg style="display:none" xmlns="http://www.w3.org/2000/svg">
   <symbol id="ic-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
@@ -68,8 +66,8 @@
 </svg>
 
 <!-- ══════════ MOBILE MENU OVERLAY ══════════ -->
-<div class="mob-overlay" id="mob-overlay" onclick="closeMob()"></div>
-<nav class="mob-nav" id="mob-nav">
+<div class="mob-overlay" id="mob-overlay" onclick="closeMob()" style="display:none"></div>
+<nav class="mob-nav" id="mob-nav" style="transform:translateX(-100%)">
   <div class="mob-nav-head">
     <a class="logo-wrap" href="/">
       <img class="logo-img" src="https://bidcoreai-assets.vercel.app/logo.png" alt="BidcoreAI"
@@ -157,7 +155,7 @@
       </div>
 
       <div class="nl-drop">
-        <a class="nl nl-drop-t" id="nl-solutions" href="/solutions" aria-expanded="false" aria-haspopup="true">Solutions<svg width="10" height="10" class="nl-caret"><use href="#ic-caret"/></svg></a>
+        <a class="nl nl-drop-t on" id="nl-solutions" href="/solutions" aria-expanded="false" aria-haspopup="true">Solutions<svg width="10" height="10" class="nl-caret"><use href="#ic-caret"/></svg></a>
         <div class="nl-panel nl-panel--wide" role="menu">
           <div class="nl-panel-h">By who you are</div>
           <a class="nl-item" href="/solutions">
@@ -226,7 +224,7 @@
       </div>
 
       <a class="nl" id="nl-pricing" href="/pricing">Pricing</a>
-      <a class="nl on" id="nl-contact" href="/contact">Contact</a>
+      <a class="nl" id="nl-contact" href="/contact">Contact</a>
     </div>
     <div class="nav-cta">
       <button class="btn btn-gh btn-sm nav-demo" onclick="openModal('Book Live Demo')">Live Demo</button>
@@ -234,53 +232,33 @@
   </div>
 </nav>
 
+<!-- PAGE CONTENT -->
+<section class="ft-hero">
+  <div class="con" style="max-width:760px;text-align:center">
+    <div class="eyebrow" style="justify-content:center"><svg width="12" height="12"><use href="#ic-file"/></svg> Blog</div>
+    <h1 class="h1" style="font-size:clamp(28px,3.6vw,44px)">Federal bidding,<br>written down.</h1>
+    <p class="lead" style="margin:14px auto 0">How the decisions actually get made &mdash; qualification, takeoff, estimating and proposals.</p>
+  </div>
+</section>
 
-  <section style="background:var(--dk);padding:64px 24px 48px;text-align:center;position:relative;overflow:hidden">
-    <div style="position:absolute;inset:0;background:radial-gradient(ellipse 50% 50% at 50% 40%,rgba(224,154,50,.14) 0%,transparent 62%)"></div>
-    <div class="con" style="position:relative;z-index:2;max-width:600px">
-      <div class="eyebrow" style="justify-content:center"><svg width="12" height="12"><use href="#ic-mail"/></svg> Contact Us</div>
-      <h1 class="h1" style="font-size:clamp(26px,3.6vw,46px)">Get in Touch with<br><span style="color:var(--orange)">BidcoreAI</span></h1>
-      <p style="font-size:15.5px;color:var(--g600);line-height:1.72;margin-top:12px">Questions about the platform, enterprise pricing, the takeoff service, or federal bid support — we're here to help.</p>
+<section class="overview">
+  <div class="con" style="max-width:860px">
+    <div class="bp-list">
+      <a class="bp-card" href="/blog/free-federal-go-no-go-analyser-construction">
+        <div class="bp-meta"><span class="bp-tag">Go/No-Go</span><span>30 July 2026</span><span>8 min read</span></div>
+        <div class="bp-card-t">Free federal Go/No-Go analysers for construction: what to look for</div>
+        <div class="bp-card-x">A free analyser is only useful if it scores against your company, runs on live SAM.gov data, and shows its reasoning. Here is the bar — and how contractors use one to find work they would otherwise miss.</div>
+        <div class="bp-card-r">Read the article &rarr;</div>
+      </a>
+      <a class="bp-card" href="/blog/federal-go-no-go-decision">
+        <div class="bp-meta"><span class="bp-tag">Federal Contracting</span><span>30 July 2026</span><span>9 min read</span></div>
+        <div class="bp-card-t">The federal Go/No-Go decision: what to check before you bid</div>
+        <div class="bp-card-x">Most bid/no-bid calls are made on a deadline and a feeling. Here is the framework — twelve checks, in the order that saves the most time.</div>
+        <div class="bp-card-r">Read the article &rarr;</div>
+      </a>
     </div>
-  </section>
-  <section style="padding:64px 24px">
-    <div class="con">
-      <div class="contact-grid contact-grid--solo rv">
-        <div class="rform-wrap" style="margin-top:0">
-          <div class="rform-title" style="font-size:18px">Send Us a Message</div>
-          <div class="rform-sub" style="margin-bottom:20px">We respond within 1 business day.</div>
-          <div id="ct-form-body">
-            <div class="fg2">
-              <div class="fg"><label>Name *</label><input type="text" id="ct-name" placeholder="Mike Rodriguez"/></div>
-              <div class="fg"><label>Email *</label><input type="email" id="ct-email" placeholder="mike@company.com"/></div>
-            </div>
-            <div class="fg2">
-              <div class="fg"><label>Company</label><input type="text" id="ct-co" placeholder="Rodriguez GC LLC"/></div>
-              <div class="fg"><label>Subject *</label>
-                <select id="ct-subj">
-                  <option value="">Select…</option>
-                  <option>Book a Demo</option><option>Takeoff Service Inquiry</option><option>Federal Bid Support</option><option>Enterprise / Team Plan</option><option>Technical Support</option><option>Other</option>
-                </select>
-              </div>
-            </div>
-            <div class="fg"><label>Message *</label><textarea id="ct-msg" rows="4" placeholder="Tell us how we can help…"></textarea></div>
-            <div class="ferr" id="ct-err">Please fill in all required fields.</div>
-            <button class="fsub" id="ct-btn" onclick="submitContact()">
-              <svg width="15" height="15"><use href="#ic-send"/></svg> Send Message
-            </button>
-            <div class="fnote">Sent directly to <strong>barkha@bidcoreai.com</strong> · No spam.</div>
-          </div>
-          <div class="f-success" id="ct-ok">
-            <div class="f-success-ico">✉️</div>
-            <div class="f-success-t">Message Sent!</div>
-            <div class="f-success-s">Your message has been delivered. We'll be in touch within 1 business day.</div>
-            <button class="btn btn-n" style="margin-top:16px" href="/">Back to Home</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
+  </div>
+</section>
 <!-- ════════ FOOTER ════════ -->
 <footer class="footer">
   <div class="ft-in">
@@ -409,24 +387,5 @@
 </div>
 
 <script src="../public/script.js"></script>
-
-<script>
-/* Local preview helper — rewrites clean URLs to .html when opened via file:// */
-if(window.location.protocol === 'file:'){
-  document.querySelectorAll('a[href]').forEach(function(a){
-    var h = a.getAttribute('href');
-    var map = {'/':' index.html','/solutions':'solutions.html','/pricing':'pricing.html','/go-no-go':'go-no-go.html',
-      '/takeoff-services':'services.html','/feedback':'feedback.html','/contact':'contact.html',
-      '/drywall-takeoff-services':'drywall-takeoff-services.html',
-      '/flooring-takeoff-services':'flooring-takeoff-services.html',
-      '/doors-windows-takeoff-services':'doors-windows-takeoff-services.html',
-      '/construction-takeoff-services':'construction-takeoff-services.html',
-      '/construction-estimating-services':'construction-estimating-services.html'
-    };
-    if(map[h]) a.setAttribute('href', map[h]);
-  });
-}
-</script>
-
 </body>
 </html>

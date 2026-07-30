@@ -719,3 +719,44 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
 .ft-hub-x{font-size:13px;color:var(--g600);line-height:1.65}
 @media(max-width:900px){.ft-hub{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:600px){.ft-hub{grid-template-columns:1fr}}
+
+/* ───── BLOG ───── */
+.bp-list{display:flex;flex-direction:column;gap:16px}
+.bp-card{display:block;background:var(--white);border:1px solid var(--g200);border-radius:16px;padding:26px 28px;text-decoration:none;transition:border-color .15s,box-shadow .15s,transform .15s}
+.bp-card:hover{border-color:rgba(204,77,0,.35);box-shadow:var(--s1);transform:translateY(-2px)}
+.bp-card-t{font-family:var(--fh);font-size:20px;font-weight:800;color:var(--navy);line-height:1.25;margin:10px 0 8px}
+.bp-card-x{font-size:14px;color:var(--g600);line-height:1.7}
+.bp-card-r{font-size:12.5px;font-weight:700;color:var(--orange);margin-top:14px}
+
+.bp-meta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:11.5px;color:var(--g400);font-weight:600}
+.bp-tag{background:var(--odim);color:var(--orange);border-radius:100px;padding:3px 10px;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+
+.bp-head{background:var(--dk);padding:56px 24px 48px;border-bottom:1px solid var(--g200)}
+.bp-back{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--g600);text-decoration:none;margin-bottom:18px;transition:color .14s}
+.bp-back:hover{color:var(--orange)}
+.bp-back svg{transform:rotate(90deg)}
+.bp-head .bp-meta{margin-bottom:14px}
+
+/* Article body. Measure is capped near 68ch: long-form prose gets unreadable
+   much wider than that regardless of how much room the viewport has. */
+.bp-body{max-width:720px;padding:52px 24px 72px}
+.bp-lead{font-size:17.5px;color:var(--text);line-height:1.8;margin-bottom:22px;font-weight:500}
+.bp-body p{font-size:15.5px;color:var(--text);line-height:1.85;margin-bottom:20px}
+.bp-body h2{font-family:var(--fh);font-size:25px;font-weight:800;color:var(--navy);line-height:1.25;margin:44px 0 16px}
+.bp-body h3{font-family:var(--fh);font-size:17px;font-weight:750;color:var(--navy);margin:30px 0 10px}
+.bp-body ul{margin:0 0 22px 0;padding-left:22px}
+.bp-body li{font-size:15.5px;color:var(--text);line-height:1.8;margin-bottom:9px}
+.bp-body strong{color:var(--navy);font-weight:700}
+.bp-body em{font-style:italic}
+
+.bp-cta{margin-top:44px;background:var(--dk);border:1px solid var(--g200);border-radius:16px;padding:28px}
+.bp-cta-t{font-family:var(--fh);font-size:18px;font-weight:800;color:var(--navy);margin-bottom:8px}
+.bp-cta-x{font-size:14px;color:var(--g600);line-height:1.7;margin-bottom:18px!important}
+
+@media(max-width:768px){
+  .bp-head{padding:38px 16px 34px}
+  .bp-body{padding:36px 18px 52px}
+  .bp-card{padding:22px 20px}
+  .bp-card-t{font-size:18px}
+  .bp-body h2{font-size:21px;margin-top:34px}
+}

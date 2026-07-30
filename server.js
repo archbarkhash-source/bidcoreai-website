@@ -107,6 +107,17 @@ app.get('/contact', (req, res) =>
    point: this is the one surface a
    stranger can write to.
 ───────────────────────────────────────*/
+/* Blog. Posts live at /blog/<slug> and are stored as views/blog-<slug>.html,
+   so the slug is validated against a whitelist rather than trusted into a
+   file path. */
+const BLOG_POSTS = ['federal-go-no-go-decision', 'free-federal-go-no-go-analyser-construction'];
+app.get('/blog', (req, res) =>
+  res.sendFile(path.join(VIEWS_DIR, 'blog.html')));
+app.get('/blog/:slug', (req, res, next) => {
+  if (!BLOG_POSTS.includes(req.params.slug)) return next();
+  res.sendFile(path.join(VIEWS_DIR, `blog-${req.params.slug}.html`));
+});
+
 // Features overview — the page the Features nav tab links to.
 app.get('/features', (req, res) =>
   res.sendFile(path.join(VIEWS_DIR, 'features.html')));
