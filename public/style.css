@@ -667,37 +667,22 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
    to a low opacity so it reads as texture instead of competing with the
    headline. .ft-vis is taken out of flow, so the copy gets the full column. */
 .ft-hero{position:relative;overflow:hidden;background:var(--dk);padding:96px 24px 104px;border-bottom:1px solid var(--g200);min-height:560px;display:flex;align-items:center}
+/* Sits between the screenshot (z-index 1) and the copy (z-index 2). */
+.ft-hero::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse 64% 82% at 50% 50%,
+    rgba(246,247,249,.95) 0%,rgba(246,247,249,.88) 42%,
+    rgba(246,247,249,.55) 70%,rgba(246,247,249,.15) 88%,rgba(246,247,249,0) 100%)}
 .ft-hero-in{position:relative;z-index:2;max-width:660px;width:100%;margin:0 auto}
-/* Glass panel: it is what keeps the headline legible now the screenshot behind is
-   at 85% rather than 30%. backdrop-filter blurs whatever shows through, so the
-   image stays visible as texture without ever fighting the text. */
-.ft-hero-in>div:first-child{
-  position:relative;z-index:2;
-  padding:30px 32px;border-radius:20px;
-  /* .85, not less: a dark region of a screenshot showing through a thinner
-     panel drops body text to 2.4:1. At .85 the worst case is 4.59:1, which
-     clears AA, and the image still reads clearly around the panel. */
-  background:rgba(255,255,255,.85);
-  -webkit-backdrop-filter:blur(14px) saturate(1.25);
-          backdrop-filter:blur(14px) saturate(1.25);
-  border:1px solid rgba(255,255,255,.7);
-  box-shadow:0 1px 0 rgba(255,255,255,.8) inset,0 10px 40px -12px rgba(23,26,32,.10);
-}
-/* Without backdrop-filter the panel would be flat translucent white and the
-   image behind it would show through unblurred, so it goes more opaque. */
-@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
-  .ft-hero-in>div:first-child{background:rgba(255,255,255,.94)}
-}
 
 .ft-vis{
   position:absolute;top:50%;right:-26%;transform:translateY(-50%);
   width:120%;max-width:1100px;z-index:1;pointer-events:none;
-  opacity:.85;
+  opacity:.20;
   /* A light blur is what reads as glass; saturation pulled back so the UI in the
      screenshot does not compete with the headline for attention. */
-  filter:blur(1.5px) saturate(.85) contrast(.95);
-  -webkit-mask-image:linear-gradient(to right,transparent 4%,rgba(0,0,0,.45) 26%,#000 58%,#000 100%);
-          mask-image:linear-gradient(to right,transparent 4%,rgba(0,0,0,.45) 26%,#000 58%,#000 100%);
+  filter:blur(2.5px) saturate(.7) contrast(.92);
+  -webkit-mask-image:linear-gradient(to right,transparent 0%,#000 22%,#000 100%);
+          mask-image:linear-gradient(to right,transparent 0%,#000 22%,#000 100%);
 }
 /* Strip the card treatment — no frame, no shadow, no fill. */
 .ft-vis .slide-img-wrap{background:none;border:none;box-shadow:none;border-radius:0}
@@ -720,7 +705,6 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
 }
 @media(max-width:768px){
   .ft-hero{padding:44px 16px 48px}
-  .ft-hero-in>div:first-child{padding:22px 20px;border-radius:16px}
   /* Narrow enough that a background image behind the copy just muddies it. */
   .ft-vis{width:185%;right:-60%;opacity:.16}
   .ft-hero{min-height:auto;padding:44px 16px 48px}
@@ -897,3 +881,15 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
   .yt-cta{flex-direction:column;align-items:flex-start;gap:14px;padding:20px}
   .yt-cta-a{width:100%;justify-content:center}
 }
+
+/* Featured blog card in the Community mega-menu. Spans the panel so it reads as a
+   promoted item rather than a sixth column, the way Procore's Featured block does. */
+.nl-feat{grid-column:1/-1;display:flex;gap:14px;align-items:center;margin-top:10px;padding:10px 11px;
+  border-top:1px solid var(--g200);border-radius:0 0 9px 9px;text-decoration:none;transition:background .13s}
+.nl-feat:hover{background:var(--g100)}
+.nl-feat-img{flex-shrink:0;width:104px;height:62px;border-radius:8px;overflow:hidden;background:var(--g100)}
+.nl-feat-img img{width:100%;height:100%;object-fit:cover;display:block}
+.nl-feat-b{display:flex;flex-direction:column;gap:3px;min-width:0}
+.nl-feat-k{font-size:9.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--orange)}
+.nl-feat-t{font-family:var(--fh);font-size:13.5px;font-weight:700;color:var(--navy)}
+.nl-feat-x{font-size:11.5px;color:var(--g600);line-height:1.45}
