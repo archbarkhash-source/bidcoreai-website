@@ -676,9 +676,9 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
    .ft-hero-in — including the image — so it never did anything. */
 .ft-hero>.con{position:relative;z-index:2}
 .ft-hero-in::before{content:"";position:absolute;inset:-56px -48px;z-index:1;pointer-events:none;
-  background:radial-gradient(ellipse 60% 74% at 50% 50%,
-    rgba(246,247,249,.96) 0%,rgba(246,247,249,.9) 46%,
-    rgba(246,247,249,.5) 74%,rgba(246,247,249,0) 100%)}
+  background:radial-gradient(ellipse 54% 68% at 50% 50%,
+    rgba(246,247,249,.96) 0%,rgba(246,247,249,.9) 44%,
+    rgba(246,247,249,.42) 72%,rgba(246,247,249,0) 100%)}
 .ft-hero-in>div:first-child{position:relative;z-index:2}
 /* Centre-aligned, matching every other hero on the site (pricing, blog, guide,
    the features hub). The copy column was already centred in the band; only its
@@ -695,7 +695,7 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
   opacity:.4;
   /* A light blur is what reads as glass; saturation pulled back so the UI in the
      screenshot does not compete with the headline for attention. */
-  filter:blur(2px) saturate(.8) contrast(.95);
+  filter:blur(1.2px) saturate(1.02) contrast(1.1);
   -webkit-mask-image:linear-gradient(to right,transparent 0%,#000 22%,#000 100%);
           mask-image:linear-gradient(to right,transparent 0%,#000 22%,#000 100%);
 }
