@@ -120,6 +120,7 @@ const BLOG_POSTS = [
   'set-aside-certifications-explained',
   'federal-proposal-writing',
   'ai-in-construction-preconstruction',
+  'end-to-end-federal-estimating-software',
 ];
 const BLOG_CATEGORIES = [
   'federal-bidding',
