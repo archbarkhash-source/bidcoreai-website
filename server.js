@@ -110,7 +110,15 @@ app.get('/contact', (req, res) =>
 /* Blog. Posts live at /blog/<slug> and are stored as views/blog-<slug>.html,
    so the slug is validated against a whitelist rather than trusted into a
    file path. */
-const BLOG_POSTS = ['federal-go-no-go-decision', 'free-federal-go-no-go-analyser-construction'];
+const BLOG_POSTS = [
+  'federal-go-no-go-decision',
+  'free-federal-go-no-go-analyser-construction',
+  'reading-a-sam-gov-solicitation',
+  'quantity-takeoff-accuracy',
+  'bid-leveling-subcontractor-quotes',
+  'bonding-capacity-portfolio-decision',
+  'set-aside-certifications-explained',
+];
 app.get('/blog', (req, res) =>
   res.sendFile(path.join(VIEWS_DIR, 'blog.html')));
 app.get('/blog/:slug', (req, res, next) => {

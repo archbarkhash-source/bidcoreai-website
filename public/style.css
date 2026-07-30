@@ -760,3 +760,24 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
   .bp-card-t{font-size:18px}
   .bp-body h2{font-size:21px;margin-top:34px}
 }
+
+/* Illustrated blog index. */
+.bp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.bp-card{overflow:hidden;padding:0}
+.bp-thumb{aspect-ratio:16/9;overflow:hidden;background:var(--g100);border-bottom:1px solid var(--g200)}
+.bp-thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease}
+.bp-card:hover .bp-thumb img{transform:scale(1.04)}
+.bp-card-b{padding:20px 22px 24px}
+.bp-card .bp-card-t{font-size:17px;margin:10px 0 8px}
+.bp-card .bp-card-x{font-size:13.5px}
+.bp-card .bp-card-r{margin-top:12px;font-size:12px}
+
+/* Lead image on a post, between the header band and the prose. */
+.bp-hero-img{margin:-24px 0 0;border-radius:16px;overflow:hidden;border:1px solid var(--g200);box-shadow:var(--s2);position:relative;top:-24px}
+.bp-hero-img img{width:100%;display:block}
+
+@media(max-width:960px){.bp-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){
+  .bp-grid{grid-template-columns:1fr}
+  .bp-card-b{padding:18px 18px 20px}
+}
