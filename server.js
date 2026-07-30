@@ -47,6 +47,29 @@ const VIEWS_DIR  = path.join(__dirname, 'views');
    pre-built HTML file with full SEO head
 ───────────────────────────────────────*/
 
+/* ── Canonical URL enforcement ─────────────────────────────────────────────
+   Two sources of duplicate URLs, both of which Search Console reports as
+   "Alternate page with proper canonical tag":
+
+   1. Express has strict routing off, so /pricing/ matches /pricing and returns
+      200. That is a second URL serving identical content.
+   2. The bare domain is a separate host from www.
+
+   Canonical tags already point at the right URL, so nothing was broken — but a
+   301 is a stronger signal than a canonical hint, and it stops the duplicate
+   being crawled at all. Root is exempt: "/" has to keep its slash. */
+app.use((req, res, next) => {
+  const host = req.headers.host || '';
+  if (host === 'bidcoreai.com') {
+    return res.redirect(301, `https://www.bidcoreai.com${req.originalUrl}`);
+  }
+  if (req.path.length > 1 && req.path.endsWith('/')) {
+    const q = req.originalUrl.slice(req.path.length);
+    return res.redirect(301, req.path.replace(/\/+$/, '') + q);
+  }
+  next();
+});
+
 const noCache = (req, res, next) => {
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   res.set('Pragma', 'no-cache');
