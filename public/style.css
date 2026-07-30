@@ -796,3 +796,12 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
 .gd-t{font-family:var(--fh);font-size:16px;font-weight:750;color:var(--navy);line-height:1.35;margin-bottom:5px}
 .gd-x{font-size:13.5px;color:var(--g600);line-height:1.65}
 @media(max-width:600px){.gd-step{padding:16px 16px;gap:12px}}
+
+/* Social icons under the footer brand block. Icon-only, with the real brand
+   colours on hover; aria-label and title carry the name since there is no text. */
+.ft-socials{display:flex;align-items:center;gap:6px;margin-top:14px}
+.ft-social{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;
+  border-radius:8px;color:var(--g400);text-decoration:none;transition:color .14s,background .14s}
+.ft-social:hover{background:var(--g200)}
+.ft-yt:hover{color:#FF0000}
+.ft-li:hover{color:#0A66C2}
