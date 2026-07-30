@@ -124,8 +124,9 @@ const BLOG_POSTS = [
 const BLOG_CATEGORIES = [
   'federal-bidding',
   'cost-estimating',
-  'ai-in-construction',
+  'bidding',
   'proposal-writing',
+  'ai-in-construction',
 ];
 
 app.get('/blog', (req, res) =>
