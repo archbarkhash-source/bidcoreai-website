@@ -811,12 +811,15 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
    default, so the drawer opens short instead of 25 links deep. */
 .mob-grp{border-top:1px solid var(--g200)}
 .mob-grp:first-of-type{border-top:none}
-.mob-grp>summary{display:flex;align-items:center;justify-content:space-between;gap:10px;
-  min-height:46px;padding:13px 14px;font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
-  color:var(--g600);cursor:pointer;list-style:none}
+.mob-grp>summary{display:flex;align-items:center;justify-content:space-between;gap:6px;
+  min-height:46px;padding:0 8px 0 0;cursor:pointer;list-style:none}
+/* The label is an anchor so the top-level destination stays reachable; the rest
+   of the summary row toggles. */
+.mob-grp-l{flex:1;display:flex;align-items:center;min-height:46px;padding:0 6px 0 14px;
+  font-size:14px;font-weight:600;color:var(--g600);text-decoration:none}
+.mob-grp-l:hover,.mob-grp[open]>summary .mob-grp-l{color:var(--navy)}
+.mob-grp-c{padding:6px;border-radius:6px}
 .mob-grp>summary::-webkit-details-marker{display:none}
-.mob-grp>summary:hover{color:var(--navy)}
-.mob-grp[open]>summary{color:var(--navy)}
 .mob-grp-c{flex-shrink:0;transition:transform .18s;opacity:.7}
 .mob-grp[open]>summary .mob-grp-c{transform:rotate(180deg)}
 /* Children indent so the hierarchy is legible once a group is open. */
@@ -855,4 +858,21 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
   .hs .hs-l{font-size:10.5px}
   /* Section rhythm: less air between bands on a small screen. */
   .overview,.compare,.hiw{padding-top:44px;padding-bottom:44px}
+}
+
+.mob-nl--top{font-size:14px;font-weight:600}
+
+/* YouTube learning callout. Stacks on a phone so the button never gets squeezed
+   into two words per line. */
+.yt-cta{display:flex;align-items:center;gap:18px;background:var(--white);border:1px solid var(--g200);
+  border-left:3px solid #FF0000;border-radius:14px;padding:22px 24px;margin-bottom:32px;box-shadow:var(--s1)}
+.yt-cta-i{flex-shrink:0;width:48px;height:48px;border-radius:12px;background:rgba(255,0,0,.07);
+  color:#FF0000;display:flex;align-items:center;justify-content:center}
+.yt-cta-b{flex:1;min-width:0}
+.yt-cta-t{font-family:var(--fh);font-size:16px;font-weight:800;color:var(--navy);margin-bottom:5px}
+.yt-cta-x{font-size:13.5px;color:var(--g600);line-height:1.65;margin:0}
+.yt-cta-a{flex-shrink:0;white-space:nowrap}
+@media(max-width:760px){
+  .yt-cta{flex-direction:column;align-items:flex-start;gap:14px;padding:20px}
+  .yt-cta-a{width:100%;justify-content:center}
 }
