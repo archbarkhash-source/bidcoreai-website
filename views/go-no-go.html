@@ -3,20 +3,49 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Free Federal Go/No-Go Analysis — Should You Bid It? | BidcoreAI</title>
-<meta name="description" content="Free bid/no-bid analysis for federal construction solicitations. Connect your own SAM.gov API key, search live opportunities, and get an instant GO / REVIEW / NO-GO scored across 12 criteria against your company's NAICS, certifications, bonding and past performance."/>
-<meta name="keywords" content="federal bid no bid analysis, go no go decision, SAM.gov search, government construction bidding, federal contracting, capture management"/>
-<link rel="canonical" href="https://bidcoreai.com/go-no-go"/>
+<title>Free Go/No-Go for US Federal Contractors | BidcoreAI</title>
+<meta name="description" content="Free Go/No-Go analyzer for US federal contractors — no card, no trial clock. Connect your own SAM.gov API key, search live opportunities, and get an instant GO / REVIEW / NO-GO scored across 12 criteria against your company's NAICS, set-aside eligibility, bonding and past performance."/>
+<meta name="keywords" content="free go no go for US federal contractors, free go no go for US contractors, free go no go analyzer, go no go analyzer for construction RFPs, federal bid no bid analysis, go no go decision, SAM.gov opportunity search, government construction bidding, federal contracting, capture management"/>
+<link rel="canonical" href="https://www.bidcoreai.com/go-no-go"/>
 <meta name="robots" content="index, follow"/>
 
 <meta property="og:type" content="website"/>
-<meta property="og:url" content="https://bidcoreai.com/go-no-go"/>
-<meta property="og:title" content="Free Federal Go/No-Go Analysis — BidcoreAI"/>
+<meta property="og:url" content="https://www.bidcoreai.com/go-no-go"/>
+<meta property="og:title" content="Free Go/No-Go for US Federal Contractors — BidcoreAI"/>
 <meta property="og:description" content="Should you bid it? Search live SAM.gov solicitations with your own API key and get an instant 12-criterion GO / REVIEW / NO-GO. Free, no card."/>
 <meta name="twitter:card" content="summary_large_image"/>
 
 <link rel="icon" type="image/png" href="https://bidcoreai-assets.vercel.app/favicon.png"/>
 <link rel="stylesheet" href="/go-no-go.css"/>
+
+<!-- This page is the app itself: almost everything below is rendered by JS, so a
+     crawler that does not run scripts sees very little. The structured data and
+     the <noscript> block below are what it reads instead — they have to state
+     what the tool is and that it is free, without depending on go-no-go.js. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "@id": "https://www.bidcoreai.com/go-no-go#app",
+  "name": "BidcoreAI Free Go/No-Go Analyzer",
+  "url": "https://www.bidcoreai.com/go-no-go",
+  "applicationCategory": "BusinessApplication",
+  "applicationSubCategory": "Government Contracting",
+  "operatingSystem": "Web browser",
+  "description": "Free Go/No-Go analyzer for US federal contractors. Search live SAM.gov solicitations with your own API key and get an instant GO / REVIEW / NO-GO scored across 12 criteria.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "description": "Free. No credit card. Runs on the contractor's own SAM.gov API key."
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "BidcoreAI",
+    "url": "https://www.bidcoreai.com/"
+  }
+}
+</script>
 </head>
 
 <body class="gg">
@@ -53,9 +82,31 @@
   <div class="gg-head-right" id="gg-head-right"></div>
 </header>
 
+<!-- go-no-go.js replaces this wholesale on boot, so nothing here is ever seen for
+     more than a moment by a visitor. It is written out anyway because the first
+     thing a crawler receives is this file, not the rendered app, and "Loading…"
+     is not something that can rank or be summarised. The h1 and the copy below
+     are the page's only script-free description of itself. -->
 <main id="gg-app">
   <div class="gg-wrap">
+    <h1 class="gg-h1">Free Go/No-Go for US Federal Contractors</h1>
+    <p class="gg-lead">
+      Should you bid it? Search live SAM.gov solicitations with your own API key and get an
+      instant GO / REVIEW / NO-GO — scored across 12 criteria against your company. Free, no
+      credit card, no trial clock.
+    </p>
+    <p class="gg-lead">
+      The score weighs your NAICS and PSC codes, project magnitude, distance from your office,
+      preferred state and agency, contract type, set-aside eligibility, capability match, bonding
+      capacity, past performance, and how much bid preparation time is actually left — and shows
+      the reason behind every one of them.
+    </p>
     <div class="gg-skeleton">Loading…</div>
+    <noscript>
+      <p class="gg-lead"><strong>This tool needs JavaScript.</strong> Enable it and reload to
+      search opportunities and score them. For a walkthrough of what it does, see the
+      <a href="/" style="color:var(--gg-orange)">BidcoreAI home page</a>.</p>
+    </noscript>
   </div>
 </main>
 

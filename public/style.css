@@ -1,17 +1,30 @@
 /* ───── TOKENS ───── */
 :root{
-  --dk:#061F32; --navy:#0B3C5D; --navy2:#12537E;
-  --blue:#007BFF; --blu2:#4BA8FF; --bdim:rgba(0,123,255,.1);
-  --orange:#FF6B00; --org2:#FF8C35; --odim:rgba(255,107,0,.09);
-  --teal:#00C9B1; --tdim:rgba(0,201,177,.09);
-  --green:#22c55e; --g50:#F7FAFD; --g100:#EDF2F8;
-  --g200:#D5E3EE; --g300:#AFC8DC; --g400:#7A9BB5; --g600:#3E6480;
-  --text:#162E42; --white:#fff;
+  /* Light scheme. Two token names are historical and worth knowing:
+     --dk is the darkest *surface* on the page, which in a light theme is a faint
+     warm grey, not a navy; --navy is now the ink used for headings. Both keep
+     their names because every page references them, and renaming across twelve
+     files buys nothing. The blue is gone entirely — amber carries the accent
+     work alongside the brand orange. */
+  --dk:#F6F7F9; --navy:#171A20; --navy2:#2B3037;
+  --blue:#B26206; --blu2:#E09A32; --bdim:rgba(224,154,50,.12);
+  /* #CC4D00 is the lightest orange that clears WCAG AA (4.54:1) both as text
+     on white and as the background under white button text. The brighter
+     #FF6B00 measured 3.50:1, which fails for the eyebrow labels and button
+     captions it was being used for. --org2 is the darker hover state. */
+  --orange:#CC4D00; --org2:#B84300; --odim:rgba(204,77,0,.07);
+  --teal:#0E8C7B; --tdim:rgba(14,140,123,.08);
+  --green:#15803D; --g50:#FBFBFC; --g100:#F1F2F5;
+  --g200:#E3E5EA; --g300:#C7CBD2; --g400:#8A9099; --g600:#5C636D;
+  --text:#22262C; --white:#fff;
+  /* Warm greige for the header band. Sitting against white page content it
+     separates the chrome from the page without a hard rule or a shadow. */
+  --cream:#EADFD8; --cream2:#DCCEC5;
   --fh:'Segoe UI',system-ui,sans-serif; --fb:'Segoe UI',system-ui,sans-serif;
   --r:10px; --r2:18px;
-  --s1:0 2px 20px rgba(11,60,93,.08);
-  --s2:0 10px 48px rgba(11,60,93,.14);
-  --s3:0 28px 72px rgba(0,0,0,.42);
+  --s1:0 1px 3px rgba(23,26,32,.05),0 6px 20px rgba(23,26,32,.05);
+  --s2:0 4px 12px rgba(23,26,32,.06),0 16px 44px rgba(23,26,32,.09);
+  --s3:0 18px 48px rgba(23,26,32,.14);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -22,94 +35,169 @@ button{font-family:var(--fb)}
 /* ───── UTIL ───── */
 .con{max-width:1160px;margin:0 auto;padding:0 24px}
 .fh{font-family:var(--fh)}
-.h1{font-family:var(--fh);font-size:clamp(32px,4.2vw,56px);font-weight:800;line-height:1.1;color:var(--white)}
+.h1{font-family:var(--fh);font-size:clamp(32px,4.2vw,56px);font-weight:800;line-height:1.1;color:var(--navy)}
 .h2{font-family:var(--fh);font-size:clamp(24px,3vw,42px);font-weight:800;line-height:1.12;color:var(--navy)}
-.h2w{color:var(--white)}
+/* Was white type for dark bands; those bands are light now. */
+.h2w{color:var(--navy)}
 .h3{font-family:var(--fh);font-size:18px;font-weight:700;color:var(--navy)}
 .lead{font-size:16px;color:var(--g600);line-height:1.76;max-width:600px}
 .eyebrow{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;color:var(--orange);letter-spacing:.16em;text-transform:uppercase;margin-bottom:10px}
 
 /* pills */
 .pill{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:100px;border:1.5px solid}
-.pill-o{background:var(--odim);color:var(--orange);border-color:rgba(255,107,0,.22)}
-.pill-b{background:var(--bdim);color:var(--blue);border-color:rgba(0,123,255,.22)}
-.pill-t{background:var(--tdim);color:var(--teal);border-color:rgba(0,201,177,.2)}
+.pill-o{background:var(--odim);color:var(--orange);border-color:rgba(232,93,0,.22)}
+.pill-b{background:var(--bdim);color:var(--blue);border-color:rgba(224,154,50,.22)}
+.pill-t{background:var(--tdim);color:var(--teal);border-color:rgba(14,140,123,.2)}
 .pill-g{background:rgba(34,197,94,.07);color:#16a34a;border-color:rgba(34,197,94,.22)}
 
 /* buttons */
 .btn{display:inline-flex;align-items:center;gap:7px;font-family:var(--fb);font-size:14px;font-weight:600;padding:11px 22px;border-radius:var(--r);border:none;cursor:pointer;transition:all .17s;white-space:nowrap;line-height:1;text-decoration:none}
 .btn-lg{font-size:15.5px;padding:14px 30px}
 .btn-sm{font-size:12.5px;padding:8px 16px}
-.btn-p{background:var(--orange);color:#fff;box-shadow:0 4px 16px rgba(255,107,0,.28)}
-.btn-p:hover{background:var(--org2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,107,0,.38)}
+.btn-p{background:var(--orange);color:#fff;box-shadow:0 3px 12px rgba(232,93,0,.22)}
+.btn-p:hover{background:var(--org2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,93,0,.38)}
 .btn-n{background:var(--navy);color:#fff}
 .btn-n:hover{background:var(--navy2);transform:translateY(-2px)}
-.btn-gh{background:rgba(255,255,255,.08);color:#fff;border:1.5px solid rgba(255,255,255,.24)}
-.btn-gh:hover{background:rgba(255,255,255,.16);transform:translateY(-1px)}
+.btn-gh{background:#fff;color:var(--navy);border:1.5px solid var(--g200)}
+.btn-gh:hover{background:var(--g50);border-color:var(--g300);transform:translateY(-1px)}
 .btn-out{background:transparent;color:var(--navy);border:2px solid var(--g300)}
 .btn-out:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
 .btn-blu{background:var(--blue);color:#fff}
 .btn-blu:hover{background:var(--blu2);transform:translateY(-2px)}
 
 /* ───── NAV ───── */
-.nav{position:sticky;top:0;z-index:500;background:rgba(6,31,50,.97);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06)}
+.nav{position:sticky;top:0;z-index:500;background:var(--cream);backdrop-filter:blur(20px);border-bottom:1px solid var(--cream2)}
 .nav-in{max-width:1160px;margin:0 auto;padding:0 24px;height:62px;display:flex;align-items:center;gap:8px}
 .logo-wrap{display:flex;align-items:center;gap:8px;cursor:pointer;flex-shrink:0;text-decoration:none}
 .logo-img{height:30px;width:auto;display:block}
-.logo-txt{font-family:var(--fh);font-size:18px;font-weight:800;color:#fff}
+.logo-txt{font-family:var(--fh);font-size:18px;font-weight:800;color:var(--navy)}
 .nav-links{display:flex;gap:1px;margin-left:auto}
-.nl{font-size:13px;font-weight:500;color:rgba(255,255,255,.6);padding:7px 13px;border-radius:7px;cursor:pointer;transition:all .14s;border:none;background:none;display:flex;align-items:center;gap:5px}
-.nl:hover,.nl.on{color:#fff;background:rgba(255,255,255,.08)}
-.nl.hl{color:var(--org2);background:rgba(255,107,0,.1)}
+.nl{font-size:13px;font-weight:550;color:var(--g600);padding:7px 13px;border-radius:7px;cursor:pointer;transition:all .14s;border:none;background:none;display:flex;align-items:center;gap:5px}
+.nl:hover,.nl.on{color:var(--navy);background:rgba(23,26,32,.06)}
+.nl.hl{color:var(--orange);background:var(--odim)}
 .nav-cta{display:flex;gap:8px;margin-left:16px}
 .nav-cta .btn{padding:8px 16px;font-size:13px}
 
+/* ───── NAV DROPDOWNS (mega-menu) ─────
+   Opens on hover for the mouse and on :focus-within for the keyboard, so the
+   menu needs no JavaScript at all — it survives script errors and works before
+   any JS has loaded. The panel is hidden with visibility+opacity rather than
+   display:none so the transition can run and so its links stay in the tab order
+   only while it is open (pointer-events guards the closed state). */
+.nl-drop{position:relative}
+.nl-drop-t{font-family:inherit}
+.nl-caret{margin-left:3px;opacity:.75;transition:transform .16s}
+.nl-drop:hover .nl-caret,.nl-drop:focus-within .nl-caret{transform:rotate(180deg)}
+
+/* Procore's geometry: the menu is a full-width band pinned under the nav bar,
+   not a small panel floating over the page. It reads as part of the header
+   rather than a popup, and it gives the columns room to breathe.
+
+   position:fixed with left/right:0 escapes .nl-drop's containing block, so the
+   band spans the viewport while the trigger stays where it is. The nav is
+   sticky at 62px tall, hence the top offset. */
+.nl-panel{
+  position:fixed;top:62px;left:0;right:0;
+  padding:26px 24px 30px;
+  background:#fff;border-top:1px solid var(--g200);
+  border-bottom:1px solid var(--g200);
+  box-shadow:0 22px 44px -18px rgba(23,26,32,.16);
+  opacity:0;visibility:hidden;pointer-events:none;
+  transform:translateY(-6px);
+  z-index:600;
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px 22px;
+  max-width:1160px;margin:0 auto;
+  /* Closing is delayed; opening is not. Aiming at a menu item means travelling
+     diagonally, which briefly leaves both the tab and the panel — with an
+     instant close the menu vanishes mid-reach. The grace period makes it hold
+     still long enough to actually click something. */
+  transition:opacity .16s .25s,transform .16s .25s,visibility 0s .41s;
+}
+/* The panel is pinned to the bottom of the nav bar, so the pointer has to cross
+   the rest of that bar to reach it. This covers the gap from directly under the
+   tab down into the panel, and overhangs sideways for diagonal approaches. */
+.nl-drop::after{content:'';position:absolute;left:-14px;right:-14px;top:100%;height:24px}
+.nl-panel::before{content:'';position:absolute;top:-24px;left:0;right:0;height:24px}
+/* The band is white against the cream header, so it needs its own top edge. */
+.nl-panel{border-top-color:var(--cream2)}
+.nl-drop:hover .nl-panel,.nl-drop:focus-within .nl-panel{
+  opacity:1;visibility:visible;pointer-events:auto;transform:translateY(0);
+  transition:opacity .15s .12s,transform .15s .12s,visibility 0s .12s;
+}
+/* Keyboard focus should never wait. */
+.nl-drop:focus-within .nl-panel{transition:opacity .12s,transform .12s,visibility 0s}
+
+.nl-item{display:flex;gap:11px;align-items:flex-start;padding:9px 11px;border-radius:9px;text-decoration:none;transition:background .13s}
+.nl-item:hover,.nl-item:focus-visible{background:var(--g100);outline:none}
+.nl-item-ico{flex-shrink:0;width:29px;height:29px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:var(--odim);color:var(--orange)}
+.nl-item-txt{display:flex;flex-direction:column;gap:2px;min-width:0}
+.nl-item-t{font-family:var(--fh);font-size:13px;font-weight:650;color:var(--navy);display:flex;align-items:center;gap:6px;white-space:nowrap}
+.nl-item-d{font-size:11.5px;color:var(--g600);line-height:1.45}
+.nl-badge{font-size:9.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#15803D;background:rgba(21,128,61,.09);border:1px solid rgba(21,128,61,.22);border-radius:100px;padding:1.5px 6px}
+
+/* Solutions carries far more rows than Features, so it runs four across to keep
+   the band from becoming taller than the viewport. */
+.nl-panel--wide{grid-template-columns:repeat(4,minmax(0,1fr))}
+.nl-item-t{white-space:normal}
+
+/* Group label. It spans the full row so the items beneath it start a new line,
+   which is what turns one flat grid into labelled sections. */
+.nl-panel-h{grid-column:1/-1;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--g400);padding:14px 11px 7px;margin-top:4px;
+  border-top:1px solid var(--g200)}
+.nl-panel-h:first-child{border-top:none;margin-top:0;padding-top:2px}
+
 /* Mobile toggle */
-.mob-toggle{display:none;background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;padding:6px;border-radius:7px;margin-right:2px;flex-shrink:0}
-.mob-toggle:hover{color:#fff;background:rgba(255,255,255,.08)}
+.mob-toggle{display:none;background:none;border:none;color:var(--g600);cursor:pointer;padding:6px;border-radius:7px;margin-right:2px;flex-shrink:0}
+.mob-toggle:hover{color:var(--navy);background:var(--g100)}
 .nav-demo{display:inline-flex}
 
 /* ───── MOBILE NAV ───── */
 .mob-overlay{display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.5);backdrop-filter:blur(4px)}
 .mob-overlay.on{display:block}
-.mob-nav{position:fixed;top:0;left:0;bottom:0;width:280px;z-index:800;background:var(--dk);transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;border-right:1px solid rgba(255,255,255,.07)}
+.mob-nav{position:fixed;top:0;left:0;bottom:0;width:280px;z-index:800;background:#fff;transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;border-right:1px solid var(--g200)}
 .mob-nav.on{transform:translateX(0)}
-.mob-nav-head{padding:16px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06)}
-.mob-close{background:rgba(255,255,255,.07);border:none;border-radius:7px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(255,255,255,.6);transition:all .14s}
-.mob-close:hover{background:rgba(255,255,255,.13);color:#fff}
+.mob-nav-head{padding:16px 18px;display:flex;align-items:center;justify-content:space-between;background:var(--cream);border-bottom:1px solid var(--cream2)}
+.mob-close{background:var(--g100);border:none;border-radius:7px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--g600);transition:all .14s}
+.mob-close:hover{background:var(--g200);color:var(--navy)}
 .mob-links{flex:1;padding:10px 10px;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
-.mob-nl{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:9px;font-size:14px;font-weight:500;color:rgba(255,255,255,.7);cursor:pointer;background:none;border:none;font-family:var(--fb);transition:all .14s;width:100%;text-align:left}
-.mob-nl:hover{color:#fff;background:rgba(255,255,255,.08)}
-.mob-nl.hl{color:var(--org2)}
-.mob-cta{padding:14px 16px;border-top:1px solid rgba(255,255,255,.06)}
+.mob-nl{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:9px;font-size:14px;font-weight:500;color:var(--g600);cursor:pointer;background:none;border:none;font-family:var(--fb);transition:all .14s;width:100%;text-align:left}
+.mob-nl:hover{color:var(--navy);background:var(--g100)}
+.mob-nl.hl{color:var(--orange)}
+/* The drawer has no room for hover menus, so the same groups become labelled
+   sections in one scrolling list. */
+.mob-nl-h{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--g400);padding:16px 14px 5px}
+.mob-nl-h:first-child{padding-top:6px}
+.mob-nl .nl-badge{margin-left:2px}
+.mob-cta{padding:14px 16px;border-top:1px solid var(--g200)}
 
 /* ───── PAGE ROUTER ───── */
 .pg{display:none}.pg.on{display:block}
 
 /* ───── HOME HERO ───── */
 .hero{background:var(--dk);padding:82px 24px 0;overflow:hidden;position:relative;min-height:88vh;display:flex;align-items:center}
-.hero-glow{position:absolute;inset:0;background:radial-gradient(ellipse 60% 55% at 76% 40%,rgba(0,123,255,.17) 0%,transparent 64%),radial-gradient(ellipse 35% 35% at 12% 75%,rgba(255,107,0,.1) 0%,transparent 58%)}
-.hero-grid{position:absolute;inset:0;opacity:.036;background-image:radial-gradient(circle,rgba(255,255,255,.9) 1px,transparent 1px);background-size:32px 32px}
-.hero-in{position:relative;z-index:2;max-width:1160px;margin:0 auto;display:grid;grid-template-columns:1fr 1.08fr;gap:56px;align-items:center;padding-bottom:80px;width:100%}
-.hero-tag{display:inline-flex;align-items:center;gap:7px;background:rgba(255,107,0,.14);border:1px solid rgba(255,107,0,.28);border-radius:100px;padding:5px 14px;font-size:11px;font-weight:700;color:var(--org2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
-.hero-sub{font-size:16px;color:rgba(255,255,255,.64);line-height:1.76;max-width:480px;margin-bottom:30px}
+.hero-glow{position:absolute;inset:0;background:radial-gradient(ellipse 60% 55% at 76% 40%,rgba(232,93,0,.07) 0%,transparent 64%),radial-gradient(ellipse 35% 35% at 12% 75%,rgba(224,154,50,.09) 0%,transparent 58%)}
+.hero-grid{position:absolute;inset:0;opacity:.05;background-image:radial-gradient(circle,rgba(23,26,32,.55) 1px,transparent 1px);background-size:32px 32px}
+.hero-in{position:relative;z-index:2;max-width:1280px;margin:0 auto;display:grid;grid-template-columns:1fr 1.42fr;gap:44px;align-items:center;padding-bottom:80px;width:100%}
+.hero-tag{display:inline-flex;align-items:center;gap:7px;background:rgba(232,93,0,.14);border:1px solid rgba(232,93,0,.25);border-radius:100px;padding:5px 14px;font-size:11px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
+.hero-sub{font-size:16px;color:var(--g600);line-height:1.76;max-width:480px;margin-bottom:30px}
 .hero-ctas{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:44px}
-.hero-stats{display:flex;gap:0;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden;width:fit-content}
-.hs{padding:13px 24px;border-right:1px solid rgba(255,255,255,.07)}
+.hero-stats{display:flex;gap:0;background:#fff;border:1px solid var(--g200);border-radius:12px;overflow:hidden;width:fit-content;box-shadow:var(--s1)}
+.hs{padding:13px 24px;border-right:1px solid var(--g200)}
 .hs:last-child{border-right:none}
-.hs-v{font-family:var(--fh);font-size:27px;font-weight:800;color:#fff;line-height:1}
-.hs-l{font-size:11px;color:rgba(255,255,255,.38);margin-top:4px}
+.hs-v{font-family:var(--fh);font-size:27px;font-weight:800;color:var(--navy);line-height:1}
+.hs-l{font-size:11px;color:var(--g600);margin-top:4px}
 
 /* hero screenshot */
-.hero-ss{border-radius:14px;overflow:hidden;box-shadow:var(--s3);border:1px solid rgba(255,255,255,.09);animation:risein .72s ease both;width:100%;max-width:760px;margin-left:auto;transform:scale(1.08);transform-origin:center}
+.hero-ss{border-radius:14px;overflow:hidden;box-shadow:var(--s3);border:1px solid var(--g200);animation:risein .72s ease both;width:100%;max-width:980px;margin-left:auto;transform:scale(1.04);transform-origin:center}
 @keyframes risein{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
-.ss-chrome{background:rgba(11,60,93,.85);padding:9px 14px;display:flex;align-items:center;gap:6px;border-bottom:1px solid rgba(255,255,255,.06)}
+.ss-chrome{background:rgba(28,32,38,.92);padding:9px 14px;display:flex;align-items:center;gap:6px;border-bottom:1px solid rgba(255,255,255,.06)}
 .ssdot{width:9px;height:9px;border-radius:50%}
 .ss-chrome-ttl{font-family:var(--fh);font-size:9.5px;color:rgba(255,255,255,.35);margin-left:auto;letter-spacing:.04em}
 .hero-ss video{width:100%;height:auto;display:block;object-fit:cover}
 
 /* ───── PULSE ───── */
-.pulse-bar{background:linear-gradient(90deg,rgba(0,123,255,.08),rgba(0,201,177,.08));border-bottom:1px solid rgba(0,123,255,.14);padding:11px 24px}
+.pulse-bar{background:linear-gradient(90deg,rgba(224,154,50,.08),rgba(14,140,123,.08));border-bottom:1px solid rgba(224,154,50,.14);padding:11px 24px}
 .pulse-bar-in{max-width:1160px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0;animation:blink 2s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
@@ -133,11 +221,27 @@ button{font-family:var(--fb)}
 
 /* ───── SCREENSHOT SLIDES ───── */
 .slides-sec{background:var(--g50);padding:88px 24px}
+.slides-sec>.con{max-width:1280px}
 .slides-tabs{display:flex;gap:0;background:var(--white);border:1px solid var(--g200);border-radius:12px;overflow:hidden;margin-bottom:28px}
-.stab{flex:1;padding:12px 16px;font-size:13px;font-weight:600;color:var(--g400);cursor:pointer;border-bottom:2.5px solid transparent;transition:all .16s;border:none;background:none;font-family:var(--fb);text-align:center;border-right:1px solid var(--g200)}
+/* border:none used to come AFTER border-bottom in this rule and reset it, so
+   .stab.on setting border-bottom-COLOR had nothing to colour and the active
+   tab never showed an underline. Shorthand first, specific borders after. */
+.stab{flex:1;border:none;padding:12px 16px;font-size:13px;font-weight:600;color:var(--g600);cursor:pointer;transition:all .16s;background:none;font-family:var(--fb);text-align:center;border-right:1px solid var(--g200);border-bottom:2.5px solid transparent}
 .stab:last-child{border-right:none}
-.stab.on{color:var(--blue);background:var(--g50);border-bottom-color:var(--blue)}
-.slide-pane{display:none}.slide-pane.on{display:grid;grid-template-columns:1.1fr 1fr;gap:28px;align-items:start}
+.stab.on{color:var(--orange);background:var(--g50);border-bottom-color:var(--orange)}
+.slide-pane{display:none}.slide-pane.on{display:grid;grid-template-columns:1.65fr 1fr;gap:32px;align-items:start}
+/* Text-only slides. The app screenshots came out of the home page because the
+   product UI changes faster than a marketing page gets re-shot, and a screenshot
+   six versions old dates the site worse than having none. Scoped with a modifier
+   rather than changed on .slide-pane itself: five feature pages still pair a pane
+   with an image and must keep their two columns.
+   With no image column the pane is one column, the description is held to a
+   readable measure, and the three features spread across the width the screenshot
+   used instead of leaving it empty. */
+.slide-pane--text.on{grid-template-columns:1fr;gap:18px}
+.slide-pane--text .slide-desc{max-width:80ch;margin-bottom:4px}
+.slide-pane--text .slide-feats{flex-direction:row;flex-wrap:wrap}
+.slide-pane--text .slide-feats .sf{flex:1 1 250px}
 .slide-img-wrap{background:var(--white);border:1px solid var(--g200);border-radius:16px;overflow:hidden;box-shadow:var(--s2)}
 .slide-img-wrap img{width:100%;display:block}
 .slide-info{padding:8px 0}
@@ -145,7 +249,7 @@ button{font-family:var(--fb)}
 .slide-desc{font-size:13.5px;color:var(--g600);line-height:1.72;margin-bottom:20px}
 .slide-feats{display:flex;flex-direction:column;gap:9px}
 .sf{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;background:var(--white);border:1px solid var(--g200);border-radius:10px;transition:all .16s}
-.sf:hover{box-shadow:var(--s1);border-color:rgba(0,123,255,.18)}
+.sf:hover{box-shadow:var(--s1);border-color:rgba(224,154,50,.18)}
 .sf-ico{width:30px;height:30px;border-radius:8px;background:var(--bdim);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--blue)}
 .sf-t{font-size:12.5px;font-weight:700;color:var(--navy);margin-bottom:1px}
 .sf-s{font-size:11.5px;color:var(--g600)}
@@ -161,7 +265,7 @@ button{font-family:var(--fb)}
 .hs-label{font-size:13px;font-weight:600;color:var(--navy);line-height:1.4;padding-top:3px}
 .hs-sub{font-size:11.5px;color:var(--g400);margin-top:2px}
 .hiw-panel{padding:32px 36px;min-height:360px;display:flex;flex-direction:column;justify-content:center}
-.hp-badge{display:inline-flex;align-items:center;gap:5px;background:var(--odim);color:var(--orange);border:1px solid rgba(255,107,0,.2);border-radius:6px;font-size:10px;font-weight:700;padding:3px 9px;text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px}
+.hp-badge{display:inline-flex;align-items:center;gap:5px;background:var(--odim);color:var(--orange);border:1px solid rgba(232,93,0,.2);border-radius:6px;font-size:10px;font-weight:700;padding:3px 9px;text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px}
 .hp-title{font-family:var(--fh);font-size:22px;font-weight:800;color:var(--navy);margin-bottom:10px}
 .hp-desc{font-size:14px;color:var(--g600);line-height:1.72;margin-bottom:20px;max-width:520px}
 .hp-points{display:flex;flex-direction:column;gap:8px}
@@ -173,8 +277,8 @@ button{font-family:var(--fb)}
 
 /* ───── SOLUTIONS PAGE ───── */
 .sol-hero{background:var(--dk);padding:72px 24px 56px;position:relative;overflow:hidden}
-.sol-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 55% 50% at 75% 40%,rgba(0,123,255,.16) 0%,transparent 62%)}
-.sol-hero::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 30% 30% at 10% 70%,rgba(255,107,0,.08) 0%,transparent 55%)}
+.sol-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 55% 50% at 75% 40%,rgba(224,154,50,.16) 0%,transparent 62%)}
+.sol-hero::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 30% 30% at 10% 70%,rgba(232,93,0,.08) 0%,transparent 55%)}
 .sol-hero-in{position:relative;z-index:2;max-width:1160px;margin:0 auto}
 .platform-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:44px}
 .plat-card{background:var(--white);border:1px solid var(--g200);border-radius:16px;padding:22px 18px;transition:all .18s;position:relative;overflow:hidden}
@@ -191,7 +295,7 @@ button{font-family:var(--fb)}
 .sol-img img{width:100%;display:block}
 .sol-feats{display:flex;flex-direction:column;gap:11px;margin-top:22px}
 .sol-f{display:flex;gap:11px;align-items:flex-start;padding:13px 15px;background:var(--g50);border:1px solid var(--g200);border-radius:11px;transition:all .18s}
-.sol-f:hover{box-shadow:var(--s1);border-color:rgba(0,123,255,.18);background:var(--white)}
+.sol-f:hover{box-shadow:var(--s1);border-color:rgba(224,154,50,.18);background:var(--white)}
 .sf-icon{width:34px;height:34px;border-radius:9px;background:var(--bdim);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--blue)}
 .sf-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:2px}
 .sf-desc{font-size:12px;color:var(--g600);line-height:1.58}
@@ -199,26 +303,26 @@ button{font-family:var(--fb)}
 /* Federal set-aside badges */
 .sa-badges{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px}
 .sab{display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:7px;font-size:11px;font-weight:700;border:1px solid}
-.sa8{background:rgba(0,123,255,.13);color:var(--blu2);border-color:rgba(0,123,255,.24)}
+.sa8{background:rgba(224,154,50,.13);color:var(--blu2);border-color:rgba(224,154,50,.24)}
 .sahub{background:rgba(34,197,94,.11);color:#4ade80;border-color:rgba(34,197,94,.22)}
-.sawosb{background:rgba(255,107,0,.13);color:var(--org2);border-color:rgba(255,107,0,.22)}
-.sasdvo{background:rgba(0,201,177,.11);color:var(--teal);border-color:rgba(0,201,177,.2)}
+.sawosb{background:rgba(232,93,0,.13);color:var(--org2);border-color:rgba(232,93,0,.22)}
+.sasdvo{background:rgba(14,140,123,.11);color:var(--teal);border-color:rgba(14,140,123,.2)}
 .sass{background:rgba(249,115,22,.12);color:#fb923c;border-color:rgba(249,115,22,.22)}
 
 /* ───── SERVICES PAGE ───── */
 .svc-layout{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;margin-top:44px}
-.svc-card{background:linear-gradient(145deg,var(--dk),var(--navy));border-radius:18px;padding:28px;border:1px solid rgba(255,255,255,.1);color:#fff;position:relative;overflow:hidden}
-.svc-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(0,123,255,.18) 0%,transparent 60%)}
-.svc-price-v{font-family:var(--fh);font-size:48px;font-weight:800;color:#fff;position:relative;z-index:1;line-height:1}
-.svc-price-u{font-size:15px;color:rgba(255,255,255,.5);position:relative;z-index:1}
+.svc-card{background:linear-gradient(145deg,#fff,var(--dk));border-radius:18px;padding:28px;border:1px solid var(--g200);color:var(--text);box-shadow:var(--s1);position:relative;overflow:hidden}
+.svc-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(224,154,50,.18) 0%,transparent 60%)}
+.svc-price-v{font-family:var(--fh);font-size:48px;font-weight:800;color:var(--navy);position:relative;z-index:1;line-height:1}
+.svc-price-u{font-size:15px;color:var(--g600);position:relative;z-index:1}
 .svc-dels{display:flex;flex-direction:column;gap:7px;margin-top:16px;position:relative;z-index:1}
-.svc-del{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;font-size:12.5px;color:rgba(255,255,255,.78)}
-.svc-disc{background:rgba(34,197,94,.16);border:1px solid rgba(34,197,94,.28);border-radius:9px;padding:11px 14px;text-align:center;margin-top:12px;position:relative;z-index:1}
-.svc-disc-v{font-family:var(--fh);font-size:20px;font-weight:800;color:#4ade80}
-.svc-disc-t{font-size:11.5px;color:rgba(255,255,255,.5);margin-top:2px}
+.svc-del{display:flex;align-items:center;gap:8px;background:var(--g100);border:1px solid var(--g200);border-radius:8px;padding:9px 12px;font-size:12.5px;color:var(--text)}
+.svc-disc{background:rgba(21,128,61,.08);border:1px solid rgba(21,128,61,.2);border-radius:9px;padding:11px 14px;text-align:center;margin-top:12px;position:relative;z-index:1}
+.svc-disc-v{font-family:var(--fh);font-size:20px;font-weight:800;color:var(--green)}
+.svc-disc-t{font-size:11.5px;color:var(--g600);margin-top:2px}
 .svc-steps{display:flex;flex-direction:column;gap:11px;margin-top:24px}
 .svc-step{display:flex;gap:11px;padding:13px 15px;background:var(--white);border:1px solid var(--g200);border-radius:11px;transition:all .18s}
-.svc-step:hover{box-shadow:var(--s1);transform:translateX(3px);border-color:rgba(0,123,255,.2)}
+.svc-step:hover{box-shadow:var(--s1);transform:translateX(3px);border-color:rgba(224,154,50,.2)}
 .svc-n{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;font-family:var(--fh);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .svc-t{font-size:12.5px;font-weight:700;color:var(--navy);margin-bottom:2px}
 .svc-s{font-size:12px;color:var(--g600);line-height:1.56}
@@ -230,7 +334,7 @@ button{font-family:var(--fb)}
 .fg{margin-bottom:13px}
 .fg label{display:block;font-size:11.5px;font-weight:700;color:var(--navy);margin-bottom:4px;text-transform:uppercase;letter-spacing:.07em}
 .fg input,.fg select,.fg textarea{width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid var(--g200);font-family:var(--fb);font-size:13.5px;color:var(--text);background:var(--white);outline:none;transition:all .14s}
-.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,123,255,.07)}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(224,154,50,.07)}
 .fg input[type="file"]{background:var(--g50);cursor:pointer;padding:7px 12px}
 .fg2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
@@ -241,9 +345,9 @@ button{font-family:var(--fb)}
 .dtab.on{color:var(--blue);background:var(--white)}
 .div-opts{padding:10px;display:grid;grid-template-columns:repeat(2,1fr);gap:5px;max-height:200px;overflow-y:auto}
 .dopt{display:flex;align-items:center;gap:6px;padding:6px 9px;border-radius:7px;cursor:pointer;font-size:11.5px;color:var(--text);border:1px solid transparent;transition:all .13s}
-.dopt:hover{background:var(--bdim);border-color:rgba(0,123,255,.14)}
+.dopt:hover{background:var(--bdim);border-color:rgba(224,154,50,.14)}
 .dopt input{accent-color:var(--blue);width:13px;height:13px;flex-shrink:0}
-.dopt.ck{background:var(--bdim);border-color:rgba(0,123,255,.2);font-weight:600;color:var(--navy)}
+.dopt.ck{background:var(--bdim);border-color:rgba(224,154,50,.2);font-weight:600;color:var(--navy)}
 .div-sel-lbl{font-size:11.5px;color:var(--blue);font-weight:600;margin-top:6px;min-height:18px}
 .fsub{width:100%;padding:13px;background:var(--orange);color:#fff;border:none;border-radius:9px;font-family:var(--fb);font-size:14.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .17s;margin-top:4px}
 .fsub:hover{background:var(--org2);transform:translateY(-1px)}
@@ -256,16 +360,17 @@ button{font-family:var(--fb)}
 .f-success-s{font-size:13.5px;color:var(--g600);line-height:1.65}
 
 /* ───── COMPARE ───── */
-.compare{background:var(--navy);padding:80px 24px}
+/* --navy is ink now, so this band takes the light surface instead. */
+.compare{background:var(--dk);padding:80px 24px}
 .cmp-in{max-width:920px;margin:0 auto}
-.cmp-t{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:14px;overflow:hidden;margin-top:44px}
-.cmp-thead{display:grid;grid-template-columns:1.8fr 1fr 1fr;background:rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.09)}
-.cth{padding:12px 16px;font-size:12px;font-weight:700;color:rgba(255,255,255,.7);text-align:center}
-.cth:first-child{text-align:left}.cth.hi{background:rgba(255,107,0,.13);color:var(--orange)}
-.cmp-row{display:grid;grid-template-columns:1.8fr 1fr 1fr;border-bottom:1px solid rgba(255,255,255,.05)}
+.cmp-t{background:#fff;border:1px solid var(--g200);border-radius:14px;overflow:hidden;margin-top:44px}
+.cmp-thead{display:grid;grid-template-columns:1.8fr 1fr 1fr;background:var(--g100);border-bottom:1px solid var(--g200)}
+.cth{padding:12px 16px;font-size:12px;font-weight:700;color:var(--navy);text-align:center}
+.cth:first-child{text-align:left}.cth.hi{background:var(--odim);color:var(--orange)}
+.cmp-row{display:grid;grid-template-columns:1.8fr 1fr 1fr;border-bottom:1px solid var(--g200)}
 .cmp-row:last-child{border-bottom:none}
-.ctd{padding:11px 16px;font-size:12px;color:rgba(255,255,255,.54);text-align:center;display:flex;align-items:center;justify-content:center;gap:4px}
-.ctd:first-child{text-align:left;justify-content:flex-start;font-weight:600;color:rgba(255,255,255,.8)}.ctd.hi{background:rgba(255,107,0,.05)}
+.ctd{padding:11px 16px;font-size:12px;color:var(--g600);text-align:center;display:flex;align-items:center;justify-content:center;gap:4px}
+.ctd:first-child{text-align:left;justify-content:flex-start;font-weight:600;color:var(--navy)}.ctd.hi{background:var(--odim)}
 .ck2{color:#4ade80}.cx2{color:#f87171}.cp2{color:#fbbf24}
 
 /* ───── PRICING ───── */
@@ -273,7 +378,7 @@ button{font-family:var(--fb)}
 .price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:44px;max-width:1140px;margin-left:auto;margin-right:auto}
 .pc2{background:var(--white);border:2px solid var(--g200);border-radius:18px;padding:28px 24px;position:relative;transition:all .2s}
 .pc2:hover{box-shadow:var(--s2);transform:translateY(-4px)}
-.pc2.pop{border-color:var(--blue);box-shadow:0 0 0 4px rgba(0,123,255,.08)}
+.pc2.pop{border-color:var(--blue);box-shadow:0 0 0 4px rgba(224,154,50,.08)}
 .pop-b{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--blue);color:#fff;font-size:10px;font-weight:700;padding:3px 13px;border-radius:100px;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap}
 .pt{font-size:10px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.12em;margin-bottom:4px}
 .pname{font-family:var(--fh);font-size:18px;font-weight:800;color:var(--navy);margin-bottom:4px}
@@ -288,7 +393,7 @@ button{font-family:var(--fb)}
 .pf.ms{color:var(--g400)}.pf.ms .ck{color:var(--g300)}
 .pcta{display:block;text-align:center;width:100%}
 .pnote{font-size:10.5px;color:var(--g400);text-align:center;margin-top:7px}
-.disc-banner{background:linear-gradient(135deg,rgba(34,197,94,.07),rgba(0,123,255,.07));border:1px solid rgba(34,197,94,.2);border-radius:13px;padding:16px 20px;margin-top:22px;text-align:center}
+.disc-banner{background:linear-gradient(135deg,rgba(34,197,94,.07),rgba(224,154,50,.07));border:1px solid rgba(34,197,94,.2);border-radius:13px;padding:16px 20px;margin-top:22px;text-align:center}
 .disc-b-t{font-family:var(--fh);font-size:14.5px;font-weight:800;color:var(--navy);margin-bottom:4px}
 .disc-b-s{font-size:12.5px;color:var(--g600);line-height:1.6}
 
@@ -300,7 +405,7 @@ button{font-family:var(--fb)}
 
 /* ───── FEEDBACK PAGE ───── */
 .fb-hero{background:var(--dk);padding:64px 24px 48px;text-align:center;position:relative;overflow:hidden}
-.fb-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 55% 50% at 50% 40%,rgba(0,123,255,.16) 0%,transparent 65%)}
+.fb-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 55% 50% at 50% 40%,rgba(224,154,50,.16) 0%,transparent 65%)}
 .fb-hero-in{position:relative;z-index:2;max-width:600px;margin:0 auto}
 .fb-form-section{padding:64px 24px}
 .star-rating{display:flex;gap:8px;margin-bottom:6px}
@@ -310,6 +415,9 @@ button{font-family:var(--fb)}
 
 /* ───── CONTACT PAGE ───── */
 .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:44px;align-items:start}
+/* Contact is a single form now, so the two-column grid collapses to one
+   centred column rather than leaving the form stranded on the left. */
+.contact-grid--solo{grid-template-columns:minmax(0,560px);justify-content:center}
 .contact-info{display:flex;flex-direction:column;gap:16px}
 .ci-item{display:flex;gap:14px;padding:16px 18px;background:var(--g50);border:1px solid var(--g200);border-radius:12px}
 .ci-ico{width:40px;height:40px;border-radius:10px;background:var(--bdim);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--blue)}
@@ -317,9 +425,13 @@ button{font-family:var(--fb)}
 .ci-text{font-size:12.5px;color:var(--g600);line-height:1.6}
 
 /* ───── MODAL ───── */
-.mov{display:none;position:fixed;inset:0;z-index:900;background:rgba(6,31,50,.76);backdrop-filter:blur(10px);align-items:flex-start;justify-content:center;padding:18px;overflow-y:auto}
+/* padding-top clears the 62px nav. The close button sits at the card's top
+   right, and with only 18px of padding that button landed inside the nav
+   strip — so dismissing the dialog left the pointer parked on a nav tab and
+   the mega-menu opened by itself. */
+.mov{display:none;position:fixed;inset:0;z-index:900;background:rgba(23,26,32,.62);backdrop-filter:blur(10px);align-items:flex-start;justify-content:center;padding:82px 18px 24px;overflow-y:auto}
 .mov.on{display:flex}
-.mod{background:var(--white);border-radius:18px;padding:36px 32px;width:100%;max-width:460px;position:relative;box-shadow:0 20px 72px rgba(11,60,93,.26);animation:minIn .28s cubic-bezier(.18,.8,.28,1) both;margin:auto}
+.mod{background:var(--white);border-radius:18px;padding:36px 32px;width:100%;max-width:460px;position:relative;box-shadow:0 20px 72px rgba(23,26,32,.24);animation:minIn .28s cubic-bezier(.18,.8,.28,1) both;margin:auto}
 @keyframes minIn{from{opacity:0;transform:scale(.92) translateY(14px)}to{opacity:1;transform:scale(1) translateY(0)}}
 .mclose{position:absolute;top:12px;right:12px;background:var(--g100);border:none;border-radius:7px;width:29px;height:29px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--g400);transition:all .14s}
 .mclose:hover{background:var(--g200);color:var(--navy)}
@@ -330,8 +442,8 @@ button{font-family:var(--fb)}
 /* ───── DEMO DATE & TIME PICKER ───── */
 .demo-date-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
 .demo-date-card{border:1.5px solid var(--g200);border-radius:12px;padding:12px 8px;text-align:center;cursor:pointer;background:var(--white);transition:border-color .14s,background .14s,box-shadow .14s}
-.demo-date-card:hover{border-color:var(--blue);background:rgba(0,123,255,.03)}
-.demo-date-sel{border-color:var(--blue)!important;background:rgba(0,123,255,.07)!important;box-shadow:0 0 0 3px rgba(0,123,255,.12)}
+.demo-date-card:hover{border-color:var(--blue);background:rgba(224,154,50,.03)}
+.demo-date-sel{border-color:var(--blue)!important;background:rgba(224,154,50,.07)!important;box-shadow:0 0 0 3px rgba(224,154,50,.12)}
 .demo-day-name{font-size:10.5px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
 .demo-day-num{font-family:var(--fh);font-size:22px;font-weight:800;color:var(--navy);line-height:1;margin-bottom:2px}
 .demo-mon{font-size:10.5px;color:var(--g400);font-weight:500}
@@ -369,23 +481,33 @@ button{font-family:var(--fb)}
 .cal-sel{background:var(--blue)!important;color:#fff!important;font-weight:700}
 
 /* ───── FOOTER ───── */
-.footer{background:var(--dk);padding:48px 24px 24px;border-top:1px solid rgba(255,255,255,.05)}
+.footer{background:var(--dk);padding:48px 24px 24px;border-top:1px solid var(--g200)}
 .ft-in{max-width:1160px;margin:0 auto}
-.ft-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;margin-bottom:36px}
+/* Five columns now the Features list is there: brand block plus four link
+   lists. It drops to 2-up on tablet and 1-up on phones below. */
+.ft-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr 1fr;gap:28px;margin-bottom:36px}
 .ft-logo-wrap{margin-bottom:8px}
 .ft-logo-img{height:24px;display:block}
-.ft-logo-txt{font-family:var(--fh);font-size:16px;font-weight:800;color:#fff}
-.ft-tag{font-size:12px;color:rgba(255,255,255,.3);line-height:1.7;max-width:190px;margin-bottom:13px}
-.ft-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(255,107,0,.12);color:var(--org2);border:1px solid rgba(255,107,0,.17);border-radius:6px;font-size:10px;font-weight:600;padding:4px 8px}
-.ft-col-t{font-size:10.5px;font-weight:700;color: #ffffff;;text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px}
+.ft-logo-txt{font-family:var(--fh);font-size:16px;font-weight:800;color:var(--navy)}
+.ft-tag{font-size:12px;color:var(--g600);line-height:1.7;max-width:190px;margin-bottom:13px}
+.ft-badge{display:inline-flex;align-items:center;gap:5px;background:var(--odim);color:var(--orange);border:1px solid rgba(232,93,0,.2);border-radius:6px;font-size:10px;font-weight:600;padding:4px 8px}
+.ft-col-t{font-size:10.5px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px}
 .ft-links{list-style:none;display:flex;flex-direction:column;gap:7px}
-.ft-links li{font-size:12px;color:rgba(255,255,255,.4);cursor:pointer;transition:color .14s}
-.ft-links li:hover{color:#fff}
-.ft-links li a{display:block;font-size:12px;color:rgba(255,255,255,.4);text-decoration:none;cursor:pointer;transition:color .14s}
-.ft-links li a:hover{color:#fff}
-.ft-bot{border-top:1px solid rgba(255,255,255,.05);padding-top:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
-.ft-copy{font-size:11px;color:rgba(255,255,255,.22)}
-.ft-flag{font-size:11px;color:rgba(255,255,255,.3);display:flex;align-items:center;gap:5px}
+.ft-links li{font-size:12px;color:var(--g600);cursor:pointer;transition:color .14s}
+.ft-links li:hover{color:var(--navy)}
+.ft-links li a{display:block;font-size:12px;color:var(--g600);text-decoration:none;cursor:pointer;transition:color .14s}
+.ft-links li a:hover{color:var(--navy)}
+/* Three columns with the outer two equal, so the copyright is centred against
+   the page rather than against whatever the side items happen to measure.
+   space-between could not do that: the wider "Serving the US..." label on the
+   right pushed the copyright left of centre. */
+.ft-bot{border-top:1px solid var(--g200);padding-top:20px;display:grid;
+  grid-template-columns:1fr auto 1fr;align-items:center;gap:12px}
+.ft-socials{display:flex;align-items:center;gap:6px;justify-self:start}
+.ft-bot .ft-copy{justify-self:center;text-align:center}
+.ft-bot .ft-flag{justify-self:end}
+.ft-copy{font-size:11px;color:var(--g400)}
+.ft-flag{font-size:11px;color:var(--g600);display:flex;align-items:center;gap:5px}
 
 /* ───── REVEAL ANIM — fixed to always show, animate only when JS fires ───── */
 .rv{opacity:1;transform:none;transition:opacity .54s ease,transform .54s ease}
@@ -400,7 +522,10 @@ button{font-family:var(--fb)}
   .slide-pane.on{grid-template-columns:1fr}
   .sol-layout{grid-template-columns:1fr!important}
   .svc-layout{grid-template-columns:1fr}
-  .contact-grid{grid-template-columns:1fr}
+  /* :not() so the single-column contact variant keeps its centred 560px cap
+     below 1040px — this rule sits later in the file and would otherwise win. */
+  .contact-grid:not(.contact-grid--solo){grid-template-columns:1fr}
+  .contact-grid--solo{grid-template-columns:minmax(0,560px)}
   .price-grid{grid-template-columns:1fr;max-width:480px;margin-left:auto;margin-right:auto}
   .hiw-grid{grid-template-columns:1fr}
   .hiw-steps{border-right:none;border-bottom:1px solid var(--g200)}
@@ -411,6 +536,7 @@ button{font-family:var(--fb)}
 
 @media(max-width:768px){
   .hero-in{grid-template-columns:1fr;padding-bottom:48px;gap:32px}
+  .hero-ss{max-width:100%;transform:none}
   .hero-ss{display:block}
   .nav-links{display:none}
   .nav-demo{display:none}
@@ -435,6 +561,20 @@ button{font-family:var(--fb)}
   section>.con{padding:0 16px}
 }
 
+@media(max-width:600px){
+  /* On a phone the screenshots are the content, so they take the full width and
+     lose the desktop insets that would otherwise shrink them further. */
+  .hero-ss,.slide-img-wrap{max-width:100%;transform:none;border-radius:12px}
+  .slides-sec{padding:48px 12px}
+  .slides-sec>.con{padding:0 4px}
+  .slide-pane.on{gap:20px}
+  .slide-info{padding:0}
+  .pt-scroll{border-radius:12px}
+  .faq-q{padding-right:34px}
+  .mod{padding:26px 18px}
+  .mov{padding:74px 10px 18px}
+}
+
 @media(max-width:480px){
   .hero-stats .hs{padding:10px 16px}
   .hs-v{font-size:22px}
@@ -447,3 +587,135 @@ button{font-family:var(--fb)}
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 /* ─── CASE STUDY ─── */
 .case-study{background:var(--white);border:1px solid var(--g200);border-radius:18px;padding:28px 28px 24px}
+
+/* ───── PRICING FEATURE MATRIX ─────
+   A CSS grid rather than a <table>: the header cells hold a heading, a badge and
+   a button, which a table cell handles awkwardly, and the group rows need to
+   span the full width. Four columns — the feature, then one per plan. */
+.pt-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--r2);border:1px solid var(--g200);background:var(--white)}
+.pt-table{min-width:720px;display:grid;grid-template-columns:minmax(240px,1.6fr) repeat(3,minmax(120px,1fr))}
+
+.pt-head{display:contents}
+.pt-hf{padding:22px 20px;background:var(--g100);border-bottom:1px solid var(--g200)}
+.pt-hf-t{font-family:var(--fh);font-size:17px;font-weight:800;color:var(--navy)}
+.pt-hf-s{font-size:11.5px;color:var(--g600);margin-top:5px;max-width:200px;line-height:1.5}
+.pt-hp{padding:22px 14px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:11px;justify-content:flex-end;position:relative;
+  background:var(--g100);border-left:1px solid var(--g200);border-bottom:1px solid var(--g200)}
+.pt-hp--pop{background:var(--odim)}
+.pt-pop{position:absolute;top:7px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--orange);white-space:nowrap}
+.pt-hp-n{font-family:var(--fh);font-size:20px;font-weight:800;color:var(--navy)}
+.pt-cta{white-space:nowrap}
+
+.pt-group{grid-column:1/-1;padding:13px 20px;background:var(--dk);border-top:1px solid var(--g200);border-bottom:1px solid var(--g200);
+  font-size:10.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--g600)}
+.pt-row{display:contents}
+.pt-f{padding:13px 20px;font-size:13px;color:var(--text);display:flex;align-items:center;border-bottom:1px solid var(--g200)}
+.pt-c{padding:13px 14px;display:flex;align-items:center;justify-content:center;border-left:1px solid var(--g200);border-bottom:1px solid var(--g200)}
+.pt-yes{width:20px;height:20px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pt-no{color:var(--g300);display:flex;align-items:center}
+.pt-v{font-size:12.5px;font-weight:700;color:var(--navy);text-align:center}
+
+/* ───── FAQ ─────
+   <details>/<summary> so it opens with no JavaScript and is announced correctly
+   by screen readers. */
+.faq{max-width:820px;margin:64px auto 0}
+.faq-i{border-bottom:1px solid var(--g200)}
+.faq-i:first-of-type{border-top:1px solid var(--g200)}
+.faq-q{font-family:var(--fh);font-size:15px;font-weight:700;color:var(--navy);padding:18px 44px 18px 4px;cursor:pointer;position:relative;list-style:none;display:block}
+.faq-q::-webkit-details-marker{display:none}
+.faq-q:hover{color:var(--orange)}
+.faq-ico{position:absolute;right:6px;top:50%;transform:translateY(-50%);color:var(--g400);display:flex;transition:transform .18s}
+.faq-i[open] .faq-q{color:var(--navy)}
+.faq-i[open] .faq-ico{transform:translateY(-50%) rotate(180deg)}
+.faq-a{font-size:14px;color:var(--g600);line-height:1.75;padding:0 44px 20px 4px}
+
+@media(max-width:768px){
+  .pt-hf{padding:18px 14px}
+  .pt-hp{padding:20px 10px}
+  .pt-hp-n{font-size:17px}
+  .pt-f{padding:12px 14px;font-size:12.5px}
+  .faq{margin-top:44px}
+  .faq-q{font-size:14px;padding-right:38px}
+}
+
+/* ───── PAGE INERT WHILE A DIALOG IS OPEN ─────
+   Set by lockScroll()/unlockScroll() in script.js. A modal overlay already
+   covers the page, but the nav is sticky and its menus open purely on :hover,
+   so without this the pointer could rest on a tab and the menu would spring
+   open the moment the dialog was dismissed. Nothing behind the dialog should
+   react to a pointer at all. */
+body.ui-locked .nav,
+body.ui-locked .hero,
+body.ui-locked main,
+body.ui-locked footer{pointer-events:none}
+/* The drawer and its close button live above the lock and must stay usable. */
+body.ui-locked .mob-nav,
+body.ui-locked .mob-overlay,
+body.ui-locked .mov{pointer-events:auto}
+/* Force any menu that was open shut, and keep it shut while locked. */
+body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer-events:none!important;transition:none!important}
+
+/* YouTube link in the footer bottom bar. */
+.ft-social{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;
+  border-radius:8px;color:var(--g400);text-decoration:none;transition:color .14s,background .14s}
+.ft-social:hover{background:var(--g200)}
+.ft-yt:hover{color:#FF0000}
+.ft-li:hover{color:#0A66C2}
+/* The two social links sit together at the left of the bottom bar. */
+/* Below 600px the three columns stack and everything centres. */
+@media(max-width:600px){
+  .ft-bot{grid-template-columns:1fr;justify-items:center;gap:14px}
+  .ft-socials,.ft-bot .ft-flag,.ft-bot .ft-copy{justify-self:center}
+}
+
+/* ───── FEATURE PAGES ─────
+   The hero screenshot sits behind the copy rather than in a card beside it: it
+   bleeds off the right edge, fades out towards the text with a mask, and drops
+   to a low opacity so it reads as texture instead of competing with the
+   headline. .ft-vis is taken out of flow, so the copy gets the full column. */
+.ft-hero{position:relative;overflow:hidden;background:var(--dk);padding:96px 24px 104px;border-bottom:1px solid var(--g200);min-height:560px;display:flex;align-items:center}
+.ft-hero-in{position:relative;z-index:2;max-width:660px;width:100%;margin:0 auto}
+
+.ft-vis{
+  position:absolute;top:50%;right:-26%;transform:translateY(-50%);
+  width:120%;max-width:none;z-index:1;opacity:.30;pointer-events:none;
+  /* It now runs well behind the headline, so the fade starts later and is
+     softer — the copy stays fully legible while the screenshot fills the band. */
+  -webkit-mask-image:linear-gradient(to right,transparent 14%,rgba(0,0,0,.25) 38%,#000 62%,#000 100%);
+          mask-image:linear-gradient(to right,transparent 14%,rgba(0,0,0,.25) 38%,#000 62%,#000 100%);
+}
+/* Strip the card treatment — no frame, no shadow, no fill. */
+.ft-vis .slide-img-wrap{background:none;border:none;box-shadow:none;border-radius:0}
+.ft-vis svg rect[fill="var(--g50)"]{fill:none}
+
+.ft-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.ft-step{display:flex;gap:14px;align-items:flex-start;background:var(--white);border:1px solid var(--g200);border-radius:14px;padding:20px 18px}
+.ft-step-n{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-family:var(--fh);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.ft-step-t{font-family:var(--fh);font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.ft-step-x{font-size:12.5px;color:var(--g600);line-height:1.6}
+
+.ft-rel{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.ft-rel-c{display:block;background:var(--white);border:1px solid var(--g200);border-radius:14px;padding:18px 20px;text-decoration:none;transition:border-color .14s,box-shadow .14s,transform .14s}
+.ft-rel-c:hover{border-color:rgba(204,77,0,.35);box-shadow:var(--s1);transform:translateY(-2px)}
+.ft-rel-t{font-family:var(--fh);font-size:14px;font-weight:700;color:var(--navy);margin-bottom:3px}
+.ft-rel-x{font-size:12px;color:var(--g600)}
+
+@media(max-width:900px){
+  .ft-steps,.ft-rel{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  .ft-hero{padding:44px 16px 48px}
+  /* Narrow enough that a background image behind the copy just muddies it. */
+  .ft-vis{width:185%;right:-60%;opacity:.16}
+  .ft-hero{min-height:auto;padding:44px 16px 48px}
+}
+
+/* Features hub grid. */
+.ft-hub{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.ft-hub-c{display:block;background:var(--white);border:1px solid var(--g200);border-radius:16px;padding:22px 20px;text-decoration:none;transition:border-color .15s,box-shadow .15s,transform .15s}
+.ft-hub-c:hover{border-color:rgba(204,77,0,.35);box-shadow:var(--s1);transform:translateY(-3px)}
+.ft-hub-i{width:38px;height:38px;border-radius:10px;background:var(--odim);color:var(--orange);display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.ft-hub-t{font-family:var(--fh);font-size:15px;font-weight:700;color:var(--navy);margin-bottom:6px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.ft-hub-x{font-size:13px;color:var(--g600);line-height:1.65}
+@media(max-width:900px){.ft-hub{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.ft-hub{grid-template-columns:1fr}}

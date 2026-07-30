@@ -107,6 +107,22 @@ app.get('/contact', (req, res) =>
    point: this is the one surface a
    stranger can write to.
 ───────────────────────────────────────*/
+// Features overview — the page the Features nav tab links to.
+app.get('/features', (req, res) =>
+  res.sendFile(path.join(VIEWS_DIR, 'features.html')));
+
+/* Feature pages — one per platform capability. */
+for (const slug of [
+  'ai-quantity-takeoff',
+  'ai-document-analysis',
+  'ai-risk-compliance-analyser',
+  'csi-cost-estimation',
+  'bid-packages-leveling',
+  'ai-bid-proposal',
+]) {
+  app.get(`/${slug}`, (req, res) => res.sendFile(path.join(VIEWS_DIR, `${slug}.html`)));
+}
+
 app.get('/go-no-go', noCache, (req, res) =>
   res.sendFile(path.join(VIEWS_DIR, 'go-no-go.html')));
 

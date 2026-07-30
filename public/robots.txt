@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# /pricing is deliberately unlinked from the site's navigation, but it is a real
+# page that sales still sends people to, so it stays crawlable. Disallowing it
+# would strip it from search without making it any more private.
+
+Sitemap: https://www.bidcoreai.com/sitemap.xml

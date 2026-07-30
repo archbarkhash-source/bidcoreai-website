@@ -44,7 +44,15 @@ const isConnectedCountry = (code) =>
 
 const asList = (v) => (Array.isArray(v) ? v.map((x) => String(x).trim()).filter(Boolean) : []);
 const splitList = (v) => (typeof v === 'string' ? v.split(',').map((s) => s.trim()).filter(Boolean) : asList(v));
-const numberOrNull = (v) => (v === '' || v == null || Number.isNaN(Number(v)) ? null : Number(v));
+// Thousands separators and a currency sign are display, not data. The money
+// fields strip them before posting, but a cached copy of the script — or anyone
+// driving the API by hand — can still send "1,200,000", and Number() reads that
+// as NaN. NaN reaches the UPDATE as null, COALESCE takes it as "leave the stored
+// value alone", and the save reports success having changed nothing.
+const numberOrNull = (v) => {
+  const raw = typeof v === 'string' ? v.replace(/[$,\s]/g, '') : v;
+  return raw === '' || raw == null || Number.isNaN(Number(raw)) ? null : Number(raw);
+};
 
 /** Wrap an async handler so a rejection reaches the error middleware. */
 const wrap = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);

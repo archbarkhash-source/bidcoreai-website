@@ -17,6 +17,11 @@
   --gg-grey: #666;
   --gg-line: #E4E4E4;
   --gg-soft: #F7F7F7;
+  /* The one filled surface on the page: the row whose verdict is on screen. Warm
+     rather than grey so it reads as "selected" beside the orange accent instead
+     of as "disabled". Black on it is ~18:1, so nothing on the row loses contrast
+     by being highlighted. */
+  --gg-beige: #FAF2E8;
   --gg-font: 'Segoe UI', system-ui, -apple-system, sans-serif;
   /* The only colours on the page beyond the orange, and only for the verdict:
      GO green, NO-GO red, anything undecided orange. A bid/no-bid answer is the
@@ -115,6 +120,16 @@ h3.gg-h3 { font-size: 15px; font-weight: 700; margin: 0 0 4px; }
 .gg-input::placeholder { color: #AAA; }
 .gg-input:focus { border-color: var(--gg-orange); }
 .gg-input--code { font-size: 26px; font-weight: 700; letter-spacing: 12px; text-align: center; }
+
+/* A dollar amount. The $ sits inside the box but outside the value: it cannot be
+   typed over, deleted, or posted, and the digits are indented to clear it.
+   tabular-nums so a column of figures lines up digit for digit. */
+.gg-money { position: relative; }
+.gg-money-sign {
+  position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+  font-size: 15px; color: var(--gg-grey); pointer-events: none;
+}
+.gg-money .gg-input { padding-left: 30px; font-variant-numeric: tabular-nums; }
 .gg-grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0 16px; }
 
 /* ── Messages ── */
@@ -177,9 +192,45 @@ h3.gg-h3 { font-size: 15px; font-weight: 700; margin: 0 0 4px; }
 }
 .gg-side .gg-field { margin-bottom: 12px; }
 .gg-side .gg-input { font-size: 13.5px; padding: 9px 11px; }
+/* Restated for the sidebar because the rule above resets padding wholesale and,
+   at equal specificity, wins on order — the digits would print over the $. */
+.gg-side .gg-money .gg-input { padding-left: 25px; }
+.gg-side .gg-money-sign { left: 11px; font-size: 13.5px; }
 .gg-side .gg-label { font-size: 12px; }
 .gg-side-block { border-bottom: 1px solid var(--gg-line); padding-bottom: 16px; margin-bottom: 16px; }
 .gg-side-block:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+
+/* ── The company panel's Save, pinned to the panel's own bottom edge ──
+   Sticky rather than merely last: the fields, and Past performance under them,
+   scroll behind it inside this box, so Save is in reach from anywhere in the
+   panel and reaching it never moves the page. The white backing and the border
+   are what stop scrolled content showing through it. */
+/* The card gives up its bottom padding to the footer. Kept on the card, that
+   padding sits BELOW the pinned footer inside the scrollport, and content scrolls
+   through the strip — the lead-time select appeared under the Save button. With it
+   at zero the footer's own padding does the spacing and nothing can pass beneath
+   it. */
+.gg-side--profile.gg-card { padding-bottom: 0; }
+.gg-side-foot {
+  position: sticky; bottom: 0; z-index: 2;
+  background: #fff; border-top: 1px solid var(--gg-line);
+  padding: 12px 0 14px;
+}
+/* "28 selected" under a collapsed picker looks exactly like a saved profile, so
+   the one state the panel has to report is that it is NOT saved yet. Shown only
+   when there are pending edits — a permanent caption would be noise. */
+.gg-side-dirty {
+  display: none;
+  font-size: 11.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+  color: var(--gg-orange); margin-bottom: 7px;
+}
+.gg-side-foot.is-dirty .gg-side-dirty { display: block; }
+/* The footer draws the panel's last divider now, so the block above it stops
+   drawing one — two lines 12px apart read as a mistake. Scoped: the analysis
+   panel has side blocks of its own and no footer. */
+.gg-side--profile .gg-side-block:nth-last-child(2) {
+  border-bottom: none; padding-bottom: 0; margin-bottom: 12px;
+}
 .gg-side-title {
   font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
   margin-bottom: 12px; color: var(--gg-black);
@@ -214,7 +265,14 @@ h3.gg-h3 { font-size: 15px; font-weight: 700; margin: 0 0 4px; }
 .gg-result-title { font-size: 15.5px; font-weight: 700; line-height: 1.35; margin-bottom: 4px; }
 .gg-result-meta { font-size: 13px; color: var(--gg-grey); }
 .gg-result-actions { display: flex; gap: 8px; margin-left: auto; flex-shrink: 0; }
-@media (max-width: 620px) { .gg-result-actions { margin-left: 0; width: 100%; } }
+/* The actions must be allowed to WRAP, not just to sit on their own line. Unable
+   to wrap and with flex-shrink:0, the row's min-content — SAM.gov, Save, Go/No-Go,
+   the dismiss × and now the verdict pill, side by side — was about 400px, and a
+   grid track sized from that floor made the whole page wider than a 390px phone
+   and scrollable sideways. Measured at 390: track 410px before this, 359 after. */
+@media (max-width: 620px) {
+  .gg-result-actions { margin-left: 0; width: 100%; flex-wrap: wrap; min-width: 0; }
+}
 
 /* ── Verdict: no colour coding beyond the one accent.
       GO is filled orange, REVIEW is outlined, NO-GO is filled black —
@@ -287,11 +345,18 @@ h3.gg-h3 { font-size: 15px; font-weight: 700; margin: 0 0 4px; }
 .gg-spin { display: inline-block; width: 15px; height: 15px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 999px; animation: gg-spin .7s linear infinite; }
 .gg-skeleton { color: var(--gg-grey); font-size: 14px; padding: 20px 0; }
 
-/* The result the score panel is currently describing. */
-.gg-result.is-selected { border-color: var(--gg-orange); border-width: 2px; padding: 17px 19px; }
+/* The result the score panel is currently describing. Beige as well as the
+   outline: down a list of ten white cards an outline alone is easy to lose, and
+   a filled row makes "this is the one the verdict belongs to" readable at a
+   glance. A surface only — the border and the panel still carry the meaning, so
+   nothing here depends on seeing the tint. */
+.gg-result.is-selected {
+  border-color: var(--gg-orange); border-width: 2px; padding: 17px 19px;
+  background: var(--gg-beige);
+}
 
 /* ── Feed / Pipeline switch ── */
-.gg-views { display: flex; gap: 8px; margin-bottom: 16px; }
+.gg-views { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
 .gg-view-btn {
   font-family: var(--gg-font); font-size: 14px; font-weight: 600; cursor: pointer;
   padding: 9px 16px; border-radius: var(--gg-radius);
@@ -311,7 +376,18 @@ h3.gg-h3 { font-size: 15px; font-weight: 700; margin: 0 0 4px; }
   margin-left: auto; font-size: 11px; font-weight: 700; color: var(--gg-grey);
   border: 1px solid var(--gg-line); border-radius: 999px; padding: 1px 8px; min-width: 24px; text-align: center;
 }
-.gg-col-body { padding: 10px; display: grid; gap: 8px; min-height: 60px; }
+/* Each stage scrolls in its own box.
+   A column with six cards ran off the bottom of the page — and because the board
+   is one row of columns, the only way to reach the last card was to scroll the
+   whole page, which took every other column's cards away with it. Bounded and
+   scrolling internally, every stage stays reachable from one position, and the
+   column head — stage name, count, Clear — stays put above its own cards. */
+.gg-col { display: flex; flex-direction: column; max-height: calc(100vh - var(--gg-head-h) - 175px); }
+.gg-col-head { flex: 0 0 auto; }
+.gg-col-body {
+  padding: 10px; display: grid; gap: 8px; min-height: 60px;
+  overflow-y: auto; align-content: start;
+}
 .gg-col-empty { font-size: 12px; color: #AAA; padding: 6px 3px; }
 
 .gg-card-mini { border: 1px solid var(--gg-line); border-radius: 8px; padding: 10px 11px; }
@@ -343,20 +419,41 @@ h3.gg-h3 { font-size: 15px; font-weight: 700; margin: 0 0 4px; }
 }
 .gg-who-name { font-size: 13px; font-weight: 600; line-height: 1.25; }
 .gg-who-sub { font-size: 11.5px; color: var(--gg-grey); line-height: 1.25; }
-@media (max-width: 700px) { .gg-who { display: none; } }
+/* The name and email are what there is no room for on a phone — the BUTTON has
+   to stay. `display:none` on the whole thing used to take the account menu with
+   it, and that menu is the only route to Settings, the API key and Sign out: a
+   phone visitor could sign in and then had no way to change or replace the key
+   they had just been asked for. */
+@media (max-width: 700px) {
+  .gg-who-text, .gg-who-caret { display: none; }
+  /* Padding, not a bigger avatar: 30px of circle inside 6px of hit area is the
+     42px a fingertip needs, with the design unchanged. */
+  .gg-who { border-left: none; padding: 6px; gap: 0; border-radius: 999px; }
+}
 
 
-/* ── Frozen toolbar: setup checklist + Feed/Pipeline switch ──
+/* ── Frozen toolbar: view switch + filters + search ──
    These are controls, not content: scrolling a long result list should never
-   take the view switch off screen. Sits directly under the sticky header, with
-   a white backing so results pass behind it rather than through it. */
+   take the view switch, the filters or the search box off screen. Sits directly
+   under the sticky header, with a white backing so results pass behind it rather
+   than through it.
+   The search hint stays in the scroll — it describes rather than does, and every
+   row that freezes is a row of results that does not fit. That cost is real on a
+   phone: three frozen rows there is roughly a third of the screen, which is why
+   each of them is compacted at 620px rather than simply carried over. */
 .gg-topbar {
   position: sticky; top: var(--gg-head-h); z-index: 15;
-  background: #fff; padding: 14px 0 10px; margin-top: -14px;
+  background: #fff; padding: 14px 0 12px; margin-top: -14px;
   border-bottom: 1px solid var(--gg-line); margin-bottom: 16px;
+  display: grid; gap: 10px;
 }
 .gg-topbar .gg-views { margin-bottom: 0; }
 .gg-topbar .gg-check { margin-bottom: 12px; }
+/* The grid's gap spaces the rows now, so the bar's own margins would double it. */
+.gg-topbar .gg-feed-head { margin-bottom: 0; }
+/* Grid children default to stretching; the box must be free to shrink or a long
+   value in it pushes the button off the edge. */
+.gg-topbar .gg-search .gg-input { min-width: 0; }
 .gg-who-caret { display: flex; color: var(--gg-grey); transition: transform .18s; }
 .gg-who.is-open .gg-who-caret { transform: rotate(180deg); }
 
@@ -397,17 +494,24 @@ button.gg-menu-item:hover { background: var(--gg-soft); }
 button.gg-who { border: none; background: none; cursor: pointer; font-family: var(--gg-font); color: var(--gg-black); }
 button.gg-who:hover { background: var(--gg-soft); border-radius: 8px; }
 
-/* ── Feed pager ── */
+/* ── Feed pager: frozen at the foot of the feed ──
+   Previous / Next are the counterpart of the frozen search at the top: paging is
+   what you want at the END of reading a page of results, and it used to be
+   reachable only by scrolling past every row — then scrolling back up to read
+   the new page. Sticky at the bottom, it is under the thumb the whole way down.
+   White backed and bordered, so rows pass behind it rather than through it. */
 .gg-pager {
+  position: sticky; bottom: 0; z-index: 14;
+  background: #fff;
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  padding: 14px 4px 4px; margin-top: 4px; border-top: 1px solid var(--gg-line); flex-wrap: wrap;
+  padding: 14px 4px; margin-top: 4px; border-top: 1px solid var(--gg-line); flex-wrap: wrap;
 }
 .gg-pager-info { font-size: 13px; }
 button.gg-chip { cursor: pointer; font-family: var(--gg-font); }
 button.gg-chip:hover { border-color: var(--gg-black); }
 
 /* ── Settings ── */
-.gg-set-head { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+.gg-set-head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-bottom: 20px; }
 .gg-set-head .gg-btn { margin-left: auto; }
 .gg-set-section { padding-bottom: 22px; margin-bottom: 22px; border-bottom: 1px solid var(--gg-line); }
 .gg-set-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
@@ -462,7 +566,7 @@ button.gg-chip:hover { border-color: var(--gg-black); }
 }
 .gg-col-clear:hover { color: var(--gg-orange); text-decoration: underline; }
 .gg-col-head .gg-col-count { margin-left: auto; }
-.gg-feed-head { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; font-size: 13px; }
+.gg-feed-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; margin-bottom: 10px; font-size: 13px; }
 .gg-feed-head .gg-col-clear { margin-left: auto; }
 
 /* Feed toolbar controls sit inline with the count. */
@@ -495,9 +599,20 @@ button.gg-chip:hover { border-color: var(--gg-black); }
 /* ── Collapsible pickers ── */
 .gg-picker-head {
   display: flex; align-items: center; gap: 8px; width: 100%; text-align: left;
-  background: none; border: none; padding: 0 0 6px; cursor: pointer; font-family: var(--gg-font);
+  background: none; border: none; padding: 2px 0 6px; cursor: pointer; font-family: var(--gg-font);
   color: var(--gg-black);
 }
+/* A hairline under each category.
+   Collapsed, these rows are just a label, a count and a chevron — four of them
+   stacked with the text fields between read as one undifferentiated column, and
+   there was no way to see that "NAICS codes you hold" and "Set-asides you hold"
+   are separate things to open. The line is the lightest thing that separates
+   them: --gg-line is the same grey every other divider on the page uses. */
+.gg-field--pick {
+  border-bottom: 1px solid var(--gg-line);
+  padding-bottom: 11px;
+}
+.gg-side .gg-field--pick { margin-bottom: 12px; }
 .gg-picker-count { margin-left: auto; font-size: 12px; color: var(--gg-grey); }
 .gg-picker-head .gg-toggle-caret { color: var(--gg-grey); transition: transform .18s; display: flex; }
 .gg-picker-head[aria-expanded="true"] .gg-toggle-caret { transform: rotate(180deg); }
@@ -566,7 +681,10 @@ button.gg-chip:hover { border-color: var(--gg-black); }
   background: var(--gg-orange); border-color: var(--gg-orange); color: #fff;
 }
 .gg-move--score:hover:not(:disabled) { background: var(--gg-orange-dark); border-color: var(--gg-orange-dark); color: #fff; }
-.gg-card-mini.is-selected { border-color: var(--gg-orange); border-width: 2px; padding: 9px 10px; }
+.gg-card-mini.is-selected {
+  border-color: var(--gg-orange); border-width: 2px; padding: 9px 10px;
+  background: var(--gg-beige);   /* same mark as the feed's selected row */
+}
 .gg-side-title--icon { display: flex; align-items: center; gap: 8px; }
 
 .gg-col-ttl {
@@ -586,7 +704,9 @@ button.gg-chip:hover { border-color: var(--gg-black); }
 .gg-col { flex: 0 0 200px; }
 
 /* What the one search box accepts. */
-.gg-search-hint { font-size: 12.5px; color: var(--gg-grey); margin: 8px 0 16px; line-height: 1.6; }
+/* No top margin: the frozen bar above it already ends in a border and 16px of
+   its own, and the hint used to sit under a search box that scrolled with it. */
+.gg-search-hint { font-size: 12.5px; color: var(--gg-grey); margin: 0 0 14px; line-height: 1.6; }
 .gg-eg {
   background: none; border: none; padding: 0; cursor: pointer; font-family: var(--gg-font);
   font-size: 12.5px; font-weight: 600; color: var(--gg-orange); text-decoration: underline;
@@ -638,4 +758,134 @@ button.gg-chip:hover { border-color: var(--gg-black); }
   background: var(--gg-black); color: #fff; font-size: 12px; line-height: 1.45;
   padding: 8px 10px; border-radius: 8px; white-space: nowrap; z-index: 5;
   box-shadow: 0 6px 20px rgba(0,0,0,.2); pointer-events: none;
+}
+
+/* ══ Phones ═════════════════════════════════════════════════════════════════
+   This page is a three-column workspace on a desktop and a single stacked
+   column on a phone. The stacking itself is handled above, next to the layout
+   it changes; what follows is everything else that a thumb on a 360px-wide
+   screen needs, kept together because it is one intent rather than one
+   component.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 860px) {
+  /* Stacked, the panels are full width, so the page gutter is all that is
+     between the content and the edge of the screen — 26px of it is a waste of a
+     narrow screen. */
+  .gg-wrap--full { padding: 16px 14px 48px; }
+  .gg-wrap { padding: 28px 16px 56px; }
+  .gg-layout { gap: 14px; }
+
+  /* Stacked, the DOM order is the reading order — and the DOM puts the company
+     profile first, because on a desktop it is the left column. On a phone that
+     meant a screenful of NAICS codes, set-asides, states and dollar limits
+     before the search box the visitor came for. Work first, then the verdict,
+     then the profile that tunes it. Nothing is lost: the SETUP chips in the
+     analysis panel jump straight to whichever field is still empty. */
+  .gg-main { order: 1; }
+  #gg-score-panel { order: 2; }
+  .gg-layout > .gg-side:first-child { order: 3; }
+  /* The analysis panel is the reason for the page; stacked it reads as the
+     document it is, not a narrow column. */
+  .gg-side.gg-card { padding: 20px 18px; }
+  /* Matched to the gutter above, so the frozen bar butts against the header
+     instead of leaving a strip of page for results to scroll through. */
+  .gg-topbar { margin-top: -16px; }
+
+  /* Stacked, this panel loses the bounded height its desktop column gets, and
+     Save then sits at the far end of the longest thing on the page. Bounded
+     again so the fields scroll inside the box with Save pinned under them.
+     max-height, not height: a panel with its sections collapsed shrinks to fit
+     rather than leaving dead space above the footer. */
+  .gg-side--profile { max-height: 76vh; overflow-y: auto; }
+}
+
+@media (max-width: 620px) {
+  /* ── Header. Compact enough that the sticky bar does not eat the screen, and
+        measured at runtime (syncHeadHeight) rather than assumed: the frozen
+        toolbar hangs off --gg-head-h, and a guess leaves either a gap that
+        results scroll through or a toolbar hidden behind the header. ── */
+  .gg-head { padding: 10px 14px; gap: 10px; }
+  .gg-brand img { height: 22px; }
+  .gg-brand span { font-size: 15px; }
+  /* The h1 underneath says "Free Go/No-Go" — the pill is decoration, and it is
+     the first thing to go when the row has to hold identity as well. */
+  .gg-tag { display: none; }
+  .gg-head-right { gap: 10px; }
+  .gg-usage { font-size: 11.5px; line-height: 1.3; text-align: right; }
+
+  /* Still anchored to the right edge, but it can no longer be wider than the
+     screen it is anchored in. */
+  .gg-menu { top: calc(var(--gg-head-h) + 4px); right: 10px; left: 10px; width: auto; }
+  .gg-menu-email { font-size: 12px; }
+
+  /* iOS Safari zooms the page in whenever a focused field is smaller than 16px,
+     and does not zoom back out — one tap in the search box and the whole
+     workspace is wider than the screen for the rest of the visit. Every field
+     that can take focus goes to 16px, including the sidebar's smaller ones and
+     the inline toolbar selects. */
+  .gg-input, .gg-side .gg-input, .gg-input--inline { font-size: 16px; }
+  .gg-money-sign, .gg-side .gg-money-sign { font-size: 16px; }
+  .gg-side .gg-input { padding: 11px 12px; }
+  .gg-side .gg-money .gg-input { padding-left: 27px; }
+  /* Bounded for a toolbar it no longer shares with three other controls. */
+  .gg-input--place { max-width: none; }
+  .gg-feed-ctl { flex: 1 1 auto; min-width: 140px; }
+  .gg-feed-ctl select { flex: 1; }
+
+  /* Inside the frozen bar the search stays one row. Stacked — which is what
+     .gg-search does on its own at this width — the box and its button would
+     freeze 110px of a screen that still has to show results. The button gives up
+     padding, not its label: an unlabelled magnifier beside a text box is a
+     guess, and this is the one control the page cannot afford to make ambiguous. */
+  .gg-topbar { padding: 10px 0 10px; gap: 8px; }
+  .gg-topbar .gg-search { flex-direction: row; align-items: center; gap: 8px; }
+  .gg-topbar .gg-search .gg-btn { flex-shrink: 0; padding: 12px 14px; font-size: 14px; }
+
+  /* The filters freeze too, so their row has to earn its height: tighter gaps,
+     and the count sentence — which is the tallest part of it, and the part that
+     only reports — set small and given the whole width so it wraps on its own
+     line instead of pushing a select onto a third row. */
+  .gg-topbar .gg-feed-head { gap: 6px 10px; font-size: 12px; }
+  .gg-topbar .gg-feed-head > span:first-child { flex: 1 0 100%; }
+  .gg-topbar .gg-feed-ctl { min-width: 128px; font-size: 12px; }
+
+  /* ── Touch targets. These are 12-20px icons and 5px-padded chips designed for
+        a cursor; a fingertip covers about 44px. Padding grows rather than the
+        glyph, so nothing about the design changes except what is hittable. ── */
+  .gg-result-x, .gg-row-x {
+    min-width: 40px; min-height: 40px; display: flex;
+    align-items: center; justify-content: center; padding: 0;
+  }
+  .gg-move { padding: 9px 12px; font-size: 13px; }
+  .gg-col-clear { padding: 8px 6px; font-size: 12.5px; }
+  .gg-view-btn { font-size: 13px; padding: 9px 13px; }
+  .gg-view-btn.is-on { padding: 8px 12px; }
+  .gg-btn--small { font-size: 14px; padding: 11px 16px; }
+  /* A collapsed picker is a whole row to press, not just its label. */
+  .gg-picker-head { padding: 9px 0; }
+  .gg-tick { padding: 9px 6px; font-size: 13.5px; }
+  .gg-tick input { width: 18px; height: 18px; }
+
+  /* ── Content ── */
+  .gg-card { padding: 20px 16px; }
+  .gg-result { padding: 15px 14px; }
+  .gg-verdict-score { font-size: 28px; }
+  /* Four columns of arithmetic in a 330px panel: the reason text needs every
+     pixel the numbers are not using. */
+  .gg-calc { font-size: 12px; }
+  .gg-calc .gg-num { padding-left: 7px; }
+  /* One card fills the screen instead of one and a sliver, so a swipe moves
+     between stages rather than nudging. */
+  .gg-col { flex: 0 0 78vw; }
+  /* The frozen pager is three items on one line if they fit, and every pixel it
+     does not take is a row of results that stays visible. */
+  .gg-pager { padding: 10px 2px; gap: 8px; }
+  .gg-pager-info { font-size: 12px; }
+  .gg-pager .gg-btn--small { padding: 9px 12px; font-size: 13px; }
+
+  /* Full width at the foot: 24px of inset either side leaves a strip too narrow
+     for the message and its Undo. */
+  .gg-undo { left: 10px; right: 10px; bottom: 12px; max-width: none; padding: 12px 14px; }
+  .gg-foot { font-size: 12px; }
 }

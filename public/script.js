@@ -16,7 +16,7 @@ function openMob(){
   overlay.style.removeProperty('display');
   nav.classList.add('on');
   overlay.classList.add('on');
-  document.body.style.overflow = 'hidden';
+  lockScroll();
 }
 function closeMob(){
   const nav = document.getElementById('mob-nav');
@@ -24,7 +24,43 @@ function closeMob(){
   if(!nav || !overlay) return;
   nav.classList.remove('on');
   overlay.classList.remove('on');
-  document.body.style.overflow = '';
+  unlockScroll();
+}
+
+/* ─── SCROLL LOCK ───
+   body carries overflow-x:hidden, which makes body the scrolling box in most
+   engines. Setting overflow:hidden on it to lock the page therefore destroyed
+   the scroll offset, and the page snapped to the top the moment a modal opened
+   — from halfway down the pricing table you were thrown back to the header.
+
+   So the offset is captured, the body is pinned with a matching negative top
+   (which holds the view exactly where it was), and it is restored on unlock.
+   Counting locks keeps the mobile drawer and the modal from unlocking each
+   other when both are open. */
+let _lockY = 0, _locks = 0;
+function lockScroll(){
+  if(_locks++ > 0) return;
+  _lockY = window.scrollY || document.documentElement.scrollTop || 0;
+  // Marks the page inert while a dialog owns the screen: see .ui-locked in the
+  // stylesheet, which stops anything behind from opening on hover or taking a
+  // click. Without it a nav tab could sit under the pointer and drop its menu
+  // open the instant the dialog closed.
+  document.body.classList.add('ui-locked');
+  const b = document.body.style;
+  b.overflow = 'hidden';
+  b.position = 'fixed';
+  b.top = -_lockY + 'px';
+  b.left = '0';
+  b.right = '0';
+  b.width = '100%';
+}
+function unlockScroll(){
+  if(_locks === 0) return;
+  if(--_locks > 0) return;
+  document.body.classList.remove('ui-locked');
+  const b = document.body.style;
+  b.overflow = ''; b.position = ''; b.top = ''; b.left = ''; b.right = ''; b.width = '';
+  window.scrollTo(0, _lockY);
 }
 
 /* ─── MODAL ─── */
@@ -32,7 +68,7 @@ function openModal(interest){
   const modal = document.getElementById('modal');
   if(!modal) return;
   modal.classList.add('on');
-  document.body.style.overflow = 'hidden';
+  lockScroll();
   if(interest){
     const sel = document.getElementById('m-int');
     if(sel){ sel.value = interest; onInterestChange(); }
@@ -42,7 +78,7 @@ function closeModal(){
   const modal = document.getElementById('modal');
   if(!modal) return;
   modal.classList.remove('on');
-  document.body.style.overflow = '';
+  unlockScroll();
 }
 
 document.addEventListener('DOMContentLoaded', function(){
@@ -65,34 +101,38 @@ function switchSlide(i){
 
 /* ─── HOW IT WORKS ─── */
 const HIW_DATA = [
-  {badge:'Step 1',title:'Upload Project Documents',desc:'Drop in your SOWs, specifications, solicitations, hazardous reports, and addenda. BidcoreAI organizes them in version-controlled folders and shares read-only access with subs via invite link.',
-   pts:[{t:'Drag-and-drop upload',s:'PDF, Word, Excel — any format accepted'},
-        {t:'Folder organization',s:'Rev 0, Rev 01, Addendum 1 — always the right version'},
-        {t:'Sub sharing',s:'Invite link gives subs read-only access instantly'}]},
-  {badge:'Step 2',title:'AI Document Analysis',desc:'The moment a document is uploaded, AI reads it end-to-end — extracts scope, identifies risk items, generates a bid checklist, and highlights missing information.',
-   pts:[{t:'Scope extraction',s:'Exact scope of work pulled from specs and SOWs'},
-        {t:'Risk flag identification',s:'Hazardous materials, exclusions, missing specs flagged'},
-        {t:'Bid checklist generated',s:'Auto-checklist of what to price before you start'}]},
-  {badge:'Step 3',title:'Generate Bid Packages',desc:'One click creates structured bid packages from your project documents — scoped by trade, organized by CSI division, ready to send to subcontractors.',
-   pts:[{t:'CSI-structured packages',s:'Divisions 01–50, organized by trade'},
-        {t:'Scope auto-populated',s:'AI pulls scope descriptions directly from project docs'},
-        {t:'Multiple packages, one click',s:'9, 15, 20+ packages generated instantly'}]},
-  {badge:'Step 4',title:'Invite Subcontractors',desc:'Discover nearby subcontractors via radius search, pull from your private directory, or add manually. Send professional ITBs with one click and track opens in real time.',
-   pts:[{t:'Nearby sub discovery',s:'Google Places + AI matching finds local subs fast'},
-        {t:'Private directory',s:'Import CSV or add manually — your sub list, always available'},
-        {t:'Automated ITB delivery',s:'Professional invitations sent with project docs attached'}]},
-  {badge:'Step 5',title:'Level & Compare Bids',desc:'As sub bids arrive, BidcoreAI organizes them side by side — scope gaps, alternates, exclusions, and price variances highlighted automatically.',
-   pts:[{t:'Side-by-side comparison',s:'All bids leveled in one view with variance analysis'},
-        {t:'Scope gap alerts',s:'Missing items and exclusions flagged automatically'},
-        {t:'Alternates & add-ons tracked',s:'All pricing variants captured and compared'}]},
-  {badge:'Step 6',title:'Build Cost Estimate',desc:'Apply your private cost database rates, add markup, overhead, contingency, and bond. AI analyzes your margin in real time and alerts you to risk before you finalize.',
-   pts:[{t:'Your private cost library',s:'50 CSI divisions — materials, labor, equipment, assemblies'},
-        {t:'Markup & overhead settings',s:'Set GC markup, sub premium, contingency, bond'},
-        {t:'AI margin alerts',s:'Real-time risk flags when margins drop below threshold'}]},
-  {badge:'Step 7',title:'Write & Submit Proposal',desc:'AI drafts your complete proposal — Cover Letter, Technical Approach, Management Plan, Price Schedule — federal-compliant and export-ready as .doc or PDF.',
-   pts:[{t:'Federal-compliant drafting',s:'Sections for RFP, IFB, IDIQ, RFQ, Sources Sought'},
-        {t:'Refine with AI',s:'One click improves any section — unlimited refinements'},
-        {t:'Export & submit',s:'.doc, .txt, or PDF — ready to attach to SAM.gov submission'}]}
+  {badge:'Stage 1',title:'Project Setup',desc:'Configure the project, invite your team, and set the documents up front.',
+   pts:[{t:'Project details',s:'Owner, agency, delivery method, deadline'},
+        {t:'Team and roles',s:'Estimators, PMs, and org members'},
+        {t:'Compliance profile',s:'Standards and requirements set once'}]},
+  {badge:'Stage 2',title:'Documents',desc:'Upload and organize drawings, specifications, solicitations, and addenda.',
+   pts:[{t:'Any format',s:'PDF, Word, Excel — drag and drop'},
+        {t:'Version control',s:'Rev 0, Rev 01, Addendum 1 — always the right one'},
+        {t:'Share with subs',s:'Invite link gives read-only access'}]},
+  {badge:'Stage 3',title:'AI Analysis',desc:'AI reads every document end to end and extracts the scope.',
+   pts:[{t:'Scope extraction',s:'Trade scopes pulled from specs and SOWs'},
+        {t:'Risk flags',s:'Exclusions, hazards, missing specs surfaced'},
+        {t:'Bid checklist',s:'What to price, before you start'}]},
+  {badge:'Stage 4',title:'Takeoff',desc:'Measure drawings in a built-in quantity takeoff workspace.',
+   pts:[{t:'On-screen measurement',s:'Counts, lengths, and areas by trade'},
+        {t:'Version history',s:'Every takeoff revision kept'},
+        {t:'Import instead',s:'Bring existing takeoff data in'}]},
+  {badge:'Stage 5',title:'Cost Estimation',desc:'Price the work against your own cost database, structured by CSI.',
+   pts:[{t:'Your rates',s:'Materials, labor, equipment, assemblies'},
+        {t:'50 CSI divisions',s:'Cost codes and assemblies you control'},
+        {t:'Conceptual or detailed',s:'Area cost/SF early, line items later'}]},
+  {badge:'Stage 6',title:'Bid Structuring',desc:'Build bid packages by trade and get them out to subcontractors.',
+   pts:[{t:'CSI-structured packages',s:'Scoped by trade, generated together'},
+        {t:'Find subs',s:'Radius search plus your own directory'},
+        {t:'Level the bids',s:'Side by side, with scope gaps flagged'}]},
+  {badge:'Stage 7',title:'Bid Cost',desc:'Turn the estimate into a bid: markup, overhead, contingency, bond.',
+   pts:[{t:'Full breakdown',s:'Direct cost through to bid price'},
+        {t:'Margin control',s:'GC markup, sub premium, contingency'},
+        {t:'General conditions',s:'Priced as their own line items'}]},
+  {badge:'Stage 8',title:'AI Bid Proposal',desc:'AI drafts the proposal, federal-compliant and export-ready.',
+   pts:[{t:'Structured sections',s:'Cover letter, technical approach, management plan'},
+        {t:'Refine any section',s:'One click, unlimited revisions'},
+        {t:'Export and submit',s:'.doc or PDF, ready for SAM.gov'}]}
 ];
 
 let activeStep = 0;
@@ -121,21 +161,6 @@ function renderPanel(i){
 }
 setTimeout(()=>renderPanel(0), 50);
 
-/* ─── BILLING TOGGLE — Estimator & Pro have fixed prices, Premium is Ask for Pricing ─── */
-let isYearly = false;
-function toggleBilling(){
-  isYearly = !isYearly;
-  const btn = document.getElementById('billing-toggle');
-  if(btn) btn.classList.toggle('on', isYearly);
-  const estimatorPrice = document.getElementById('estimator-price');
-  const estimatorPer   = estimatorPrice && estimatorPrice.closest('.pamt') && estimatorPrice.closest('.pamt').querySelector('.pper');
-  if(estimatorPrice) estimatorPrice.textContent = isYearly ? '1099' : '99';
-  if(estimatorPer)   estimatorPer.textContent   = isYearly ? '/year' : '/month';
-  const soloPrice = document.getElementById('solo-price');
-  const soloPer   = soloPrice && soloPrice.closest('.pamt') && soloPrice.closest('.pamt').querySelector('.pper');
-  if(soloPrice) soloPrice.textContent = isYearly ? '3499' : '299';
-  if(soloPer)   soloPer.textContent   = isYearly ? '/year' : '/month';
-}
 
 /* ─── CSI DIVISIONS ─── */
 const DIVS = [
@@ -406,7 +431,7 @@ function onInterestChange(){
   const val     = sel ? sel.value : '';
   const slotsEl = document.getElementById('m-slots');
   const btnEl   = document.getElementById('m-btn');
-  const showSlots = val==='Book Live Demo' || val==='Start Free Trial';
+  const showSlots = val==='Book Live Demo';
 
   if(slotsEl) slotsEl.style.display = showSlots ? 'block' : 'none';
   if(btnEl){
@@ -425,7 +450,7 @@ function submitModal(){
   if(!fn||!em||!co||!tr){err.textContent='Please fill in all required fields.';err.style.display='block';return;}
   if(!isEmail(em)){err.textContent='Please enter a valid email.';err.style.display='block';return;}
   let demoInfo = '';
-  if(interest==='Book Live Demo' || interest==='Start Free Trial'){
+  if(interest==='Book Live Demo'){
     const sd = _demoDates[demoSelIdx];
     if(sd){
       const istLabel = `${String(demoISTH).padStart(2,'0')}:${String(demoISTM).padStart(2,'0')} IST`;

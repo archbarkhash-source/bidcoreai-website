@@ -30,6 +30,18 @@
   // your results gone — having spent a SAM.gov call to get them — is the kind
   // of small loss that stops people returning. Restored, never re-fetched.
   var RESULTS_KEY = 'bca_go_no_go_last_results';
+  // Sidebar edits that have not been saved yet. Ticking 28 NAICS codes, closing
+  // the picker and seeing "28 selected" looks exactly like a saved profile — so a
+  // reload used to throw all of it away without ever having said it was unsaved.
+  // Kept here so a refresh restores the work, and marked in the panel so it is
+  // clear it still needs saving.
+  var DRAFT_KEY = 'bca_go_no_go_profile_draft';
+  // The keys in S.draft that make up the company profile — and only those. The
+  // same object also holds the search box, the sign-in code and the SAM.gov API
+  // key: none of those may be written to disk, and typing in the search box must
+  // not mark the profile unsaved.
+  var PROFILE_KEYS = ['naics', 'certs', 'states', 'types', 'lead',
+    'gg-office', 'gg-bond', 'gg-min', 'gg-max'];
   // Ten to a page: enough to scan without scrolling past the sidebar's own
   // content, and short enough that the Go/No-Go button is always near.
   var PAGE_SIZE = 10;
@@ -58,6 +70,44 @@
       // Quota exceeded (private browsing, or a very large page of notices).
       // The feed still works for this session; it just won't survive a reload.
     }
+  }
+
+  function loadDraft() {
+    try {
+      var parsed = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null');
+      return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+    } catch (e) {
+      return {};   // corrupt entry: start clean rather than throw on boot
+    }
+  }
+
+  /** True when the sidebar holds edits the server has not been told about. */
+  function hasProfileDraft() {
+    return PROFILE_KEYS.some(function (k) {
+      return Object.prototype.hasOwnProperty.call(S.draft, k);
+    });
+  }
+
+  /** Writes the unsaved sidebar edits to disk and marks the panel's footer.
+   *  Called from the field handlers, which deliberately do not re-render — the
+   *  page redraws wholesale, and doing that on every keystroke or tick would
+   *  fight the person typing. So the one thing that has to change on screen is
+   *  set directly instead. */
+  function keepDraft() {
+    var out = {};
+    PROFILE_KEYS.forEach(function (k) {
+      if (Object.prototype.hasOwnProperty.call(S.draft, k)) out[k] = S.draft[k];
+    });
+    try { localStorage.setItem(DRAFT_KEY, JSON.stringify(out)); }
+    catch (e) { /* private mode or quota: the session still holds it */ }
+    var foot = document.querySelector('.gg-side-foot');
+    if (foot) foot.classList.add('is-dirty');
+  }
+
+  /** After a successful save, and whenever the workspace changes hands. */
+  function dropDraft() {
+    S.draft = {};
+    try { localStorage.removeItem(DRAFT_KEY); } catch (e) { /* private mode */ }
   }
 
   var S = {
@@ -113,13 +163,21 @@
     scoring: false,      // the panel's own loading state, separate from busy
     score: null,
     detailsOpen: false,
+    // Every verdict produced this session, keyed the same way the feed keys its
+    // rows: { score, recommendation }. The panel holds one at a time; this holds
+    // all of them, so a scored row keeps showing its number after the panel has
+    // moved on, and Save can send the verdict for the row being saved rather
+    // than whichever one is on screen.
+    verdicts: {},
 
     // What is typed into the sidebar right now. The page re-renders wholesale
     // on every state change, which recreates those inputs — without this, a
     // background refresh landing mid-sentence would wipe what you were typing,
     // and the fields would snap back to the last saved values. Cleared on a
-    // successful save, when the server's copy becomes the truth again.
-    draft: {},
+    // successful save, when the server's copy becomes the truth again — and
+    // restored from disk on boot, so a reload with edits pending does not throw
+    // them away.
+    draft: loadDraft(),
     // Sidebar sections that are collapsed by default — past performance is
     // add-once-and-forget, so it should not push the fields you edit often
     // below the fold.
@@ -195,6 +253,27 @@
     var el = document.getElementById(id);
     return el && typeof el.value === 'string' ? el.value.trim() : '';
   };
+
+  /** Groups a money value in thousands for display: 300000 -> "300,000". Nobody
+   *  reads 1000000 at a glance, and on this form the difference between a $1M
+   *  and a $10M ceiling decides which bids come back GO.
+   *
+   *  Everything but digits and a decimal point is dropped, so the same function
+   *  can be run over a value it has already formatted — which is what happens on
+   *  every re-render. A trailing point survives ("1200." stays "1,200."): that
+   *  is a number halfway through being typed, not a broken one. */
+  function groupMoney(raw) {
+    var parts = String(raw == null ? '' : raw).replace(/[^\d.]/g, '').split('.');
+    var whole = parts.shift().replace(/^0+(?=\d)/, '');
+    var rest = parts.length ? '.' + parts.join('').slice(0, 2) : '';
+    return whole.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + rest;
+  }
+
+  /** The other direction: what the server is allowed to see. The grouping is
+   *  display only — Number('300,000') is NaN, and the API reads NaN as "leave
+   *  the stored value alone", so posting the formatted string would produce a
+   *  save that says "Saved." and changes nothing. */
+  var moneyVal = function (id) { return val(id).replace(/[^\d.]/g, ''); };
 
   // ── Boot ───────────────────────────────────────────────────────────────────
 
@@ -293,6 +372,10 @@
   function afterSignIn(body) {
     S.token = body.session_token;
     localStorage.setItem(TOKEN_KEY, S.token);
+    // A draft left on this browser was typed against whichever workspace was
+    // open before. Signing in may be a different one, and applying one company's
+    // NAICS codes to another's profile is worse than losing an unsaved edit.
+    dropDraft();
     adopt(body);
     S.busy = false;
     S.codeSent = false;
@@ -364,6 +447,10 @@
     localStorage.removeItem(TOKEN_KEY);
     S.token = null; S.profile = null; S.readiness = null;
     S.results = null; S.score = null; S.step = null; S.codeSent = false;
+    // Verdicts and unsaved edits belong to the workspace that produced them, and
+    // the next person to sign in on this browser must not inherit either.
+    S.verdicts = {};
+    dropDraft();
     render();
   }
 
@@ -428,26 +515,31 @@
     S.scoring = true;
     S.error = null;
     render();
+    // Stacked on a phone the panel is far below the list — go to it now, so the
+    // "Scoring 12 criteria…" line is the answer to the press.
+    revealScorePanel();
 
     api('/score', { method: 'POST', body: r })
       .then(function (body) {
         S.scoring = false;
         S.score = body.result;
+        // Analysing does NOT put the notice in the pipeline. It used to, and the
+        // row then vanished from the feed the instant it was scored — because the
+        // feed hides anything already in the pipeline — leaving a verdict in the
+        // panel for a row you could no longer see, and a card sitting in Under
+        // Review that nobody had decided to track. Reading a score is not a
+        // commitment; Save is. The board only gains a card when Save is pressed,
+        // and only changes stage when a stage button is.
+        //
+        // So the verdict is kept here against the row instead: it has to outlive
+        // analysing the next one, both so the feed can go on showing it and so
+        // Save sends it whatever the panel has moved on to.
+        S.verdicts[id] = {
+          score: body.result.overall_score,
+          recommendation: body.result.recommendation,
+        };
         adopt(body);          // readiness + fresh usage counters
         render();
-
-        // Analysing something is what puts it in the Analysed column —
-        // otherwise that column is a promise the page never keeps, and the
-        // work of deciding is thrown away the moment the next search runs. The
-        // upsert leaves `status` alone, so a notice already further along the
-        // board keeps its stage and just gains a fresh verdict.
-        return api('/opportunities', {
-          method: 'POST',
-          body: Object.assign({}, r, {
-            score: body.result.overall_score,
-            recommendation: body.result.recommendation,
-          }),
-        }).then(loadOpportunities);
       })
       .catch(function (e) { S.scoring = false; S.openId = null; S.scoreFor = null; fail(e); });
   }
@@ -477,13 +569,21 @@
     if (!r) return;
     var id = r.notice_id || r.solicitation_number || String(index);
     var body = JSON.parse(JSON.stringify(r));
-    if (S.openId === id && S.score) {
-      body.score = S.score.overall_score;
-      body.recommendation = S.score.recommendation;
+    // Whatever this row scored, not whatever the panel happens to be showing:
+    // analysing three notices and then saving the first used to save it with no
+    // verdict at all, because the panel had moved on.
+    var verdict = S.verdicts[id];
+    if (verdict) {
+      body.score = verdict.score;
+      body.recommendation = verdict.recommendation;
     }
     api('/opportunities', { method: 'POST', body: body })
       .then(function () {
-        S.notice = 'Saved to your pipeline.';
+        // Name the stage: saving is now the only thing that puts a notice on the
+        // board, so it should say where it landed.
+        S.notice = verdict
+          ? 'Saved to Under Review, with its score.'
+          : 'Saved to Under Review.';
         render();
         setTimeout(function () { S.notice = null; render(); }, 2500);
         return loadOpportunities();
@@ -580,8 +680,10 @@
   function visibleResults() {
     var mine = (S.profile && S.profile.states_served) || [];
     var rows = (S.results || []).filter(function (r) {
-      // Anything already analysed and saved lives in the pipeline now. Leaving
-      // it in the feed as well means deciding twice about the same notice.
+      // Anything SAVED lives in the pipeline now, and leaving it in the feed as
+      // well means deciding twice about the same notice. Analysed is not saved:
+      // a scored notice stays right here, marked with its verdict, until you
+      // decide it is worth tracking.
       if (savedFor(r)) return false;
       if (S.month && (r.solicitation_due_date || '').slice(0, 7) !== S.month) return false;
       if (!S.place) return true;
@@ -624,6 +726,7 @@
     S.scoring = true;
     S.error = null;
     render();
+    revealScorePanel();
 
     var notice = o.raw && typeof o.raw === 'object' ? o.raw : {
       title: o.title, agency: o.agency, solicitation_number: o.solicitation_number,
@@ -797,15 +900,16 @@
         min_bid_days: S.draft.lead != null ? S.draft.lead : (S.profile && S.profile.min_bid_days),
         states_served: S.draft.states || (S.profile && S.profile.states_served) || [],
         office_address: val('gg-office'),
-        bonding_capacity: val('gg-bond'),
-        project_value_min: val('gg-min'),
-        project_value_max: val('gg-max'),
+        bonding_capacity: moneyVal('gg-bond'),
+        project_value_min: moneyVal('gg-min'),
+        project_value_max: moneyVal('gg-max'),
       },
     }).then(function (body) {
       adopt(body);
-      // The saved profile is now authoritative, so drop the drafts and let the
-      // sidebar redraw from it — which is also the confirmation that it stuck.
-      S.draft = {};
+      // The saved profile is now authoritative, so drop the drafts — from disk as
+      // well as from memory — and let the sidebar redraw from it, which is also
+      // the confirmation that it stuck.
+      dropDraft();
       S.busy = false;
       S.notice = 'Saved.';
       render();
@@ -818,7 +922,7 @@
     if (!title) return;
     api('/past-performance', {
       method: 'POST',
-      body: { title: title, agency: val('gg-pp-agency'), contract_value: val('gg-pp-value') },
+      body: { title: title, agency: val('gg-pp-agency'), contract_value: moneyVal('gg-pp-value') },
     }).then(function (body) { adopt(body); render(); }).catch(fail);
   }
 
@@ -1020,6 +1124,7 @@
     var id = r.notice_id || r.solicitation_number || String(i);
     var open = S.openId === id;
     var saved = savedFor(r);
+    var verdict = S.verdicts[id];
     var meta = [
       r.agency,
       [r.place_of_performance_city, r.place_of_performance_state].filter(Boolean).join(', '),
@@ -1038,11 +1143,21 @@
           '<div class="gg-result-meta">' + esc(meta) + '</div>' +
         '</div>' +
         '<div class="gg-result-actions">' +
+          // The verdict stays on the row it belongs to. It used to be carried off
+          // to the board the moment it was produced; now the row keeps it, so a
+          // feed you have worked down shows what each notice scored instead of
+          // only the last one you pressed.
+          (verdict
+            ? '<span class="gg-score-pill ' + verdictClass(verdict.recommendation) + '" ' +
+                'title="' + esc(verdict.recommendation) + '">' + verdict.score + '</span>'
+            : '') +
           (r.ui_link ? '<a class="gg-btn gg-btn--ghost gg-btn--small" href="' + esc(r.ui_link) + '" target="_blank" rel="noopener">SAM.gov ' + icon('ext', 13) + '</a>' : '') +
           '<button class="gg-btn gg-btn--ghost gg-btn--small" data-act="save" data-i="' + i + '">' +
             'Save' + '</button>' +
+          // No arrow on "Analysed": the arrow said the notice had gone somewhere,
+          // and it no longer goes anywhere. Pressing it again closes the panel.
           '<button class="gg-btn gg-btn--small' + (open ? ' gg-btn--ghost' : '') + '" data-act="analyse" data-i="' + i + '">' +
-            (open ? 'Analysed →' : 'Go/No-Go') + '</button>' +
+            (open ? 'Analysed' : 'Go/No-Go') + '</button>' +
           '<button class="gg-result-x" data-act="dismiss" data-i="' + i + '" ' +
             'title="Remove from this feed" aria-label="Remove from this feed">&times;</button>' +
         '</div>' +
@@ -1058,7 +1173,9 @@
     return '<button class="gg-who' + (S.profileOpen ? ' is-open' : '') + '" data-act="profile" ' +
       'aria-expanded="' + (S.profileOpen ? 'true' : 'false') + '" title="Your profile and settings">' +
       '<span class="gg-who-avatar">' + esc(initial) + '</span>' +
-      '<span style="text-align:left">' +
+      // Classed so a phone can drop the name and email and keep the button:
+      // this is the only way into settings, the API key and sign out.
+      '<span class="gg-who-text" style="text-align:left">' +
         '<span class="gg-who-name">' + esc(p.company || p.name || 'Your workspace') + '</span><br/>' +
         '<span class="gg-who-sub">' + esc(p.email || '') + '</span>' +
       '</span>' +
@@ -1471,6 +1588,19 @@
     '</div>';
   }
 
+  /** The search box and its button. Lives in the frozen toolbar, so it is its
+   *  own function rather than inline markup — the input carries its own border,
+   *  which is why there is no card around it. */
+  function viewSearch() {
+    return '<div class="gg-search">' +
+      '<input class="gg-input" id="gg-q" value="' + esc(S.query) + '" ' +
+        'placeholder="Search opportunities"/>' +
+      '<button class="gg-btn" data-act="search"' + (S.busy ? ' disabled' : '') + '>' +
+        (S.busy ? '<span class="gg-spin"></span> Searching…' : icon('search', 15) + ' Search') +
+      '</button>' +
+    '</div>';
+  }
+
   function viewFeedBar() {
     var months = monthsInFeed();
     var shown = visibleResults().length;
@@ -1539,7 +1669,7 @@
       body = '<div class="gg-score-empty">Press <strong>Go/No-Go</strong> on any result and the verdict appears here — ' +
         'a score out of 100, what to watch, and the reason behind all 12 criteria.</div>';
     }
-    return '<aside class="gg-side gg-card">' +
+    return '<aside class="gg-side gg-card" id="gg-score-panel">' +
       // The checklist belongs beside the verdict, not above the results: every
       // unticked item is a reason the score below is less certain than it could
       // be, so the two are read together.
@@ -1603,28 +1733,35 @@
       (S.detailsOpen ? 'Hide' : 'Show') + ' the full calculation</button>';
 
     if (S.detailsOpen && s.matches) {
-      // Every criterion carries the same weight — the overall is their mean.
       // Showing the arithmetic matters more here than in a paid tool: a number
-      // with no visible derivation is not one anyone will bet a bid on.
-      var share = 100 / s.matches.length;
+      // with no visible derivation is not one anyone will bet a bid on. Which
+      // means it has to be the SAME arithmetic — the criteria are weighted, and
+      // recomputing a flat mean here printed 68 under a verdict of 70. Each
+      // match carries its own share of the score; use it, never a share derived
+      // from how many rows there happen to be.
+      var shareOf = function (m) {
+        return typeof m.share === 'number' ? m.share : 1 / s.matches.length;
+      };
       var overridden = !!s.override_reason && s.overall_score === 0;
 
-      out += '<div class="gg-calc-head">Each of the ' + s.matches.length + ' criteria is worth ' +
-        share.toFixed(1) + '% of the score — contribution is its score × ' +
-        share.toFixed(1) + '%.</div>';
+      out += '<div class="gg-calc-head">The ' + s.matches.length + ' criteria are not equally ' +
+        'weighted — each one’s share of the score is below, and what it adds is its ' +
+        'score × that share.</div>';
 
       out += '<table class="gg-calc"><thead><tr>' +
-        '<th>Criterion</th><th class="gg-num">Score</th><th class="gg-num">Adds</th>' +
+        '<th>Criterion</th><th class="gg-num">Score</th><th class="gg-num">Weight</th>' +
+        '<th class="gg-num">Adds</th>' +
       '</tr></thead><tbody>';
 
       var running = 0;
       s.matches.forEach(function (m) {
-        var adds = m.score * share / 100;
+        var adds = m.score * shareOf(m);
         running += adds;
         out += '<tr class="' + (m.score < 50 ? 'is-weak' : m.score === 50 ? 'is-neutral' : '') + '">' +
           '<td><span class="gg-crit-name">' + esc(m.title) + '</span><br/>' +
             '<span class="gg-crit-why">' + esc(m.reason) + '</span></td>' +
           '<td class="gg-num">' + m.score + '</td>' +
+          '<td class="gg-num">' + (shareOf(m) * 100).toFixed(1) + '%</td>' +
           '<td class="gg-num">' + adds.toFixed(1) + '</td>' +
         '</tr>';
       });
@@ -1634,14 +1771,17 @@
       '</tbody></table>';
 
       if (overridden) {
-        out += '<div class="gg-calc-head">The criteria average ' + Math.round(running) +
+        out += '<div class="gg-calc-head">The criteria come to ' + Math.round(running) +
           ', but this scores 0: an expired deadline, or a set-aside you do not hold, makes the ' +
-          'bid impossible rather than merely unattractive — so it overrides the average ' +
+          'bid impossible rather than merely unattractive — so it overrides the weighted total ' +
           'instead of being averaged into it.</div>';
       }
 
+      // The bands come from the server for the same reason the weights do: a
+      // second copy here goes stale silently. This footer once read
+      // "above 55 GO · 40–55 NOT SURE" long after the thresholds had moved.
       out += '<div class="gg-calc-head">50 means “nothing on file” — neutral, not bad. ' +
-        'Bands: above 55 GO · 40–55 NOT SURE · below 40 NO-GO.</div>';
+        'Bands: ' + esc(bandsText()) + '.</div>';
     }
     return out;
   }
@@ -1653,7 +1793,7 @@
     var p = S.profile || {};
     var perf = p.past_performance || [];
 
-    return '<aside class="gg-side gg-card">' +
+    return '<aside class="gg-side gg-side--profile gg-card">' +
       '<div class="gg-side-block">' +
         '<div class="gg-side-title">Your company</div>' +
         '<p class="gg-hint" style="margin:-6px 0 12px">The more of this we know, the more of the 12 criteria can score.</p>' +
@@ -1661,13 +1801,11 @@
         setAsidePicker(p) +
         statePicker(p) +
         field('gg-office', 'Office address', p.office_address || '', '123 Main St, Richmond, VA') +
-        field('gg-bond', 'Bonding capacity ($)', p.bonding_capacity || '', '5000000') +
-        field('gg-min', 'Smallest job you take ($)', p.project_value_min || '', '100000') +
-        field('gg-max', 'Largest job you take ($)', p.project_value_max || '', '5000000') +
+        moneyField('gg-bond', 'Bonding capacity', p.bonding_capacity || '', '5000000') +
+        moneyField('gg-min', 'Smallest job you take', p.project_value_min || '', '100000') +
+        moneyField('gg-max', 'Largest job you take', p.project_value_max || '', '5000000') +
         contractTypePicker(p) +
         leadTimePicker(p) +
-        '<button class="gg-btn gg-btn--small gg-btn--block" data-act="save-profile"' +
-          (S.busy ? ' disabled' : '') + '>Save</button>' +
       '</div>' +
 
       '<div class="gg-side-block">' +
@@ -1685,11 +1823,26 @@
             }).join('') +
             field('gg-pp-title', 'Project', '', 'Barracks roof replacement') +
             field('gg-pp-agency', 'Agency', '', 'USACE') +
-            field('gg-pp-value', 'Contract value ($)', '', '1200000') +
+            moneyField('gg-pp-value', 'Contract value', '', '1200000') +
             '<button class="gg-btn gg-btn--small gg-btn--ghost gg-btn--block" data-act="add-pp">Add project</button>'
           : '') +
       '</div>' +
 
+      // Pinned to the bottom of the panel rather than sitting at the end of a
+      // dozen fields. Reaching it used to mean scrolling the whole page past
+      // everything else on it, and once you had scrolled back up to correct a
+      // field it was out of sight again — a form whose Save you have to go and
+      // find is a form people leave unsaved. Outside the blocks above so that
+      // Past performance keeps scrolling in the panel behind it, still reachable
+      // while Save stays where it can be pressed.
+      // is-dirty is also set directly by keepDraft() as fields change, because
+      // ticking a box deliberately does not re-render. Both routes set the same
+      // class, so the marker is right whether it arrives by edit or by redraw.
+      '<div class="gg-side-foot' + (hasProfileDraft() ? ' is-dirty' : '') + '">' +
+        '<div class="gg-side-dirty">Unsaved changes</div>' +
+        '<button class="gg-btn gg-btn--small gg-btn--block" data-act="save-profile"' +
+          (S.busy ? ' disabled' : '') + '>Save profile</button>' +
+      '</div>' +
     '</aside>';
     // (The connected SAM.gov account moved to the profile panel in the header:
     //  it is account settings, not an input to the score, and this sidebar is
@@ -1703,7 +1856,7 @@
   function setAsidePicker(p) {
     var options = S.config.set_asides || [];
     var chosen = S.draft.certs || p.certifications || [];
-    return '<div class="gg-field">' +
+    return '<div class="gg-field gg-field--pick">' +
       '<button class="gg-picker-head" data-act="toggle-setasides" ' +
         'aria-expanded="' + (S.setAsideOpen ? 'true' : 'false') + '">' +
         '<span class="gg-label" style="margin:0">Set-asides you hold</span>' +
@@ -1725,8 +1878,11 @@
           '</label>';
         }).join('') +
       '</div>' +
-      '<div class="gg-hint">Only what you actually hold — an unheld set-aside makes a bid ineligible, ' +
-        'so the score treats it as a hard NO-GO.</div>' +
+      // No standing advice under this picker. What it said — an unheld set-aside
+      // is a hard NO-GO — is said where it applies instead: the verdict names the
+      // set-aside as the reason when it fires, which is the moment it matters.
+      // In the panel it was a paragraph of grey text between every visitor and
+      // the fields below it.
     '</div>';
   }
 
@@ -1736,7 +1892,7 @@
   function naicsPicker(p) {
     var options = S.config.naics || [];
     var chosen = S.draft.naics || p.naics_codes || [];
-    return '<div class="gg-field">' +
+    return '<div class="gg-field gg-field--pick">' +
       '<button class="gg-picker-head" data-act="toggle-naics" ' +
         'aria-expanded="' + (S.naicsOpen ? 'true' : 'false') + '">' +
         '<span class="gg-label" style="margin:0">NAICS codes you hold</span>' +
@@ -1770,7 +1926,7 @@
   function statePicker(p) {
     var options = S.config.states || [];
     var chosen = S.draft.states || p.states_served || [];
-    return '<div class="gg-field">' +
+    return '<div class="gg-field gg-field--pick">' +
       '<button class="gg-picker-head" data-act="toggle-states" ' +
         'aria-expanded="' + (S.statesOpen ? 'true' : 'false') + '">' +
         '<span class="gg-label" style="margin:0">States you work in</span>' +
@@ -1804,7 +1960,7 @@
   function contractTypePicker(p) {
     var options = S.config.contract_types || [];
     var chosen = S.draft.types || p.contract_types || [];
-    return '<div class="gg-field">' +
+    return '<div class="gg-field gg-field--pick">' +
       '<button class="gg-picker-head" data-act="toggle-types" ' +
         'aria-expanded="' + (S.typesOpen ? 'true' : 'false') + '">' +
         '<span class="gg-label" style="margin:0">Contract types you bid</span>' +
@@ -1858,6 +2014,24 @@
     '</div>';
   }
 
+  /** A dollar amount: a fixed $ inside the box and thousands grouped as it is
+   *  typed. The $ is an adornment rather than part of the value, so it cannot be
+   *  backspaced away or end up in what is posted — which is also why the label
+   *  no longer needs to say "($)". data-money is what the input handler keys off:
+   *  a list of ids here would have to be kept in step with this by hand. */
+  function moneyField(id, label, value, placeholder) {
+    var shown = Object.prototype.hasOwnProperty.call(S.draft, id) ? S.draft[id] : value;
+    return '<div class="gg-field">' +
+      '<label class="gg-label" for="' + id + '">' + esc(label) + '</label>' +
+      '<div class="gg-money">' +
+        '<span class="gg-money-sign" aria-hidden="true">$</span>' +
+        '<input class="gg-input" id="' + id + '" data-money="1" inputmode="numeric" ' +
+          'autocomplete="off" value="' + esc(groupMoney(shown)) + '" ' +
+          'placeholder="' + esc(groupMoney(placeholder)) + '"/>' +
+      '</div>' +
+    '</div>';
+  }
+
   function viewWorkspace() {
     var body = '';
 
@@ -1887,21 +2061,12 @@
 
     var isFeed = S.view === 'feed';
     var centre = S.view === 'dashboard' ? viewDashboard() : isFeed
-      // The input carries its own border, so a card around it would be a box
-      // inside a box for no gain.
-      ? (S.results && S.results.length ? viewFeedBar() : '') +
-        '<div class="gg-search">' +
-          '<input class="gg-input" id="gg-q" value="' + esc(S.query) + '" ' +
-            'placeholder="Search opportunities"/>' +
-          '<button class="gg-btn" data-act="search"' + (S.busy ? ' disabled' : '') + '>' +
-            (S.busy ? '<span class="gg-spin"></span> Searching…' : icon('search', 15) + ' Search') +
-          '</button>' +
-        '</div>' +
-        // The box takes three different things and works out which — say so,
-        // rather than leaving it to be discovered. Each example is clickable,
-        // because the fastest way to learn what a box accepts is to watch it
-        // work once.
-        '<div class="gg-search-hint">Search by ' +
+      // The box takes three different things and works out which — say so,
+      // rather than leaving it to be discovered. Each example is clickable,
+      // because the fastest way to learn what a box accepts is to watch it
+      // work once. It stays in the scroll: it explains the box above it, and
+      // once you have searched once you never need it again.
+      ? '<div class="gg-search-hint">Search by ' +
           '<button class="gg-eg" data-act="example" data-q="roofing">keyword</button> ' +
           '<span class="gg-muted">(roofing, HVAC, paving)</span>, ' +
           '<button class="gg-eg" data-act="example" data-q="238220">NAICS code</button> ' +
@@ -1936,6 +2101,17 @@
             '<button class="gg-view-btn' + (S.view === 'dashboard' ? ' is-on' : '') + '" ' +
               'data-act="view" data-v="dashboard">Overview</button>' +
             '</div>' +
+            // Frozen with the view switch rather than scrolling away above the
+            // results: reading down a long feed and wanting a different search —
+            // or a different month, or only your own states — is the normal case,
+            // and scrolling back to the top for it is the page making you walk
+            // back for something it could have kept in reach. The filters keep
+            // their original place above the box, so the hint below it still sits
+            // under the box it describes. Feed only: there is nothing to search
+            // or filter on a board.
+            (isFeed
+              ? (S.results && S.results.length ? viewFeedBar() : '') + viewSearch()
+              : '') +
           '</div>' +
           messages() +
           centre +
@@ -1980,11 +2156,62 @@
     else app.innerHTML = viewWorkspace() + (S.profileOpen ? viewProfilePanel() : '');
 
     if (stage === 'signup' && !S.codeSent) mountGoogle();
+
+    // The header just changed — signing in adds the account button, signing out
+    // takes it away — so re-measure before anything sticky is scrolled.
+    syncHeadHeight();
   }
 
   function focus(id) {
     var el = document.getElementById(id);
     if (el) el.focus();
+  }
+
+  /** Publishes the sticky header's real height as --gg-head-h. Every sticky
+   *  offset on the page is measured from that variable, and 63px is only true of
+   *  a wide screen with a short header: on a phone the header is shorter, and
+   *  signing in makes it taller again by adding the account button. When the
+   *  constant and the header disagree, the frozen toolbar either floats a strip
+   *  of gap below the header — with results scrolling through it — or hides its
+   *  own first line behind it. Measured, so it cannot disagree. */
+  function syncHeadHeight() {
+    var head = document.querySelector('.gg-head');
+    if (!head) return;
+    var h = Math.round(head.getBoundingClientRect().height);
+    if (h > 0) document.documentElement.style.setProperty('--gg-head-h', h + 'px');
+  }
+
+  var headSyncQueued = false;
+  window.addEventListener('resize', function () {
+    // Rotating a phone fires this in a burst; one measurement per frame is
+    // enough and keeps the reflow off the resize path.
+    if (headSyncQueued) return;
+    headSyncQueued = true;
+    requestAnimationFrame(function () { headSyncQueued = false; syncHeadHeight(); });
+  });
+
+  /** Brings the analysis panel into view on a narrow screen. Stacked, that panel
+   *  sits below the entire result list, so pressing Go/No-Go scored the
+   *  opportunity off screen and read as a button that did nothing. Clear of the
+   *  sticky header, or the verdict lands underneath it. */
+  function revealScorePanel() {
+    // 860px is where .gg-layout stops being columns and starts being a stack —
+    // the same breakpoint, expressed once in each language.
+    var stacked = window.matchMedia
+      ? window.matchMedia('(max-width: 860px)').matches
+      : window.innerWidth <= 860;
+    if (!stacked) return;
+    // After the render that draws the panel, never before it.
+    requestAnimationFrame(function () {
+      var el = document.getElementById('gg-score-panel');
+      if (!el) return;
+      var head = document.querySelector('.gg-head');
+      var y = el.getBoundingClientRect().top + (window.pageYOffset || 0) -
+        ((head ? head.getBoundingClientRect().height : 0) + 10);
+      if (y < 0) y = 0;
+      try { window.scrollTo({ top: y, behavior: 'smooth' }); }
+      catch (err) { window.scrollTo(0, y); }   // older Safari: no options object
+    });
   }
 
   // ── Events ─────────────────────────────────────────────────────────────────
@@ -2101,6 +2328,7 @@
       if (e.target.checked && ni === -1) codes.push(e.target.value);
       if (!e.target.checked && ni !== -1) codes.splice(ni, 1);
       S.draft.naics = codes;
+      keepDraft();
       return;
     }
     if (e.target && e.target.className === 'gg-state') {
@@ -2109,6 +2337,7 @@
       if (e.target.checked && si === -1) states.push(e.target.value);
       if (!e.target.checked && si !== -1) states.splice(si, 1);
       S.draft.states = states;
+      keepDraft();
       return;
     }
     if (e.target && e.target.className === 'gg-ctype') {
@@ -2117,9 +2346,10 @@
       if (e.target.checked && ti === -1) types.push(e.target.value);
       if (!e.target.checked && ti !== -1) types.splice(ti, 1);
       S.draft.types = types;
+      keepDraft();
       return;
     }
-    if (e.target && e.target.id === 'gg-lead') { S.draft.lead = e.target.value; return; }
+    if (e.target && e.target.id === 'gg-lead') { S.draft.lead = e.target.value; keepDraft(); return; }
     if (e.target && e.target.id === 'gg-month') { S.month = e.target.value; S.page = 0; render(); return; }
     if (e.target && e.target.id === 'gg-place') { S.place = e.target.value; S.page = 0; render(); return; }
     if (e.target && e.target.id === 'gg-pipe-month') { S.pipeMonth = e.target.value; render(); return; }
@@ -2130,6 +2360,7 @@
       if (e.target.checked && at === -1) current.push(e.target.value);
       if (!e.target.checked && at !== -1) current.splice(at, 1);
       S.draft.certs = current;
+      keepDraft();
       return;
     }
     if (e.target && e.target.id === 'gg-country') {
@@ -2158,9 +2389,40 @@
   document.addEventListener('input', function (e) {
     var el = e.target;
     if (el && el.id && el.id.indexOf('gg-') === 0 && el.tagName === 'INPUT') {
+      if (el.getAttribute('data-money')) regroupMoney(el);
       S.draft[el.id] = el.value;
+      // Only the profile's own fields: the same draft holds the search box and
+      // the API key, and neither belongs on disk or in "unsaved profile".
+      if (PROFILE_KEYS.indexOf(el.id) !== -1) keepDraft();
     }
   });
+
+  /** Regroups a money field in place, keeping the caret where the typist left
+   *  it. Rewriting .value alone would drop the caret at the end of the box after
+   *  every keystroke, which makes correcting a digit in the middle of a figure
+   *  impossible — so the caret is restored by how many digits precede it, not by
+   *  character offset, since inserting a comma shifts every offset after it. */
+  function regroupMoney(el) {
+    var caret = el.selectionStart;
+    var next = groupMoney(el.value);
+    if (next === el.value) return;
+
+    var before = caret == null
+      ? -1
+      : el.value.slice(0, caret).replace(/[^\d.]/g, '').length;
+    el.value = next;
+    if (before < 0) return;
+
+    var seen = 0;
+    var at = 0;
+    while (at < next.length && seen < before) {
+      if (/[\d.]/.test(next.charAt(at))) seen += 1;
+      at += 1;
+    }
+    // Guarded: setSelectionRange throws on input types that have no selection,
+    // and losing the caret must never take the keystroke with it.
+    try { el.setSelectionRange(at, at); } catch (err) { /* not selectable */ }
+  }
 
   // Enter submits whichever field the visitor is in — on a page this small,
   // reaching for the mouse to continue would be the clumsiest part of it.
