@@ -138,7 +138,7 @@
   </div>
   <div class="mob-cta">
     <button class="btn btn-p" style="width:100%;justify-content:center" onclick="openModal('Book Live Demo')">
-      <svg width="14" height="14"><use href="#ic-play"/></svg> Book a Demo
+      <svg width="14" height="14"><use href="#ic-play"/></svg> Request a Demo
     </button>
   </div>
 </nav>
@@ -293,7 +293,7 @@
       <a class="nl" id="nl-contact" href="/contact">Contact</a>
     </div>
     <div class="nav-cta">
-      <button class="btn btn-gh btn-sm nav-demo" onclick="openModal('Book Live Demo')">Live Demo</button>
+      <button class="btn btn-p btn-sm nav-demo" onclick="openModal('Book Live Demo')">Request a Demo</button>
     </div>
   </div>
 </nav>
@@ -313,8 +313,12 @@
       <p class="hero-sub">BidcoreAI is the the AI-powered end-to-end preconstruction platform built exclusively for US contractors — from CSI estimation to automated bid packages and federal proposal writing.</p>
       <div class="hero-ctas">
         <button class="btn btn-p btn-lg" onclick="openModal('Book Live Demo')">
-          <svg width="17" height="17"><use href="#ic-play"/></svg> See Live Demo
+          <svg width="17" height="17"><use href="#ic-send"/></svg> Request a Demo
         </button>
+        <!-- "Live demo" means the recorded walkthrough, so it leaves the site. -->
+        <a class="btn btn-gh btn-lg" href="https://www.youtube.com/@bidcoreai" target="_blank" rel="noopener">
+          <svg width="17" height="17"><use href="#ic-play"/></svg> Watch Live Demo
+        </a>
       </div>
       <div class="hero-stats">
         <div class="hs"><div class="hs-v">10×</div><div class="hs-l">Faster Estimates</div></div>
@@ -353,11 +357,12 @@
     <div class="rv">
       <div class="slides-tabs" id="slides-tabs">
         <button class="stab on" onclick="switchSlide(0)">AI Document Analyser</button>
-        <button class="stab" onclick="switchSlide(1)">Takeoff</button>
-        <button class="stab" onclick="switchSlide(2)">Cost Estimation</button>
-        <button class="stab" onclick="switchSlide(3)">Bidding</button>
-        <button class="stab" onclick="switchSlide(4)">Bid Costing</button>
-        <button class="stab" onclick="switchSlide(5)">AI Proposal Writer</button>
+        <button class="stab" onclick="switchSlide(1)">Risk Analysis &amp; Go/No-Go</button>
+        <button class="stab" onclick="switchSlide(2)">Takeoff</button>
+        <button class="stab" onclick="switchSlide(3)">Cost Estimation</button>
+        <button class="stab" onclick="switchSlide(4)">Bidding</button>
+        <button class="stab" onclick="switchSlide(5)">Bid Costing</button>
+        <button class="stab" onclick="switchSlide(6)">AI Proposal Writer</button>
       </div>
       <!-- Slide 0: AI Document Analyser -->
       <div class="slide-pane slide-pane--text on" id="sp-0">
@@ -371,8 +376,20 @@
           </div>
         </div>
       </div>
-      <!-- Slide 1: Takeoff -->
+      <!-- Slide 1: Risk Analysis &amp; Go/No-Go -->
       <div class="slide-pane slide-pane--text" id="sp-1">
+        <div class="slide-info">
+          <div class="slide-title">Risk Analysis &amp; Go/No-Go</div>
+          <div class="slide-desc">A detailed risk report generated from the documents, and a GO / REVIEW / NO-GO verdict scored across 12 criteria against your company &mdash; so the decision to bid is made on evidence rather than a deadline.</div>
+          <div class="slide-feats">
+            <div class="sf"><div class="sf-ico"><svg width="15" height="15"><use href="#ic-shield"/></svg></div><div><div class="sf-t">Clause-level risk report</div><div class="sf-s">Exclusions and onerous terms, each citing its source page</div></div></div>
+            <div class="sf"><div class="sf-ico"><svg width="15" height="15"><use href="#ic-percent"/></svg></div><div><div class="sf-t">12-criterion score</div><div class="sf-s">NAICS, set-aside, bonding, distance, prep time and more</div></div></div>
+            <div class="sf"><div class="sf-ico"><svg width="15" height="15"><use href="#ic-check"/></svg></div><div><div class="sf-t">GO / REVIEW / NO-GO</div><div class="sf-s">A verdict you can defend in a bid review</div></div></div>
+          </div>
+        </div>
+      </div>
+      <!-- Slide 2: Takeoff -->
+      <div class="slide-pane slide-pane--text" id="sp-2">
         <div class="slide-info">
           <div class="slide-title">Takeoff</div>
           <div class="slide-desc">Upload drawings and measure on screen — counts, linear runs and areas — in the same project that holds the documents and the estimate. Quantities carry straight through, with no re-keying.</div>
@@ -383,8 +400,8 @@
           </div>
         </div>
       </div>
-      <!-- Slide 2: Cost Estimation -->
-      <div class="slide-pane slide-pane--text" id="sp-2">
+      <!-- Slide 3: Cost Estimation -->
+      <div class="slide-pane slide-pane--text" id="sp-3">
         <div class="slide-info">
           <div class="slide-title">Cost Estimation</div>
           <div class="slide-desc">Price the work against the cost database you own — materials, labour, equipment and assemblies across 50 CSI divisions, with your own cost coding.</div>
@@ -395,8 +412,8 @@
           </div>
         </div>
       </div>
-      <!-- Slide 3: Bidding -->
-      <div class="slide-pane slide-pane--text" id="sp-3">
+      <!-- Slide 4: Bidding -->
+      <div class="slide-pane slide-pane--text" id="sp-4">
         <div class="slide-info">
           <div class="slide-title">Bidding</div>
           <div class="slide-desc">Structure bid packages by trade and CSI division, invite subcontractors from your directory or a radius search, and level the returning bids side by side.</div>
@@ -407,8 +424,8 @@
           </div>
         </div>
       </div>
-      <!-- Slide 4: Bid Costing -->
-      <div class="slide-pane slide-pane--text" id="sp-4">
+      <!-- Slide 5: Bid Costing -->
+      <div class="slide-pane slide-pane--text" id="sp-5">
         <div class="slide-info">
           <div class="slide-title">Bid Costing</div>
           <div class="slide-desc">Turn the estimate into a bid: direct cost through to bid price, with markup, overhead, contingency and bond applied where you decide.</div>
@@ -419,8 +436,8 @@
           </div>
         </div>
       </div>
-      <!-- Slide 5: AI Proposal Writer -->
-      <div class="slide-pane slide-pane--text" id="sp-5">
+      <!-- Slide 6: AI Proposal Writer -->
+      <div class="slide-pane slide-pane--text" id="sp-6">
         <div class="slide-info">
           <div class="slide-title">AI Proposal Writer</div>
           <div class="slide-desc">Cover letter, technical approach, management plan and price schedule drafted from the project you have just priced — federal-compliant in structure and export-ready.</div>
@@ -501,7 +518,7 @@
       <p style="font-size:15px;color:var(--g600);max-width:500px;margin:0 auto 28px;line-height:1.74">No credit card. No setup. See it running on your own bid.</p>
       <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
 
-        <button class="btn btn-gh btn-lg" onclick="openModal('Book Live Demo')"><svg width="16" height="16"><use href="#ic-play"/></svg> Book a Demo</button>
+        <button class="btn btn-gh btn-lg" onclick="openModal('Book Live Demo')"><svg width="16" height="16"><use href="#ic-play"/></svg> Request a Demo</button>
       </div>
     </div>
   </div>
