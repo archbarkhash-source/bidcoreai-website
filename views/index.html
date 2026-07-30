@@ -352,76 +352,82 @@
     </div>
     <div class="rv">
       <div class="slides-tabs" id="slides-tabs">
-        <button class="stab on" onclick="switchSlide(0)">Bid Workspace</button>
-        <button class="stab" onclick="switchSlide(1)">Takeoff Space</button>
-        <button class="stab" onclick="switchSlide(2)">AI Proposal Writing</button>
-        <button class="stab" onclick="switchSlide(3)">Cost Estimation Workspace</button>
+        <button class="stab on" onclick="switchSlide(0)">AI Document Analyser</button>
+        <button class="stab" onclick="switchSlide(1)">Takeoff</button>
+        <button class="stab" onclick="switchSlide(2)">Cost Estimation</button>
+        <button class="stab" onclick="switchSlide(3)">Bidding</button>
+        <button class="stab" onclick="switchSlide(4)">Bid Costing</button>
+        <button class="stab" onclick="switchSlide(5)">AI Proposal Writer</button>
       </div>
-      <!-- Slide 0: Bid Workspace -->
+      <!-- Slide 0: AI Document Analyser -->
       <div class="slide-pane slide-pane--text on" id="sp-0">
         <div class="slide-info">
-          <div class="slide-title">Bid Workspace</div>
-          <div class="slide-desc">Your complete bidding command center. Manage bid packages, discover and invite nearby subcontractors, track bid responses, and monitor project health, all from one AI-powered workspace.</div>
+          <div class="slide-title">AI Document Analyser</div>
+          <div class="slide-desc">Every specification, statement of work, solicitation and addendum read end to end. Scope comes back organised by trade, with the items you have to price listed before you start.</div>
           <div class="slide-feats">
-            <div class="sf"><div class="sf-ico"><svg width="15" height="15"><use href="#ic-pkg"/></svg></div><div><div class="sf-t">AI-Generated Bid Packages</div><div class="sf-s">One click creates CSI-structured bid packages from uploaded project documents</div></div></div>
-            <div class="sf"><div class="sf-ico"><svg width="15" height="15"><use href="#ic-users"/></svg></div><div><div class="sf-t">Nearby Sub Discovery</div><div class="sf-s">Find local subcontractors via Google Places + AI and add them to your ITB instantly</div></div></div>
-            <div class="sf"><div class="sf-ico"><svg width="15" height="15"><use href="#ic-chart"/></svg></div><div><div class="sf-t">Live Bid Health Dashboard</div><div class="sf-s">Real-time visibility into package status, response rates, coverage and budget</div></div></div>
+            <div class="sf"><div class="sf-ico"><svg width="15" height="15"><use href="#ic-brain"/></svg></div><div><div class="sf-t">Scope extraction</div><div class="sf-s">Trade scopes pulled straight from the specs and SOW</div></div></div>
+            <div class="sf"><div class="sf-ico"><svg width="15" height="15"><use href="#ic-file"/></svg></div><div><div class="sf-t">Addenda tracked</div><div class="sf-s">Rev 0, Rev 01, Addendum 1 — always the current version</div></div></div>
+            <div class="sf"><div class="sf-ico"><svg width="15" height="15"><use href="#ic-report"/></svg></div><div><div class="sf-t">Bid checklist</div><div class="sf-s">What needs pricing, generated from the documents</div></div></div>
           </div>
         </div>
       </div>
-      <!-- Slide 1: Takeoff Space -->
+      <!-- Slide 1: Takeoff -->
       <div class="slide-pane slide-pane--text" id="sp-1">
         <div class="slide-info">
-          <div class="slide-title">Takeoff Space</div>
-          <div class="slide-desc">
-            Upload drawings and perform accurate, faster takeoffs with AI insights,extract measurements, identify scopes, and feed quantities directly into your estimate workflow.
-          </div>
+          <div class="slide-title">Takeoff</div>
+          <div class="slide-desc">Upload drawings and measure on screen — counts, linear runs and areas — in the same project that holds the documents and the estimate. Quantities carry straight through, with no re-keying.</div>
           <div class="slide-feats">
-            <div class="sf">
-              <div class="sf-ico"><svg width="15" height="15"><use href="#ic-scan"/></svg></div>
-              <div>
-                <div class="sf-t">AI-Assisted Quantity Takeoff</div>
-                <div class="sf-s">Measure and quantify elements faster, and verify marked-up quantities for accuracy using AI insights.</div>
-              </div>
-            </div>
-            <div class="sf">
-              <div class="sf-ico"><svg width="15" height="15"><use href="#ic-layers"/></svg></div>
-              <div>
-                <div class="sf-t">Auto Scale & Sheet Labeling</div>
-                <div class="sf-s">Automatically set drawing scale and organize sheets with clear labeling for faster and consistent takeoff workflows</div>
-              </div>
-            </div>
-            <div class="sf">
-              <div class="sf-ico"><svg width="15" height="15"><use href="#ic-db"/></svg></div>
-              <div>
-                <div class="sf-t">Seamless Estimate Integration</div>
-                <div class="sf-s">Send takeoff quantities directly into structured estimates without rework</div>
-              </div>
-            </div>
+            <div class="sf"><div class="sf-ico"><svg width="15" height="15"><use href="#ic-scan"/></svg></div><div><div class="sf-t">On-screen measurement</div><div class="sf-s">Counts, lengths and areas, grouped by trade</div></div></div>
+            <div class="sf"><div class="sf-ico"><svg width="15" height="15"><use href="#ic-refresh"/></svg></div><div><div class="sf-t">Version history</div><div class="sf-s">Every takeoff revision kept and comparable</div></div></div>
+            <div class="sf"><div class="sf-ico"><svg width="15" height="15"><use href="#ic-dl"/></svg></div><div><div class="sf-t">Import instead</div><div class="sf-s">Bring existing takeoff data in and carry on</div></div></div>
           </div>
         </div>
       </div>
-      <!-- Slide 2: AI Proposal -->
+      <!-- Slide 2: Cost Estimation -->
       <div class="slide-pane slide-pane--text" id="sp-2">
         <div class="slide-info">
-          <div class="slide-title">AI Bid Proposal Generator</div>
-          <div class="slide-desc">Generate submission-ready proposals in minutes. AI drafts your Cover Letter, Technical Approach, Management Plan, and more, optimized for federal and public-sector submissions. Export .doc or PDF.</div>
+          <div class="slide-title">Cost Estimation</div>
+          <div class="slide-desc">Price the work against the cost database you own — materials, labour, equipment and assemblies across 50 CSI divisions, with your own cost coding.</div>
           <div class="slide-feats">
-            <div class="sf"><div class="sf-ico"><svg width="15" height="15"><use href="#ic-brain"/></svg></div><div><div class="sf-t">Federal-Compliant Drafting</div><div class="sf-s">AI writes proposal sections from your project documents, cover letter, technical approach, past performance</div></div></div>
-            <div class="sf"><div class="sf-ico"><svg width="15" height="15"><use href="#ic-file"/></svg></div><div><div class="sf-t">Boilerplate Library</div><div class="sf-s">Upload and reuse your corporate documents and SFMS proposals across all projects</div></div></div>
-            <div class="sf"><div class="sf-ico"><svg width="15" height="15"><use href="#ic-sparkle"/></svg></div><div><div class="sf-t">Refine with AI</div><div class="sf-s">One click improves tone, detail, or specificity on any section, as many times as needed</div></div></div>
+            <div class="sf"><div class="sf-ico"><svg width="15" height="15"><use href="#ic-db"/></svg></div><div><div class="sf-t">Your own database</div><div class="sf-s">Materials, labour, equipment, general conditions</div></div></div>
+            <div class="sf"><div class="sf-ico"><svg width="15" height="15"><use href="#ic-layers"/></svg></div><div><div class="sf-t">Assemblies & cost codes</div><div class="sf-s">Build the assemblies you actually use</div></div></div>
+            <div class="sf"><div class="sf-ico"><svg width="15" height="15"><use href="#ic-chart"/></svg></div><div><div class="sf-t">Conceptual or detailed</div><div class="sf-s">Area cost per SF early, line items later</div></div></div>
           </div>
         </div>
       </div>
-      <!-- Slide 3: Cost Estimation Workspace -->
+      <!-- Slide 3: Bidding -->
       <div class="slide-pane slide-pane--text" id="sp-3">
         <div class="slide-info">
-          <div class="slide-title">Cost Estimation Workspace</div>
-          <div class="slide-desc">Price the work against your own cost database, structured by CSI. Takeoff quantities carry straight through, so the estimate is built from the measurements you already made — conceptual early on, line-item detailed once the drawings firm up.</div>
+          <div class="slide-title">Bidding</div>
+          <div class="slide-desc">Structure bid packages by trade and CSI division, invite subcontractors from your directory or a radius search, and level the returning bids side by side.</div>
           <div class="slide-feats">
-            <div class="sf"><div class="sf-ico"><svg width="15" height="15"><use href="#ic-db"/></svg></div><div><div class="sf-t">Your Rates, Your Assemblies</div><div class="sf-s">Materials, labor, equipment and assemblies across 50 CSI divisions, priced from the cost data you own</div></div></div>
-            <div class="sf"><div class="sf-ico"><svg width="15" height="15"><use href="#ic-scan"/></svg></div><div><div class="sf-t">Quantities Straight from Takeoff</div><div class="sf-s">Measured quantities land in the estimate without re-entry or a second spreadsheet</div></div></div>
-            <div class="sf"><div class="sf-ico"><svg width="15" height="15"><use href="#ic-layers"/></svg></div><div><div class="sf-t">Conceptual or Detailed</div><div class="sf-s">Area cost per SF while scope is loose, full line items when it is not</div></div></div>
+            <div class="sf"><div class="sf-ico"><svg width="15" height="15"><use href="#ic-pkg"/></svg></div><div><div class="sf-t">CSI-structured packages</div><div class="sf-s">Scoped by trade, generated together</div></div></div>
+            <div class="sf"><div class="sf-ico"><svg width="15" height="15"><use href="#ic-users"/></svg></div><div><div class="sf-t">Subcontractor invitations</div><div class="sf-s">ITBs sent with the current document set attached</div></div></div>
+            <div class="sf"><div class="sf-ico"><svg width="15" height="15"><use href="#ic-filter"/></svg></div><div><div class="sf-t">Bid leveling</div><div class="sf-s">Scope gaps, exclusions and alternates surfaced</div></div></div>
+          </div>
+        </div>
+      </div>
+      <!-- Slide 4: Bid Costing -->
+      <div class="slide-pane slide-pane--text" id="sp-4">
+        <div class="slide-info">
+          <div class="slide-title">Bid Costing</div>
+          <div class="slide-desc">Turn the estimate into a bid: direct cost through to bid price, with markup, overhead, contingency and bond applied where you decide.</div>
+          <div class="slide-feats">
+            <div class="sf"><div class="sf-ico"><svg width="15" height="15"><use href="#ic-calc"/></svg></div><div><div class="sf-t">Full breakdown</div><div class="sf-s">Direct cost through to submitted bid price</div></div></div>
+            <div class="sf"><div class="sf-ico"><svg width="15" height="15"><use href="#ic-percent"/></svg></div><div><div class="sf-t">Margin controls</div><div class="sf-s">GC markup, sub premium, contingency, bond</div></div></div>
+            <div class="sf"><div class="sf-ico"><svg width="15" height="15"><use href="#ic-sched"/></svg></div><div><div class="sf-t">General conditions</div><div class="sf-s">Priced as their own line items, not a percentage</div></div></div>
+          </div>
+        </div>
+      </div>
+      <!-- Slide 5: AI Proposal Writer -->
+      <div class="slide-pane slide-pane--text" id="sp-5">
+        <div class="slide-info">
+          <div class="slide-title">AI Proposal Writer</div>
+          <div class="slide-desc">Cover letter, technical approach, management plan and price schedule drafted from the project you have just priced — federal-compliant in structure and export-ready.</div>
+          <div class="slide-feats">
+            <div class="sf"><div class="sf-ico"><svg width="15" height="15"><use href="#ic-file"/></svg></div><div><div class="sf-t">Structured sections</div><div class="sf-s">Cover letter through price schedule, each editable</div></div></div>
+            <div class="sf"><div class="sf-ico"><svg width="15" height="15"><use href="#ic-sparkle"/></svg></div><div><div class="sf-t">Refine any section</div><div class="sf-s">One click, unlimited revisions</div></div></div>
+            <div class="sf"><div class="sf-ico"><svg width="15" height="15"><use href="#ic-dl"/></svg></div><div><div class="sf-t">Export and submit</div><div class="sf-s">.doc or PDF, ready to attach</div></div></div>
           </div>
         </div>
       </div>

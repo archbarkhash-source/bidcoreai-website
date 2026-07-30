@@ -222,12 +222,19 @@ button{font-family:var(--fb)}
 /* ───── SCREENSHOT SLIDES ───── */
 .slides-sec{background:var(--g50);padding:88px 24px}
 .slides-sec>.con{max-width:1280px}
-.slides-tabs{display:flex;gap:0;background:var(--white);border:1px solid var(--g200);border-radius:12px;overflow:hidden;margin-bottom:28px}
+/* Six tabs no longer fit on one row at flex:1, so they wrap. overflow:hidden
+   is dropped because it clipped the second row once wrapping began. */
+.slides-tabs{display:flex;flex-wrap:wrap;gap:0;background:var(--white);border:1px solid var(--g200);border-radius:12px;margin-bottom:28px}
 /* border:none used to come AFTER border-bottom in this rule and reset it, so
    .stab.on setting border-bottom-COLOR had nothing to colour and the active
    tab never showed an underline. Shorthand first, specific borders after. */
-.stab{flex:1;border:none;padding:12px 16px;font-size:13px;font-weight:600;color:var(--g600);cursor:pointer;transition:all .16s;background:none;font-family:var(--fb);text-align:center;border-right:1px solid var(--g200);border-bottom:2.5px solid transparent}
+.stab{flex:1 1 33.333%;min-width:150px;border:none;padding:12px 16px;font-size:13px;font-weight:600;color:var(--g600);cursor:pointer;transition:all .16s;background:none;font-family:var(--fb);text-align:center;border-right:1px solid var(--g200);border-bottom:2.5px solid transparent}
 .stab:last-child{border-right:none}
+.stab:first-child{border-top-left-radius:11px}
+.stab:nth-child(3){border-top-right-radius:11px}
+.stab:nth-child(4){border-bottom-left-radius:11px;border-top:1px solid var(--g200)}
+.stab:nth-child(5),.stab:nth-child(6){border-top:1px solid var(--g200)}
+.stab:last-child{border-bottom-right-radius:11px}
 .stab.on{color:var(--orange);background:var(--g50);border-bottom-color:var(--orange)}
 .slide-pane{display:none}.slide-pane.on{display:grid;grid-template-columns:1.65fr 1fr;gap:32px;align-items:start}
 /* Text-only slides. The app screenshots came out of the home page because the
@@ -542,7 +549,7 @@ button{font-family:var(--fb)}
   .hero-ctas{flex-direction:column;align-items:flex-start}
   .hero-ctas .btn{width:100%;justify-content:center}
   .slides-tabs{flex-wrap:wrap}
-  .stab{flex:1 1 45%;font-size:11px;padding:9px 10px}
+  .stab{flex:1 1 50%;font-size:11.5px;padding:10px 10px;min-width:0}
   .sol-hero{padding:48px 16px 36px}
   .pricing{padding:48px 16px}
   .overview{padding:56px 16px}
@@ -573,7 +580,7 @@ button{font-family:var(--fb)}
   .hs-v{font-size:22px}
   .ft-grid{grid-template-columns:1fr}
   .nav-in{padding:0 16px}
-  .stab{flex:1 1 48%;font-size:10px;padding:8px}
+  .stab{flex:1 1 100%;font-size:11.5px;padding:10px;min-width:0}
 }
 
 /* ─── SPIN FOR LOADING STATE ─── */
