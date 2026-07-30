@@ -47,6 +47,21 @@ const VIEWS_DIR  = path.join(__dirname, 'views');
    pre-built HTML file with full SEO head
 ───────────────────────────────────────*/
 
+/* Automated scanners probe every site on the internet for WordPress installs,
+   exposed .env files and admin panels. A 404 is already the right answer — this
+   site is not WordPress and there is nothing at those paths — but the handler
+   below served the full 60 KB homepage for every miss, so each probe cost real
+   bandwidth. Known-junk paths get a bare text 404 instead.
+
+   This is not security by itself: the paths do not exist either way. It just
+   stops noise being expensive. */
+const SCAN_PATHS = /^\/(wp-admin|wp-login|wp-content|wp-includes|wordpress|xmlrpc\.php|\.env|\.git|\.aws|phpmyadmin|pma|admin\.php|administrator|cgi-bin|vendor\/phpunit|\.well-known\/traffic-advice)/i;
+
+app.use((req, res, next) => {
+  if (SCAN_PATHS.test(req.path)) return res.status(404).type('txt').send('Not found');
+  next();
+});
+
 /* ── Canonical URL enforcement ─────────────────────────────────────────────
    Two sources of duplicate URLs, both of which Search Console reports as
    "Alternate page with proper canonical tag":
@@ -333,10 +348,14 @@ app.post('/api/send-with-files', upload.array('files', 20), async (req, res) => 
 });
 
 /* ─────────────────────────────────────
-   404 — clean page not found
+   404
 ───────────────────────────────────────*/
+
+/* A real not-found page. It used to return the homepage with a 404 status, which
+   left anyone who mistyped a URL looking at a page that seemed fine while the
+   address bar said otherwise. */
 app.use((req, res) => {
-  res.status(404).sendFile(path.join(VIEWS_DIR, 'index.html'));
+  res.status(404).sendFile(path.join(VIEWS_DIR, '404.html'));
 });
 
 /* ─────────────────────────────────────
