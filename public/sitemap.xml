@@ -71,6 +71,48 @@
   </url>
 
   <url>
+    <loc>https://www.bidcoreai.com/blog/category/federal-bidding</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://www.bidcoreai.com/blog/category/cost-estimating</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://www.bidcoreai.com/blog/category/ai-in-construction</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://www.bidcoreai.com/blog/category/proposal-writing</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://www.bidcoreai.com/guide</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://www.bidcoreai.com/blog/federal-proposal-writing</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://www.bidcoreai.com/blog/ai-in-construction-preconstruction</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
     <loc>https://www.bidcoreai.com/features</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>

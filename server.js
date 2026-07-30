@@ -107,9 +107,9 @@ app.get('/contact', (req, res) =>
    point: this is the one surface a
    stranger can write to.
 ───────────────────────────────────────*/
-/* Blog. Posts live at /blog/<slug> and are stored as views/blog-<slug>.html,
-   so the slug is validated against a whitelist rather than trusted into a
-   file path. */
+/* Community: the blog, its category pages and the start-here guide.
+   Slugs are matched against whitelists rather than trusted into a file path,
+   so an unknown one falls through to the 404 handler. */
 const BLOG_POSTS = [
   'federal-go-no-go-decision',
   'free-federal-go-no-go-analyser-construction',
@@ -118,9 +118,27 @@ const BLOG_POSTS = [
   'bid-leveling-subcontractor-quotes',
   'bonding-capacity-portfolio-decision',
   'set-aside-certifications-explained',
+  'federal-proposal-writing',
+  'ai-in-construction-preconstruction',
 ];
+const BLOG_CATEGORIES = [
+  'federal-bidding',
+  'cost-estimating',
+  'ai-in-construction',
+  'proposal-writing',
+];
+
 app.get('/blog', (req, res) =>
   res.sendFile(path.join(VIEWS_DIR, 'blog.html')));
+
+app.get('/guide', (req, res) =>
+  res.sendFile(path.join(VIEWS_DIR, 'guide.html')));
+
+app.get('/blog/category/:cat', (req, res, next) => {
+  if (!BLOG_CATEGORIES.includes(req.params.cat)) return next();
+  res.sendFile(path.join(VIEWS_DIR, `blog-category-${req.params.cat}.html`));
+});
+
 app.get('/blog/:slug', (req, res, next) => {
   if (!BLOG_POSTS.includes(req.params.slug)) return next();
   res.sendFile(path.join(VIEWS_DIR, `blog-${req.params.slug}.html`));

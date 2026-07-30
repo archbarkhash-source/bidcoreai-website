@@ -497,17 +497,10 @@ button{font-family:var(--fb)}
 .ft-links li:hover{color:var(--navy)}
 .ft-links li a{display:block;font-size:12px;color:var(--g600);text-decoration:none;cursor:pointer;transition:color .14s}
 .ft-links li a:hover{color:var(--navy)}
-/* Three columns with the outer two equal, so the copyright is centred against
-   the page rather than against whatever the side items happen to measure.
-   space-between could not do that: the wider "Serving the US..." label on the
-   right pushed the copyright left of centre. */
-.ft-bot{border-top:1px solid var(--g200);padding-top:20px;display:grid;
-  grid-template-columns:1fr auto 1fr;align-items:center;gap:12px}
-.ft-socials{display:flex;align-items:center;gap:6px;justify-self:start}
-.ft-bot .ft-copy{justify-self:center;text-align:center}
-.ft-bot .ft-flag{justify-self:end}
+/* The bottom bar carries only the copyright now that the socials and the
+   market line are gone, so it simply centres. */
+.ft-bot{border-top:1px solid var(--g200);padding-top:20px;display:flex;justify-content:center;align-items:center;text-align:center}
 .ft-copy{font-size:11px;color:var(--g400)}
-.ft-flag{font-size:11px;color:var(--g600);display:flex;align-items:center;gap:5px}
 
 /* ───── REVEAL ANIM — fixed to always show, animate only when JS fires ───── */
 .rv{opacity:1;transform:none;transition:opacity .54s ease,transform .54s ease}
@@ -655,18 +648,6 @@ body.ui-locked .mov{pointer-events:auto}
 /* Force any menu that was open shut, and keep it shut while locked. */
 body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer-events:none!important;transition:none!important}
 
-/* YouTube link in the footer bottom bar. */
-.ft-social{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;
-  border-radius:8px;color:var(--g400);text-decoration:none;transition:color .14s,background .14s}
-.ft-social:hover{background:var(--g200)}
-.ft-yt:hover{color:#FF0000}
-.ft-li:hover{color:#0A66C2}
-/* The two social links sit together at the left of the bottom bar. */
-/* Below 600px the three columns stack and everything centres. */
-@media(max-width:600px){
-  .ft-bot{grid-template-columns:1fr;justify-items:center;gap:14px}
-  .ft-socials,.ft-bot .ft-flag,.ft-bot .ft-copy{justify-self:center}
-}
 
 /* ───── FEATURE PAGES ─────
    The hero screenshot sits behind the copy rather than in a card beside it: it
@@ -781,3 +762,21 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
   .bp-grid{grid-template-columns:1fr}
   .bp-card-b{padding:18px 18px 20px}
 }
+
+/* Category chips on the blog index and category pages. These are real links to
+   /blog/category/<slug>, not a client-side filter, so the nav menu and the chips
+   share one set of URLs and each category is indexable on its own. */
+.bp-filter{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px}
+.bp-chip{font-size:12.5px;font-weight:600;color:var(--g600);background:var(--white);border:1px solid var(--g200);border-radius:100px;padding:7px 15px;text-decoration:none;transition:all .14s}
+.bp-chip:hover{color:var(--navy);border-color:var(--g300)}
+.bp-chip.on{background:var(--navy);border-color:var(--navy);color:#fff}
+
+/* Guide: a numbered reading order through the articles. */
+.gd-list{display:flex;flex-direction:column;gap:12px}
+.gd-step{display:flex;gap:16px;align-items:flex-start;background:var(--white);border:1px solid var(--g200);border-radius:14px;padding:20px 22px;text-decoration:none;transition:border-color .15s,box-shadow .15s,transform .15s}
+.gd-step:hover{border-color:rgba(204,77,0,.35);box-shadow:var(--s1);transform:translateY(-2px)}
+.gd-n{flex-shrink:0;width:30px;height:30px;border-radius:50%;background:var(--navy);color:#fff;font-family:var(--fh);font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.gd-label{font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--orange);margin-bottom:5px}
+.gd-t{font-family:var(--fh);font-size:16px;font-weight:750;color:var(--navy);line-height:1.35;margin-bottom:5px}
+.gd-x{font-size:13.5px;color:var(--g600);line-height:1.65}
+@media(max-width:600px){.gd-step{padding:16px 16px;gap:12px}}
