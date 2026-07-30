@@ -230,7 +230,7 @@ button{font-family:var(--fb)}
 /* border:none used to come AFTER border-bottom in this rule and reset it, so
    .stab.on setting border-bottom-COLOR had nothing to colour and the active
    tab never showed an underline. Shorthand first, specific borders after. */
-.stab{flex:1 1 33.333%;min-width:150px;border:none;padding:12px 16px;font-size:13px;font-weight:600;color:var(--g600);cursor:pointer;transition:all .16s;background:none;font-family:var(--fb);text-align:center;border-right:1px solid var(--g200);border-bottom:2.5px solid transparent}
+.stab{flex:1 1 33.333%;min-width:150px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.35;border:none;padding:12px 16px;font-size:13px;font-weight:600;color:var(--g600);cursor:pointer;transition:all .16s;background:none;font-family:var(--fb);text-align:center;border-right:1px solid var(--g200);border-bottom:2.5px solid transparent}
 .stab:last-child{border-right:none}
 .stab{border-top:1px solid var(--g200)}
 .stab:nth-child(-n+3){border-top:none}
