@@ -668,6 +668,13 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
    headline. .ft-vis is taken out of flow, so the copy gets the full column. */
 .ft-hero{position:relative;overflow:hidden;background:var(--dk);padding:96px 24px 104px;border-bottom:1px solid var(--g200);min-height:560px;display:flex;align-items:center}
 /* Sits between the screenshot (z-index 1) and the copy (z-index 2). */
+/* Any hero content sits above the veil, not just .ft-hero-in — /blog, /guide,
+   /features and the 404 use a plain .con child, and without this the veil
+   painted straight over their text. */
+.ft-hero>.con{position:relative;z-index:2}
+/* Unconditional rather than :has(.ft-vis) — without :has support there would be
+   no veil at all and the image would run straight through the headline. On the
+   text-only heroes it is a same-colour layer, so it costs nothing. */
 .ft-hero::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
   background:radial-gradient(ellipse 64% 82% at 50% 50%,
     rgba(246,247,249,.95) 0%,rgba(246,247,249,.88) 42%,
@@ -875,30 +882,3 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
 }
 
 .mob-nl--top{font-size:14px;font-weight:600}
-
-/* YouTube learning callout. Stacks on a phone so the button never gets squeezed
-   into two words per line. */
-.yt-cta{display:flex;align-items:center;gap:18px;background:var(--white);border:1px solid var(--g200);
-  border-left:3px solid #FF0000;border-radius:14px;padding:22px 24px;margin-bottom:32px;box-shadow:var(--s1)}
-.yt-cta-i{flex-shrink:0;width:48px;height:48px;border-radius:12px;background:rgba(255,0,0,.07);
-  color:#FF0000;display:flex;align-items:center;justify-content:center}
-.yt-cta-b{flex:1;min-width:0}
-.yt-cta-t{font-family:var(--fh);font-size:16px;font-weight:800;color:var(--navy);margin-bottom:5px}
-.yt-cta-x{font-size:13.5px;color:var(--g600);line-height:1.65;margin:0}
-.yt-cta-a{flex-shrink:0;white-space:nowrap}
-@media(max-width:760px){
-  .yt-cta{flex-direction:column;align-items:flex-start;gap:14px;padding:20px}
-  .yt-cta-a{width:100%;justify-content:center}
-}
-
-/* Featured blog card in the Community mega-menu. Spans the panel so it reads as a
-   promoted item rather than a sixth column, the way Procore's Featured block does. */
-.nl-feat{grid-column:1/-1;display:flex;gap:14px;align-items:center;margin-top:10px;padding:10px 11px;
-  border-top:1px solid var(--g200);border-radius:0 0 9px 9px;text-decoration:none;transition:background .13s}
-.nl-feat:hover{background:var(--g100)}
-.nl-feat-img{flex-shrink:0;width:104px;height:62px;border-radius:8px;overflow:hidden;background:var(--g100)}
-.nl-feat-img img{width:100%;height:100%;object-fit:cover;display:block}
-.nl-feat-b{display:flex;flex-direction:column;gap:3px;min-width:0}
-.nl-feat-k{font-size:9.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--orange)}
-.nl-feat-t{font-family:var(--fh);font-size:13.5px;font-weight:700;color:var(--navy)}
-.nl-feat-x{font-size:11.5px;color:var(--g600);line-height:1.45}
