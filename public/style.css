@@ -713,7 +713,9 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
 @media(max-width:768px){
   .ft-hero{padding:44px 16px 48px}
   /* Narrow enough that a background image behind the copy just muddies it. */
-  .ft-vis{width:185%;right:-60%;opacity:.16}
+  /* Lower than desktop on purpose: the copy spans the full width here, so the
+     image has nowhere to sit clear of it. */
+  .ft-vis{width:185%;right:-60%;opacity:.26;filter:blur(2.5px) saturate(.75)}
   .ft-hero{min-height:auto;padding:44px 16px 48px}
 }
 
