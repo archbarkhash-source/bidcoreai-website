@@ -671,7 +671,9 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
 
 .ft-vis{
   position:absolute;top:50%;right:-26%;transform:translateY(-50%);
-  width:120%;max-width:none;z-index:1;opacity:.30;pointer-events:none;
+  width:120%;max-width:1100px;z-index:1;opacity:.30;pointer-events:none;
+  /* Capped at the narrowest screenshot in the set (1096px). Above this the
+     browser was upscaling the file and the UI in it went soft. */
   /* It now runs well behind the headline, so the fade starts later and is
      softer — the copy stays fully legible while the screenshot fills the band. */
   -webkit-mask-image:linear-gradient(to right,transparent 14%,rgba(0,0,0,.25) 38%,#000 62%,#000 100%);
@@ -766,7 +768,9 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
 .bp-card .bp-card-r{margin-top:12px;font-size:12px}
 
 /* Lead image on a post, between the header band and the prose. */
-.bp-hero-img{margin:-24px 0 0;border-radius:16px;overflow:hidden;border:1px solid var(--g200);box-shadow:var(--s2);position:relative;top:-24px}
+.bp-hero-img{margin:-40px 0 0;border-radius:16px;overflow:hidden;border:1px solid var(--g200);box-shadow:var(--s2)}
+/* Keeps the header — and its back link — above the image that tucks under it. */
+.bp-head{position:relative;z-index:2}
 .bp-hero-img img{width:100%;display:block}
 
 @media(max-width:960px){.bp-grid{grid-template-columns:repeat(2,1fr)}}
