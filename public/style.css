@@ -161,7 +161,7 @@ button{font-family:var(--fb)}
 .mob-close{background:var(--g100);border:none;border-radius:7px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--g600);transition:all .14s}
 .mob-close:hover{background:var(--g200);color:var(--navy)}
 .mob-links{flex:1;padding:10px 10px;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
-.mob-nl{display:flex;align-items:center;gap:11px;min-height:44px;padding:11px 14px;border-radius:9px;font-size:14px;font-weight:500;color:var(--g600);cursor:pointer;background:none;border:none;font-family:var(--fb);transition:all .14s;width:100%;text-align:left}
+.mob-nl{display:flex;align-items:center;gap:11px;min-height:44px;padding:11px 14px;border-radius:9px;font-size:14px;font-weight:500;color:var(--g600);text-decoration:none;cursor:pointer;background:none;border:none;font-family:var(--fb);transition:all .14s;width:100%;text-align:left}
 .mob-nl:hover{color:var(--navy);background:var(--g100)}
 .mob-nl.hl{color:var(--orange)}
 .mob-nl .nl-badge{margin-left:2px}
