@@ -720,13 +720,13 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
   /* Lower than desktop on purpose: the copy spans the full width here, so the
      image has nowhere to sit clear of it. */
   /* Matches the desktop treatment so a pale screenshot reads the same way. */
-  .ft-vis{width:185%;right:-60%;opacity:.26;filter:blur(1.2px) saturate(1.02) contrast(1.1)}
+  .ft-vis{width:185%;right:-60%;opacity:.4;filter:blur(1.2px) saturate(1.02) contrast(1.1)}
   /* Wider and flatter than the desktop ellipse: the copy runs the full width
      here, so a 54%-wide veil left its edges uncovered. */
   .ft-hero-in::before{inset:-32px -24px;
-    background:radial-gradient(ellipse 132% 64% at 50% 46%,
-      rgba(246,247,249,.97) 0%,rgba(246,247,249,.92) 58%,
-      rgba(246,247,249,.5) 86%,rgba(246,247,249,0) 100%)}
+    background:radial-gradient(ellipse 128% 60% at 50% 46%,
+      rgba(246,247,249,.86) 0%,rgba(246,247,249,.78) 58%,
+      rgba(246,247,249,.34) 84%,rgba(246,247,249,0) 100%)}
   .ft-hero{min-height:auto;padding:44px 16px 48px}
 }
 
@@ -833,8 +833,7 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
 /* Mobile drawer groups. <details>/<summary> rather than JS: real disclosure,
    keyboard accessible, and announced correctly by a screen reader. Closed by
    default, so the drawer opens short instead of 25 links deep. */
-.mob-grp{border-top:1px solid var(--g200)}
-.mob-grp:first-of-type{border-top:none}
+.mob-grp{border-top:none}
 .mob-grp>summary{display:flex;align-items:center;justify-content:space-between;gap:6px;
   min-height:46px;padding:0 8px 0 0;cursor:pointer;list-style:none}
 /* The label is an anchor so the top-level destination stays reachable; the rest
