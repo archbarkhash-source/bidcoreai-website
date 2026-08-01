@@ -205,8 +205,14 @@ CREATE TABLE IF NOT EXISTS blog_comments (
   -- stored: it is only ever compared against a hash of the current request.
   ip_hash      TEXT,
   user_agent   TEXT,
+  -- Set when the commenter proved who they are with Google. The name and email
+  -- on a verified row come from the ID token, never from the request body.
+  verified     BOOLEAN NOT NULL DEFAULT FALSE,
+  avatar_url   TEXT,
   created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+ALTER TABLE blog_comments ADD COLUMN IF NOT EXISTS verified BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE blog_comments ADD COLUMN IF NOT EXISTS avatar_url TEXT;
 CREATE INDEX IF NOT EXISTS blog_comments_slug_idx
   ON blog_comments (slug, approved_at DESC NULLS LAST, created_at DESC);
 `;

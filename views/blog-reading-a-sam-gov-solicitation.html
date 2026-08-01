@@ -342,26 +342,28 @@
       </div>
       <div class="cm-list"></div>
       <form class="cm-form" novalidate>
-        <div class="cm-row">
-          <label class="cm-f"><span>Name</span>
-            <input name="name" type="text" maxlength="80" autocomplete="name" required/></label>
-          <label class="cm-f"><span>Email <em>(not published)</em></span>
-            <input name="email" type="email" maxlength="160" autocomplete="email"/></label>
+        <div class="cm-ident">
+          <div class="cm-gbtn"></div>
+          <div class="cm-who-row" style="display:none"></div>
+          <span class="cm-anon">or just write &mdash; you will show as Anonymous</span>
         </div>
-        <label class="cm-f"><span>Comment</span>
-          <textarea name="body" rows="4" maxlength="2000" required></textarea></label>
+        <textarea class="cm-box" name="body" rows="3" maxlength="2000"
+          placeholder="Enter comment" aria-label="Enter comment" required></textarea>
         <!-- Honeypot: off-screen and aria-hidden, so only a script fills it. -->
         <div class="cm-hp" aria-hidden="true">
           <label>Website<input name="website" type="text" tabindex="-1" autocomplete="off"/></label>
         </div>
         <div class="cm-note" style="display:none"></div>
-        <button class="btn btn-p" type="submit">Post comment</button>
-        <p class="cm-fine">Comments are reviewed before they appear. Your email is never published.</p>
+        <div class="cm-actions">
+          <button class="btn btn-p btn-sm" type="submit">Post comment</button>
+          <span class="cm-fine">Anonymous comments are reviewed before they appear.</span>
+        </div>
       </form>
     </div>
   </div>
 </section>
 
+<script src="https://accounts.google.com/gsi/client" async defer onload="window.cmOnGoogleLoad && window.cmOnGoogleLoad()"></script>
 <script src="/comments.js"></script>
 <!-- ════════ FOOTER ════════ -->
 <footer class="footer">

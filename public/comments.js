@@ -1,14 +1,16 @@
 /**
- * public/comments.js — the comment section on a blog post.
+ * public/comments.js — the comment box on a blog post.
  *
- * Loaded only by post pages. The slug comes from data-slug on the container
- * rather than from location.pathname, so the markup stays the single source of
- * truth and the script does no URL parsing.
+ * One field. A commenter either signs in with Google, in which case their name
+ * and picture come from the verified token, or posts as Anonymous.
  *
- * Everything a visitor typed is written with textContent, never innerHTML. That
- * is the whole XSS story here: comment bodies are arbitrary text from strangers,
- * and the only safe way to put them on a page is to let the DOM treat them as
- * text. Nothing below ever builds HTML from a response.
+ * Nothing about identity is sent from here except the Google credential itself.
+ * The server reads the name out of the token it verifies; this script never
+ * tells it who anyone is, because a client saying "I am X" is not evidence.
+ *
+ * Everything a visitor typed is written with textContent. Comment bodies are
+ * arbitrary text from strangers and the DOM must treat them as text — there is
+ * no innerHTML assignment in this file.
  */
 (function () {
   var root = document.getElementById('comments');
@@ -19,81 +21,162 @@
   var form = root.querySelector('.cm-form');
   var note = root.querySelector('.cm-note');
   var count = root.querySelector('.cm-count');
-  var btn = form ? form.querySelector('button[type="submit"]') : null;
+  var box = root.querySelector('.cm-box');
+  var who = root.querySelector('.cm-who-row');
+  var gbtn = root.querySelector('.cm-gbtn');
+  var btn = form.querySelector('button[type="submit"]');
 
-  // A comment posted the instant the page loads was not typed by a person.
+  var identity = null;   // {name, picture, credential} once Google vouches
   var loadedAt = Date.now();
 
   function say(msg, kind) {
-    note.textContent = msg;
+    note.textContent = msg || '';
     note.className = 'cm-note' + (kind ? ' cm-note--' + kind : '');
     note.style.display = msg ? 'block' : 'none';
   }
 
   function when(iso) {
     var d = new Date(iso);
-    if (isNaN(d)) return '';
-    return d.toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' });
+    return isNaN(d) ? '' : d.toLocaleDateString(undefined,
+      { day: 'numeric', month: 'long', year: 'numeric' });
   }
 
-  function render(comments) {
-    list.textContent = '';
-    count.textContent = comments.length
-      ? comments.length + (comments.length === 1 ? ' comment' : ' comments')
-      : 'No comments yet';
-    comments.forEach(function (c) {
-      var item = document.createElement('article');
-      item.className = 'cm-item';
+  function initials(name) {
+    return (name || '?').trim().charAt(0).toUpperCase();
+  }
 
-      var head = document.createElement('div');
-      head.className = 'cm-head';
+  function addComment(c) {
+    var item = document.createElement('article');
+    item.className = 'cm-item';
 
-      var who = document.createElement('span');
-      who.className = 'cm-who';
-      who.textContent = c.name;              // text, never markup
+    var av = document.createElement('div');
+    av.className = 'cm-av';
+    if (c.avatar_url) {
+      var img = document.createElement('img');
+      img.src = c.avatar_url;
+      img.alt = '';
+      img.loading = 'lazy';
+      // A broken avatar should leave a letter, not a torn-image icon.
+      img.onerror = function () { av.textContent = initials(c.name); };
+      av.appendChild(img);
+    } else {
+      av.textContent = initials(c.name);
+    }
 
-      var at = document.createElement('span');
-      at.className = 'cm-at';
-      at.textContent = when(c.created_at);
+    var main = document.createElement('div');
+    main.className = 'cm-main';
 
-      head.appendChild(who);
-      head.appendChild(at);
+    var head = document.createElement('div');
+    head.className = 'cm-head';
 
-      var body = document.createElement('p');
-      body.className = 'cm-body';
-      body.textContent = c.body;             // text, never markup
+    var nm = document.createElement('span');
+    nm.className = 'cm-name';
+    nm.textContent = c.name;                       // text, never markup
+    head.appendChild(nm);
 
-      item.appendChild(head);
-      item.appendChild(body);
-      list.appendChild(item);
-    });
+    if (c.verified) {
+      var tick = document.createElement('span');
+      tick.className = 'cm-verified';
+      tick.title = 'Signed in with Google';
+      tick.textContent = 'verified';
+      head.appendChild(tick);
+    }
+
+    var at = document.createElement('span');
+    at.className = 'cm-at';
+    at.textContent = when(c.created_at);
+    head.appendChild(at);
+
+    var body = document.createElement('p');
+    body.className = 'cm-body';
+    body.textContent = c.body;                     // text, never markup
+
+    main.appendChild(head);
+    main.appendChild(body);
+    item.appendChild(av);
+    item.appendChild(main);
+    list.appendChild(item);
+    return item;
+  }
+
+  function setCount(n) {
+    count.textContent = n ? n + (n === 1 ? ' comment' : ' comments') : '';
   }
 
   fetch('/api/comments/' + encodeURIComponent(slug))
     .then(function (r) { return r.json(); })
-    .then(function (d) { render(d.comments || []); })
-    .catch(function () {
-      // A comment section that cannot load is not worth an error message on an
-      // article; the post itself is the point.
-      count.textContent = '';
-    });
+    .then(function (d) {
+      var cs = d.comments || [];
+      cs.forEach(addComment);
+      setCount(cs.length);
+    })
+    .catch(function () { /* the article is the point; stay quiet */ });
 
-  if (!form) return;
+  /* ── Google sign-in ──────────────────────────────────────────────────────
+     Optional. Without it the box still works and the comment posts as
+     Anonymous, so a blocked or slow Google never costs anyone the ability to
+     comment. */
+  window.cmGoogle = function (response) {
+    var claims;
+    try {
+      // Read only for the greeting. The server verifies the signature; nothing
+      // here is trusted for anything that matters.
+      claims = JSON.parse(atob(response.credential.split('.')[1]));
+    } catch (e) { claims = {}; }
+    identity = {
+      name: claims.name || claims.email || 'You',
+      picture: claims.picture || null,
+      credential: response.credential,
+    };
+    who.textContent = '';
+    var av = document.createElement('span');
+    av.className = 'cm-av cm-av--sm';
+    if (identity.picture) {
+      var im = document.createElement('img');
+      im.src = identity.picture; im.alt = '';
+      im.onerror = function () { av.textContent = initials(identity.name); };
+      av.appendChild(im);
+    } else { av.textContent = initials(identity.name); }
+    var label = document.createElement('span');
+    label.textContent = 'Commenting as ' + identity.name;
+    who.appendChild(av);
+    who.appendChild(label);
+    who.style.display = 'flex';
+    if (gbtn) gbtn.style.display = 'none';
+    say('');
+  };
+
+  var clientId = null;
+
+  function mountGoogle() {
+    if (!gbtn || !clientId || !window.google || !window.google.accounts) return;
+    window.google.accounts.id.initialize({ client_id: clientId, callback: window.cmGoogle });
+    window.google.accounts.id.renderButton(gbtn, {
+      theme: 'outline', size: 'medium', text: 'signin_with', shape: 'pill',
+    });
+  }
+
+  /* Asked for rather than baked into the page: these are static files with no
+     access to the environment. If it is unset the button simply never appears
+     and everyone comments as Anonymous. */
+  fetch('/api/comments/config')
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      clientId = d.google_client_id;
+      if (!clientId && gbtn) gbtn.style.display = 'none';
+      mountGoogle();
+    })
+    .catch(function () { if (gbtn) gbtn.style.display = 'none'; });
+
+  // Google's script is async; whichever of the two finishes last mounts.
+  window.cmOnGoogleLoad = mountGoogle;
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
+    var text = box.value.trim();
+    if (!text) { say('Write something first.', 'err'); return; }
     if (Date.now() - loadedAt < 3000) {
       say('Take a moment — then post your comment.', 'err');
-      return;
-    }
-    var payload = {
-      name: form.elements.name.value,
-      email: form.elements.email.value,
-      body: form.elements.body.value,
-      website: form.elements.website.value,   // honeypot; a person never sees it
-    };
-    if (!payload.name.trim() || !payload.body.trim()) {
-      say('Please add your name and a comment.', 'err');
       return;
     }
 
@@ -104,15 +187,25 @@
     fetch('/api/comments/' + encodeURIComponent(slug), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        body: text,
+        credential: identity ? identity.credential : undefined,
+        website: form.elements.website.value,
+      }),
     })
       .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
       .then(function (res) {
         if (!res.ok) throw new Error(res.d.error || 'Could not post that comment.');
-        form.reset();
-        // Say what actually happened. "Posted" would have them looking for a
-        // comment that is not on the page and will not be until it is approved.
-        say('Thank you — your comment has been sent for review and will appear once approved.', 'ok');
+        box.value = '';
+        if (res.d.comment) {
+          // Signed in: it is live, so show it rather than describing it.
+          var el = addComment(res.d.comment);
+          setCount(list.children.length);
+          el.classList.add('cm-item--new');
+          say('');
+        } else {
+          say('Thanks — your comment will appear once it has been reviewed.', 'ok');
+        }
       })
       .catch(function (err) { say(err.message, 'err'); })
       .finally(function () { btn.disabled = false; btn.textContent = label; });
