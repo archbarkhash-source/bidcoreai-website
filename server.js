@@ -388,4 +388,27 @@ function reportConfig() {
 
 const PORT = process.env.PORT || 3000;
 reportConfig();
-app.listen(PORT, () => console.log(`BidcoreAI running on http://localhost:${PORT}`));
+const server = app.listen(PORT, () =>
+  console.log(`BidcoreAI running on http://localhost:${PORT}`));
+
+/* Without a handler, a failed listen emits an unhandled 'error' event and Node
+   prints a stack trace ending in "throw er" — which says EADDRINUSE somewhere in
+   the middle of twenty lines of internals. The common cause is mundane: another
+   copy of this server is already running, usually a previous nodemon child that
+   outlived its parent. Say that, and say what to do about it. */
+server.on('error', (err) => {
+  console.error('');
+  if (err.code === 'EADDRINUSE') {
+    console.error(`  Port ${PORT} is already in use — another copy of this server is running.`);
+    console.error('  Stop it, then start again:');
+    console.error(`    Windows        npx kill-port ${PORT}`);
+    console.error(`    macOS / Linux  lsof -ti:${PORT} | xargs kill`);
+    console.error(`  Or run this one elsewhere:  PORT=3001 npm run dev`);
+  } else if (err.code === 'EACCES') {
+    console.error(`  Port ${PORT} needs elevated permissions. Try a port above 1024.`);
+  } else {
+    console.error(`  The server could not start: ${err.message}`);
+  }
+  console.error('');
+  process.exit(1);
+});
