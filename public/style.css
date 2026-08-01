@@ -54,6 +54,16 @@ button{font-family:var(--fb)}
 .btn{display:inline-flex;align-items:center;gap:7px;font-family:var(--fb);font-size:14px;font-weight:600;padding:11px 22px;border-radius:var(--r);border:none;cursor:pointer;transition:all .17s;white-space:nowrap;line-height:1;text-decoration:none}
 .btn-lg{font-size:15.5px;padding:14px 30px}
 .btn-sm{font-size:12.5px;padding:8px 16px}
+/* .btn-sm lays out at 29px tall, which is fine under a cursor and too small
+   under a thumb — and it carries the primary action on pricing, the service
+   pages, the article sidebar and the comment form. Raised to the usual 44px
+   floor on touch widths only; the desktop size is unchanged. */
+@media(max-width:1000px){
+  .btn-sm{min-height:44px;padding-inline:20px}
+  /* Stacked bare links in the homepage service cards sit 19px apart, which is
+     under a fingertip on a phone. Spaced out rather than restyled. */
+  .seo-cards-grid a{display:block;padding:11px 0}
+}
 .btn-p{background:var(--orange);color:#fff;box-shadow:0 3px 12px rgba(232,93,0,.22)}
 .btn-p:hover{background:var(--org2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,93,0,.38)}
 .btn-n{background:var(--navy);color:#fff}
@@ -832,19 +842,39 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
 /* One column below the point where a 316px rail stops leaving a readable
    measure beside it. The image leads, then the headline — the order the markup
    is already in, so this is a grid change and nothing moves in the DOM. */
+/* One column below the point where a 316px rail stops leaving a readable
+   measure beside it.
+
+   The rail's parts have to interleave with the article here — contents before
+   it, offer and credit after — and `order` only sorts siblings. So the two
+   wrappers dissolve with display:contents and their children become grid items
+   of .bp-wrap directly, which is what makes the ordering below mean anything.
+   Nothing moves in the DOM; reading order and tab order still follow the
+   source. */
 @media(max-width:1000px){
-  .bp-wrap{grid-template-columns:1fr;gap:0;padding-top:28px}
-  .bp-main{max-width:720px;order:2}
-  .bp-side{order:1;margin-bottom:26px}
-  .bp-side-img{max-height:320px}
-  .bp-sticky{position:static;margin-top:0;display:flex;flex-direction:column}
-  /* On one column the byline reads as a footer credit, and the contents list
-     duplicates a page the reader can now simply scroll. Both move below the
-     article; the offer stays inline where it was. */
-  .bp-by{order:3;border-bottom:0;border-top:1px solid var(--g200);padding:20px 0 0;margin-top:26px}
-  .bp-toc{order:1;border-bottom:0;border:1px solid var(--g200);border-radius:14px;
-    padding:16px 18px;background:var(--white)}
-  .bp-side-cta{order:2;margin-top:18px}
+  .bp-wrap{grid-template-columns:1fr;gap:0;padding-top:24px}
+  .bp-side,.bp-sticky{display:contents}
+
+  /* Wider crop on one column: 4/3 eats most of a phone screen before a word of
+     the article shows. The container owns the ratio and the image fills it, so
+     it crops rather than overflowing its rounded corner. */
+  .bp-side-img{order:1;margin-bottom:24px;aspect-ratio:16/9}
+  .bp-side-img img{height:100%;aspect-ratio:auto}
+  .bp-toc{order:2;border-bottom:0;border:1px solid var(--g200);border-radius:14px;
+    padding:15px 17px;background:var(--white);margin-bottom:4px}
+  .bp-main{order:3;max-width:720px}
+  /* .btn-sm lays out at 29px, which is fine for a mouse and too small for a
+     thumb. Raised to 44 on the two controls a reader on a phone is actually
+     meant to press, and un-stretched: full width is right for a 316px rail and
+     absurd at 674px across a tablet. Left alone elsewhere — this is a fix for
+     these two, not a site-wide button change. */
+  .bp-side-cta{order:4;margin-top:32px}
+  /* Full width is right for a 316px rail and absurd at 674px across a tablet. */
+  .bp-side-cta .btn{width:auto}
+  /* Below the article the byline is a credit, not a header, so it loses the
+     card and keeps only a rule above it. */
+  .bp-by{order:5;border-bottom:0;border-top:1px solid var(--g200);
+    padding:20px 0 0;margin-top:32px}
 }
 @media(max-width:768px){
   .bp-card{padding:22px 20px}
@@ -854,6 +884,8 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
   .bp-title{line-height:1.18}
   .bp-dek{font-size:16px}
   .bp-crumb-c{max-width:22ch}
+  /* 11.5px is a caption size on a desktop and a squint on a phone. */
+  .bp-main>.bp-meta{font-size:12.5px}
 }
 
 /* Illustrated blog index. */
