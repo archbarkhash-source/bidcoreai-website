@@ -208,6 +208,10 @@ app.get('/free-go-no-go-analysis', (req, res) => res.redirect(301, '/go-no-go'))
 
 app.use('/api/go-no-go', require('./api/routes'));
 
+/* Blog comments. Stored in the same Neon database as the free workspace, and
+   held for approval — see api/comments.js. */
+app.use('/api/comments', require('./api/comments'));
+
 /* ─────────────────────────────────────
    EMAIL HELPERS
 ───────────────────────────────────────*/

@@ -339,6 +339,37 @@
 <div class="bp-cta"><div class="bp-cta-t">Score your next solicitation free</div><p class="bp-cta-x">BidcoreAI's Go/No-Go analyzer runs twelve criteria against your company profile on live SAM.gov opportunities, using your own free SAM.gov API key. No card.</p><a class="btn btn-p" href="/go-no-go"><svg width="15" height="15"><use href="#ic-check"/></svg> Try it free</a></div>
   </div>
 </article>
+
+<section class="overview" style="border-top:1px solid var(--g200)">
+  <div class="con" style="max-width:760px">
+    <div id="comments" class="cm" data-slug="free-federal-go-no-go-analyser-construction">
+      <div class="cm-top">
+        <h2 class="h2" style="font-size:clamp(20px,2.4vw,28px)">Comments</h2>
+        <span class="cm-count"></span>
+      </div>
+      <div class="cm-list"></div>
+      <form class="cm-form" novalidate>
+        <div class="cm-row">
+          <label class="cm-f"><span>Name</span>
+            <input name="name" type="text" maxlength="80" autocomplete="name" required/></label>
+          <label class="cm-f"><span>Email <em>(not published)</em></span>
+            <input name="email" type="email" maxlength="160" autocomplete="email"/></label>
+        </div>
+        <label class="cm-f"><span>Comment</span>
+          <textarea name="body" rows="4" maxlength="2000" required></textarea></label>
+        <!-- Honeypot: off-screen and aria-hidden, so only a script fills it. -->
+        <div class="cm-hp" aria-hidden="true">
+          <label>Website<input name="website" type="text" tabindex="-1" autocomplete="off"/></label>
+        </div>
+        <div class="cm-note" style="display:none"></div>
+        <button class="btn btn-p" type="submit">Post comment</button>
+        <p class="cm-fine">Comments are reviewed before they appear. Your email is never published.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script src="/comments.js"></script>
 <!-- ════════ FOOTER ════════ -->
 <footer class="footer">
   <div class="ft-in">

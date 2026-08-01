@@ -186,6 +186,29 @@ CREATE TABLE IF NOT EXISTS gg_events (
   detail       JSONB,
   created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- Blog comments. Held for approval rather than published on arrival: this is a
+-- public write endpoint on a marketing site, and an unmoderated one becomes a
+-- link farm within days. Nothing is shown until approved_at is set.
+--
+-- The post is identified by its slug rather than a foreign key, because posts
+-- are static files with no row of their own; api/routes.js checks the slug
+-- against the same whitelist the router uses before it will insert.
+CREATE TABLE IF NOT EXISTS blog_comments (
+  id           BIGSERIAL PRIMARY KEY,
+  slug         TEXT NOT NULL,
+  name         TEXT NOT NULL,
+  email        TEXT,
+  body         TEXT NOT NULL,
+  approved_at  TIMESTAMPTZ,
+  -- Kept for rate limiting and abuse review, hashed so the raw address is not
+  -- stored: it is only ever compared against a hash of the current request.
+  ip_hash      TEXT,
+  user_agent   TEXT,
+  created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS blog_comments_slug_idx
+  ON blog_comments (slug, approved_at DESC NULLS LAST, created_at DESC);
 `;
 
 /** Apply the schema on any client/pool — used by the pool below and by
