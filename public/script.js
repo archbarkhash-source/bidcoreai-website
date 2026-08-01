@@ -554,3 +554,30 @@ document.addEventListener('DOMContentLoaded', initReveal);
 
 /* ─── SPIN KEYFRAME ─── */
 // @keyframes spin defined in style.css
+
+/* ─── BLOG CONTENTS: highlight the section being read ───
+   Marks the last heading whose top has passed under the fixed header, so the
+   highlight follows the text on screen rather than jumping to whichever
+   heading happens to be intersecting. Does nothing on pages without a
+   contents list, which is every page except a post. */
+function initToc(){
+  const toc=document.querySelector('.bp-toc');
+  if(!toc) return;
+  const links=[...toc.querySelectorAll('a')];
+  const heads=links.map(a=>document.getElementById(decodeURIComponent(a.hash.slice(1))))
+                   .filter(Boolean);
+  if(!heads.length) return;
+
+  let ticking=false;
+  function mark(){
+    ticking=false;
+    let i=0;
+    for(let n=0;n<heads.length;n++){ if(heads[n].getBoundingClientRect().top<120) i=n; }
+    // Past the last paragraph nothing is "current" until the reader scrolls back.
+    links.forEach((a,n)=>a.classList.toggle('on',n===i));
+  }
+  addEventListener('scroll',()=>{ if(!ticking){ ticking=true; requestAnimationFrame(mark); } },
+    {passive:true});
+  mark();
+}
+document.addEventListener('DOMContentLoaded', initToc);

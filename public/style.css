@@ -750,15 +750,72 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
 .bp-meta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:11.5px;color:var(--g400);font-weight:600}
 .bp-tag{background:var(--odim);color:var(--orange);border-radius:100px;padding:3px 10px;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
 
-.bp-head{background:var(--dk);padding:56px 24px 48px;border-bottom:1px solid var(--g200)}
-.bp-back{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--g600);text-decoration:none;margin-bottom:18px;transition:color .14s}
-.bp-back:hover{color:var(--orange)}
-.bp-back svg{transform:rotate(90deg)}
-.bp-head .bp-meta{margin-bottom:14px}
+/* ── A post: breadcrumb, then prose left / sidebar right ────────────────────
+   The sidebar carries the lead image, the byline, the contents and the offer.
+   Putting the image there instead of full-bleed across the top means the first
+   thing on the page is the headline and the first paragraph, so a reader who
+   arrived from a search result can tell within a line whether this answers
+   their question. */
+.bp-crumb{border-bottom:1px solid var(--g200);background:var(--white)}
+.bp-crumb .con{display:flex;align-items:center;gap:9px;padding-top:14px;padding-bottom:14px;
+  font-size:12.5px;overflow-x:auto;scrollbar-width:none}
+.bp-crumb .con::-webkit-scrollbar{display:none}
+.bp-crumb a{color:var(--g600);text-decoration:none;white-space:nowrap;transition:color .14s}
+.bp-crumb a:hover{color:var(--orange)}
+.bp-crumb-s{color:var(--g300)}
+/* The current page is the one crumb that is not a link, and it is the one that
+   has to give: it truncates rather than pushing the trail off the row. */
+.bp-crumb-c{color:var(--navy);font-weight:650;white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;max-width:46ch}
+
+.bp-wrap{display:grid;grid-template-columns:minmax(0,1fr) 316px;gap:56px;
+  align-items:start;padding-top:44px;padding-bottom:56px}
+.bp-main{min-width:0;max-width:720px}
+.bp-title{font-family:var(--fh);font-size:clamp(30px,3.6vw,44px);font-weight:800;
+  color:var(--navy);line-height:1.14;letter-spacing:-.02em;margin:14px 0 0}
+.bp-dek{font-size:17.5px;color:var(--g600);line-height:1.65;margin:16px 0 0;max-width:62ch}
+.bp-main>.bp-meta{margin-top:20px;padding-bottom:26px;border-bottom:1px solid var(--g200)}
+.bp-dot{width:3px;height:3px;border-radius:50%;background:var(--g300)}
+
+/* Sidebar. Sticks once the prose is long enough to scroll past it. */
+.bp-side{position:relative;min-width:0}
+.bp-side-img{border-radius:14px;overflow:hidden;border:1px solid var(--g200);box-shadow:var(--s1)}
+.bp-side-img img{width:100%;display:block;aspect-ratio:4/3;object-fit:cover}
+.bp-sticky{position:sticky;top:96px;margin-top:26px}
+
+.bp-by{padding-bottom:20px;border-bottom:1px solid var(--g200)}
+.bp-by-k{font-size:10.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--g400);margin-bottom:8px}
+.bp-by-n{font-family:var(--fh);font-size:15px;font-weight:800;color:var(--navy)}
+.bp-by-r{font-size:12.5px;color:var(--g600);margin-top:2px}
+
+.bp-toc{padding:20px 0;border-bottom:1px solid var(--g200)}
+.bp-toc-k{font-size:10.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--g400);margin-bottom:10px}
+.bp-toc a{display:block;font-size:13px;line-height:1.5;color:var(--g600);text-decoration:none;
+  padding:6px 0 6px 13px;border-left:2px solid var(--g200);transition:color .14s,border-color .14s}
+.bp-toc a:hover{color:var(--navy);border-left-color:var(--g400)}
+.bp-toc a.on{color:var(--orange);border-left-color:var(--orange);font-weight:650}
+
+.bp-side-cta{margin-top:22px;background:var(--dk);border:1px solid var(--g200);
+  border-radius:14px;padding:22px}
+.bp-side-cta-t{font-family:var(--fh);font-size:16px;font-weight:800;color:var(--navy);
+  line-height:1.3;margin-bottom:8px}
+.bp-side-cta-x{font-size:13px;color:var(--g600);line-height:1.65;margin:0 0 16px}
+.bp-side-cta .btn{width:100%;justify-content:center}
+
+/* Anchored headings clear the fixed header when jumped to from the contents. */
+.bp-body h2{scroll-margin-top:96px}
+
+/* Comments sit on the article's grid, in the prose column, so the discussion
+   continues the same line of text the article was on. */
+.cm-sec{border-top:1px solid var(--g200);background:var(--white)}
+.bp-wrap--tail{padding-top:44px;padding-bottom:80px}
+@media(max-width:1000px){.bp-wrap--tail{padding-top:34px;padding-bottom:56px}}
 
 /* Article body. Measure is capped near 68ch: long-form prose gets unreadable
    much wider than that regardless of how much room the viewport has. */
-.bp-body{max-width:720px;padding:52px 24px 72px}
+.bp-body{max-width:720px;padding:34px 0 0}
 .bp-lead{font-size:17.5px;color:var(--text);line-height:1.8;margin-bottom:22px;font-weight:500}
 .bp-body p{font-size:15.5px;color:var(--text);line-height:1.85;margin-bottom:20px}
 .bp-body h2{font-family:var(--fh);font-size:25px;font-weight:800;color:var(--navy);line-height:1.25;margin:44px 0 16px}
@@ -772,12 +829,31 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
 .bp-cta-t{font-family:var(--fh);font-size:18px;font-weight:800;color:var(--navy);margin-bottom:8px}
 .bp-cta-x{font-size:14px;color:var(--g600);line-height:1.7;margin-bottom:18px!important}
 
+/* One column below the point where a 316px rail stops leaving a readable
+   measure beside it. The image leads, then the headline — the order the markup
+   is already in, so this is a grid change and nothing moves in the DOM. */
+@media(max-width:1000px){
+  .bp-wrap{grid-template-columns:1fr;gap:0;padding-top:28px}
+  .bp-main{max-width:720px;order:2}
+  .bp-side{order:1;margin-bottom:26px}
+  .bp-side-img{max-height:320px}
+  .bp-sticky{position:static;margin-top:0;display:flex;flex-direction:column}
+  /* On one column the byline reads as a footer credit, and the contents list
+     duplicates a page the reader can now simply scroll. Both move below the
+     article; the offer stays inline where it was. */
+  .bp-by{order:3;border-bottom:0;border-top:1px solid var(--g200);padding:20px 0 0;margin-top:26px}
+  .bp-toc{order:1;border-bottom:0;border:1px solid var(--g200);border-radius:14px;
+    padding:16px 18px;background:var(--white)}
+  .bp-side-cta{order:2;margin-top:18px}
+}
 @media(max-width:768px){
-  .bp-head{padding:38px 16px 34px}
-  .bp-body{padding:36px 18px 52px}
   .bp-card{padding:22px 20px}
   .bp-card-t{font-size:18px}
   .bp-body h2{font-size:21px;margin-top:34px}
+  .bp-wrap{padding-bottom:52px}
+  .bp-title{line-height:1.18}
+  .bp-dek{font-size:16px}
+  .bp-crumb-c{max-width:22ch}
 }
 
 /* Illustrated blog index. */
@@ -790,12 +866,6 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
 .bp-card .bp-card-t{font-size:17px;margin:10px 0 8px}
 .bp-card .bp-card-x{font-size:13.5px}
 .bp-card .bp-card-r{margin-top:12px;font-size:12px}
-
-/* Lead image on a post, between the header band and the prose. */
-.bp-hero-img{margin:-40px 0 0;border-radius:16px;overflow:hidden;border:1px solid var(--g200);box-shadow:var(--s2)}
-/* Keeps the header — and its back link — above the image that tucks under it. */
-.bp-head{position:relative;z-index:2}
-.bp-hero-img img{width:100%;display:block}
 
 @media(max-width:960px){.bp-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:640px){
@@ -829,6 +899,7 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
 .ft-social:hover{background:var(--g200)}
 .ft-yt:hover{color:#FF0000}
 .ft-li:hover{color:#0A66C2}
+.ft-x:hover{color:#000}
 
 /* Mobile drawer groups. <details>/<summary> rather than JS: real disclosure,
    keyboard accessible, and announced correctly by a screen reader. Closed by
@@ -945,7 +1016,12 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
 .cm-body{font-size:14px;color:var(--text);line-height:1.7;margin:0;white-space:pre-wrap;overflow-wrap:break-word}
 
 .cm-form{border:1px solid var(--g200);border-radius:14px;padding:16px 18px;background:var(--white)}
-.cm-ident{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;min-height:32px}
+/* Usually empty: One Tap signs people in without a button, and anonymous
+   commenters never see one. The spacing lives on the children rather than the
+   row, so an empty row takes up no height instead of leaving a gap over the
+   box. */
+.cm-ident{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.cm-gbtn,.cm-who-row{margin-bottom:12px}
 .cm-who-row{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--navy)}
 .cm-box{width:100%;border:none;border-bottom:1.5px solid var(--g200);border-radius:0;padding:10px 2px;
   font-family:var(--fb);font-size:15px;color:var(--text);background:none;resize:vertical;min-height:52px;

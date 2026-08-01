@@ -1,8 +1,13 @@
 /**
  * public/comments.js — the comment box on a blog post.
  *
- * One field. A commenter either signs in with Google, in which case their name
- * and picture come from the verified token, or posts as Anonymous.
+ * One field. A commenter's name and picture come from a verified Google token
+ * if there is one, and otherwise they post as Anonymous.
+ *
+ * Sign-in is meant to be invisible. Google One Tap runs on load with
+ * auto_select, so someone signed into the browser who has used this site before
+ * is recognised without touching anything — the form just says "Commenting as".
+ * The sign-in button only appears if that produced nothing.
  *
  * Nothing about identity is sent from here except the Google credential itself.
  * The server reads the name out of the token it verifies; this script never
@@ -147,26 +152,65 @@
   };
 
   var clientId = null;
+  var started = false;
 
-  function mountGoogle() {
-    if (!gbtn || !clientId || !window.google || !window.google.accounts) return;
-    window.google.accounts.id.initialize({ client_id: clientId, callback: window.cmGoogle });
+  /* The button starts hidden. Most people never see it: One Tap below signs in
+     a returning Chrome user without a click, and anyone who is not signed in
+     can just type and post as Anonymous. It is revealed only when the silent
+     path produced nothing, so it is a fallback rather than a step. */
+  if (gbtn) gbtn.style.display = 'none';
+
+  function revealButton() {
+    if (!gbtn || identity || !clientId) return;
+    if (!window.google || !window.google.accounts) return;
+    gbtn.style.display = '';
     window.google.accounts.id.renderButton(gbtn, {
       theme: 'outline', size: 'medium', text: 'signin_with', shape: 'pill',
     });
   }
 
+  function mountGoogle() {
+    if (started || !clientId || !window.google || !window.google.accounts) return;
+    started = true;
+
+    window.google.accounts.id.initialize({
+      client_id: clientId,
+      callback: window.cmGoogle,
+      /* The whole point: a visitor who has signed in here before and is signed
+         into the browser is picked up and returned through cmGoogle with no
+         interaction at all.
+
+         What this cannot do is identify a first-time visitor silently. A page
+         does not get to read the browser's Google session; Google hands over an
+         identity only after the person has agreed to give it to this site,
+         once. That agreement is what auto_select then remembers. So: returning
+         visitors are automatic, the first visit costs one tap, and anyone who
+         ignores it still gets to comment. */
+      auto_select: true,
+      itp_support: true,
+      cancel_on_tap_outside: false,
+      context: 'use',
+    });
+
+    window.google.accounts.id.prompt();
+
+    /* If nothing came back, offer the button. Timed rather than driven by the
+       prompt's notification callback because those status methods are being
+       withdrawn under FedCM — "did we end up with an identity?" is the question
+       that actually matters and it stays answerable. */
+    setTimeout(revealButton, 2600);
+  }
+
   /* Asked for rather than baked into the page: these are static files with no
-     access to the environment. If it is unset the button simply never appears
+     access to the environment. If it is unset nothing Google-related ever runs
      and everyone comments as Anonymous. */
   fetch('/api/comments/config')
     .then(function (r) { return r.json(); })
     .then(function (d) {
       clientId = d.google_client_id;
-      if (!clientId && gbtn) gbtn.style.display = 'none';
       mountGoogle();
     })
-    .catch(function () { if (gbtn) gbtn.style.display = 'none'; });
+    .catch(function () { /* comment as Anonymous */ });
 
   // Google's script is async; whichever of the two finishes last mounts.
   window.cmOnGoogleLoad = mountGoogle;
