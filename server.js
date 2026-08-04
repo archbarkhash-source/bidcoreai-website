@@ -101,30 +101,60 @@ app.get('/solutions', (req, res) =>
 app.get('/pricing', (req, res) =>
   res.sendFile(path.join(VIEWS_DIR, 'pricing.html')));
 
-// Primary URL for Takeoff Services (Google-friendly slug)
-app.get('/takeoff-services', (req, res) =>
-  res.sendFile(path.join(VIEWS_DIR, 'services.html')));
+/* ── Services ──
+   /services is the hub the Services nav tab points at; the trade pages below
+   are what its cards link to. Each is its own file with its own SEO title,
+   description, canonical and keywords — no shared template at runtime. */
+const SERVICE_PAGES = [
+  'takeoff-services',
+  // Takeoff — an index plus one page per CSI division
+  'construction-takeoff-services',
+  'demolition-takeoff-services',
+  'concrete-takeoff-services',
+  'masonry-takeoff-services',
+  'steel-takeoff-services',
+  'lumber-takeoff-services',
+  'roofing-insulation-takeoff-services',
+  'doors-windows-takeoff-services',
+  'finishes-takeoff-services',
+  'specialties-takeoff-services',
+  'mechanical-takeoff-services',
+  'plumbing-takeoff-services',
+  'electrical-takeoff-services',
+  'exterior-improvements-takeoff-services',
+  // Estimating, by trade
+  'construction-estimating-services',
+  'drywall-estimating-services',
+  'lumber-estimating-services',
+  'mep-estimating-services',
+  'electrical-estimating-services',
+  'hvac-estimating-services',
+  'concrete-estimating-services',
+  // CAD
+  'cad-services',
+  'architectural-cad-services',
+  // Samples
+  'work-samples',
+];
 
-// Legacy alias — redirects to canonical URL (301 = permanent, good for SEO)
-app.get('/services', (req, res) =>
-  res.redirect(301, '/takeoff-services'));
+for (const slug of SERVICE_PAGES) {
+  app.get(`/${slug}`, (req, res) => res.sendFile(path.join(VIEWS_DIR, `${slug}.html`)));
+}
 
-// ── Trade-specific takeoff & estimating service pages ──
-// Each has its own unique HTML with full SEO title, description, canonical, and keywords
-app.get('/construction-takeoff-services', (req, res) =>
-  res.sendFile(path.join(VIEWS_DIR, 'construction-takeoff-services.html')));
+/* Takeoff pages are organised by CSI division now. These are the old
+   trade-named URLs, kept alive so links and search results still land
+   somewhere useful instead of on a 404. */
+const LEGACY_TAKEOFF_URLS = {
+  'services': '/construction-takeoff-services',
+  'drywall-takeoff-services': '/finishes-takeoff-services',
+  'flooring-takeoff-services': '/finishes-takeoff-services',
+  'hvac-takeoff-services': '/mechanical-takeoff-services',
+  'mechanical-plumbing-takeoff-services': '/mechanical-takeoff-services',
+};
 
-app.get('/drywall-takeoff-services', (req, res) =>
-  res.sendFile(path.join(VIEWS_DIR, 'drywall-takeoff-services.html')));
-
-app.get('/flooring-takeoff-services', (req, res) =>
-  res.sendFile(path.join(VIEWS_DIR, 'flooring-takeoff-services.html')));
-
-app.get('/doors-windows-takeoff-services', (req, res) =>
-  res.sendFile(path.join(VIEWS_DIR, 'doors-windows-takeoff-services.html')));
-
-app.get('/construction-estimating-services', (req, res) =>
-  res.sendFile(path.join(VIEWS_DIR, 'construction-estimating-services.html')));
+for (const [slug, target] of Object.entries(LEGACY_TAKEOFF_URLS)) {
+  app.get(`/${slug}`, (req, res) => res.redirect(301, target));
+}
 
 app.get('/feedback', (req, res) =>
   res.sendFile(path.join(VIEWS_DIR, 'feedback.html')));

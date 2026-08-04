@@ -581,3 +581,75 @@ function initToc(){
   mark();
 }
 document.addEventListener('DOMContentLoaded', initToc);
+
+/* ─── QUICK TAKEOFF REQUEST (division pages) ───
+   The full form on /takeoff-services asks for thirteen fields, most of which a
+   division page already knows: the trade is the page you are standing on. This
+   one asks for a name, an email and the drawings, and nothing else is required.
+   It posts the same payload to the same endpoint. */
+function showQuickFiles(){
+  const dr = document.getElementById('q-file');
+  if(!dr) return;
+  window._quickFiles = [...dr.files];
+  renderQuickFiles();
+}
+function renderQuickFiles(){
+  const list = document.getElementById('q-file-list');
+  if(!list) return;
+  list.innerHTML = (window._quickFiles||[]).map((f,i)=>
+    `<div style="display:flex;align-items:center;gap:8px;background:var(--g50);border:1px solid var(--g200);border-radius:7px;padding:6px 10px;font-size:12px;color:var(--navy)"><svg width="13" height="13" style="color:var(--blue);flex-shrink:0"><use href="#ic-file"/></svg><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${f.name}</span><span style="color:var(--g400);font-size:11px">${(f.size/1024/1024).toFixed(1)}MB</span><button onclick="removeQuickFile(${i})" style="background:none;border:none;cursor:pointer;color:#dc2626;font-size:14px;padding:0 2px">✕</button></div>`
+  ).join('');
+}
+function removeQuickFile(i){
+  if(!window._quickFiles) return;
+  window._quickFiles.splice(i,1);
+  if(!window._quickFiles.length) document.getElementById('q-file').value='';
+  renderQuickFiles();
+}
+
+async function submitQuickSvc(){
+  const name = v('q-name'), em = v('q-email');
+  const err  = document.getElementById('q-err');
+  const dr   = document.getElementById('q-file');
+  const files = (window._quickFiles && window._quickFiles.length) ? window._quickFiles : (dr ? [...dr.files] : []);
+  const link  = v('q-cloud');
+
+  const fail = m => { err.innerHTML = m; err.style.display = 'block'; };
+  if(!name || !em)              return fail('Please add your name and email.');
+  if(!isEmail(em))              return fail('Please enter a valid email address.');
+  if(!files.length && !link)    return fail('Please attach a drawing or paste a cloud link.');
+  err.style.display = 'none';
+
+  const trade = v('q-trade') || 'Takeoff';
+  const btn = document.getElementById('q-btn');
+  const reset = () => { if(btn){ btn.disabled=false; btn.innerHTML='<svg width="15" height="15"><use href="#ic-send"/></svg> Send Request'; } };
+  if(btn){ btn.disabled=true; btn.innerHTML='<svg width="14" height="14" style="animation:spin 1s linear infinite;display:inline-block"><use href="#ic-refresh"/></svg> Sending…'; }
+
+  const fd = new FormData();
+  fd.append('meta', JSON.stringify({
+    subject: `Takeoff Request — ${trade}${v('q-project') ? ' — ' + v('q-project') : ''}`,
+    name, email: em, company: v('q-company'), trade,
+    project_name: v('q-project'), bid_due: v('q-due'),
+    cloud_link: link, notes: v('q-notes'),
+    source: 'Division Page Quick Form',
+  }));
+  files.forEach(f => fd.append('files', f));
+
+  let sent = false, errorMsg = '';
+  try{
+    const res  = await fetch('/api/send-with-files', { method:'POST', body: fd });
+    const json = await res.json().catch(()=>({}));
+    if(json.tooLarge){ reset(); return fail('📎 Files too large. Paste a Dropbox, WeTransfer or Drive link instead.'); }
+    if(!res.ok) errorMsg = json.error || `Server error ${res.status}`;
+    sent = json.success === true;
+  }catch(e){ errorMsg = e.message; }
+
+  if(sent){
+    document.getElementById('q-form-body').style.display = 'none';
+    document.getElementById('q-ok').style.display = 'block';
+  }else{
+    fail(`Submission failed. Please email <a href="mailto:barkha@bidcoreai.com" style="color:var(--org2);font-weight:700">barkha@bidcoreai.com</a> directly.`);
+    console.error('quick request failed:', errorMsg);
+  }
+  reset();
+}

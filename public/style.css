@@ -20,7 +20,8 @@
   /* Warm greige for the header band. Sitting against white page content it
      separates the chrome from the page without a hard rule or a shadow. */
   --cream:#EADFD8; --cream2:#DCCEC5;
-  --fh:'Segoe UI',system-ui,sans-serif; --fb:'Segoe UI',system-ui,sans-serif;
+  --fh:'Segoe UI Variable Display','Segoe UI',system-ui,-apple-system,sans-serif;
+  --fb:'Segoe UI Variable Text','Segoe UI',system-ui,-apple-system,sans-serif;
   --r:10px; --r2:18px;
   --s1:0 1px 3px rgba(23,26,32,.05),0 6px 20px rgba(23,26,32,.05);
   --s2:0 4px 12px rgba(23,26,32,.06),0 16px 44px rgba(23,26,32,.09);
@@ -28,32 +29,32 @@
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{font-family:var(--fb);color:var(--text);background:var(--white);overflow-x:hidden;-webkit-font-smoothing:antialiased;line-height:1.6}
+body{font-family:var(--fb);font-size:17px;color:var(--text);background:var(--white);overflow-x:hidden;-webkit-font-smoothing:antialiased;line-height:1.65}
 img{display:block;max-width:100%}
 button{font-family:var(--fb)}
 
 /* ───── UTIL ───── */
 .con{max-width:1160px;margin:0 auto;padding:0 24px}
 .fh{font-family:var(--fh)}
-.h1{font-family:var(--fh);font-size:clamp(32px,4.2vw,56px);font-weight:800;line-height:1.1;color:var(--navy)}
-.h2{font-family:var(--fh);font-size:clamp(24px,3vw,42px);font-weight:800;line-height:1.12;color:var(--navy)}
+.h1{font-family:var(--fh);font-size:clamp(34px,5vw,64px);font-weight:800;line-height:1.1;color:var(--navy)}
+.h2{font-family:var(--fh);font-size:clamp(26px,3.4vw,46px);font-weight:800;line-height:1.12;color:var(--navy)}
 /* Was white type for dark bands; those bands are light now. */
 .h2w{color:var(--navy)}
-.h3{font-family:var(--fh);font-size:18px;font-weight:700;color:var(--navy)}
-.lead{font-size:16px;color:var(--g600);line-height:1.76;max-width:600px}
-.eyebrow{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;color:var(--orange);letter-spacing:.16em;text-transform:uppercase;margin-bottom:10px}
+.h3{font-family:var(--fh);font-size:20px;font-weight:700;color:var(--navy)}
+.lead{font-size:19px;color:var(--g600);line-height:1.76;max-width:600px}
+.eyebrow{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:var(--orange);letter-spacing:.16em;text-transform:uppercase;margin-bottom:10px}
 
 /* pills */
-.pill{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:100px;border:1.5px solid}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:100px;border:1.5px solid}
 .pill-o{background:var(--odim);color:var(--orange);border-color:rgba(232,93,0,.22)}
 .pill-b{background:var(--bdim);color:var(--blue);border-color:rgba(224,154,50,.22)}
 .pill-t{background:var(--tdim);color:var(--teal);border-color:rgba(14,140,123,.2)}
 .pill-g{background:rgba(34,197,94,.07);color:#16a34a;border-color:rgba(34,197,94,.22)}
 
 /* buttons */
-.btn{display:inline-flex;align-items:center;gap:7px;font-family:var(--fb);font-size:14px;font-weight:600;padding:11px 22px;border-radius:var(--r);border:none;cursor:pointer;transition:all .17s;white-space:nowrap;line-height:1;text-decoration:none}
-.btn-lg{font-size:15.5px;padding:14px 30px}
-.btn-sm{font-size:12.5px;padding:8px 16px}
+.btn{display:inline-flex;align-items:center;gap:7px;font-family:var(--fb);font-size:15px;font-weight:600;padding:11px 22px;border-radius:var(--r);border:none;cursor:pointer;transition:all .17s;white-space:nowrap;line-height:1;text-decoration:none}
+.btn-lg{font-size:17px;padding:15px 32px}
+.btn-sm{font-size:13.5px;padding:9px 17px}
 /* .btn-sm lays out at 29px tall, which is fine under a cursor and too small
    under a thumb — and it carries the primary action on pricing, the service
    pages, the article sidebar and the comment form. Raised to the usual 44px
@@ -82,11 +83,22 @@ button{font-family:var(--fb)}
 .logo-img{height:30px;width:auto;display:block}
 .logo-txt{font-family:var(--fh);font-size:18px;font-weight:800;color:var(--navy)}
 .nav-links{display:flex;gap:1px;margin-left:auto}
-.nl{font-size:13px;font-weight:550;color:var(--g600);padding:7px 13px;border-radius:7px;cursor:pointer;transition:all .14s;border:none;background:none;display:flex;align-items:center;gap:5px}
+/* The tabs are anchors, so they inherited the browser's underline — struck off
+   here rather than per-page. 15px is the smallest size that still reads as a
+   primary navigation tab next to the 18px wordmark. */
+.nl{font-size:16px;font-weight:600;color:var(--g600);padding:7px 12px;border-radius:7px;cursor:pointer;transition:all .14s;border:none;background:none;display:flex;align-items:center;gap:5px;text-decoration:none}
+.nl:hover,.nl:focus-visible{text-decoration:none}
 .nl:hover,.nl.on{color:var(--navy);background:rgba(23,26,32,.06)}
 .nl.hl{color:var(--orange);background:var(--odim)}
 .nav-cta{display:flex;gap:8px;margin-left:16px}
 .nav-cta .btn{padding:8px 16px;font-size:13px}
+/* Six tabs at 15px plus the wordmark and the CTA stop fitting somewhere around
+   1050px. Rather than drop a tab, the row tightens until the mobile menu takes
+   over at 768px. */
+@media(max-width:1050px){
+  .nl{font-size:13.5px;padding:7px 9px}
+  .nav-cta{margin-left:10px}
+}
 
 /* ───── NAV DROPDOWNS (mega-menu) ─────
    Opens on hover for the mouse and on :focus-within for the keyboard, so the
@@ -141,8 +153,8 @@ button{font-family:var(--fb)}
 .nl-item:hover,.nl-item:focus-visible{background:var(--g100);outline:none}
 .nl-item-ico{flex-shrink:0;width:29px;height:29px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:var(--odim);color:var(--orange)}
 .nl-item-txt{display:flex;flex-direction:column;gap:2px;min-width:0}
-.nl-item-t{font-family:var(--fh);font-size:13px;font-weight:650;color:var(--navy);display:flex;align-items:center;gap:6px;white-space:nowrap}
-.nl-item-d{font-size:11.5px;color:var(--g600);line-height:1.45}
+.nl-item-t{font-family:var(--fh);font-size:13.5px;font-weight:650;color:var(--navy);display:flex;align-items:center;gap:6px;white-space:nowrap}
+.nl-item-d{font-size:12px;color:var(--g600);line-height:1.45}
 .nl-badge{font-size:9.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#15803D;background:rgba(21,128,61,.09);border:1px solid rgba(21,128,61,.22);border-radius:100px;padding:1.5px 6px}
 
 /* Solutions carries far more rows than Features, so it runs four across to keep
@@ -156,6 +168,13 @@ button{font-family:var(--fb)}
   color:var(--g400);padding:14px 11px 7px;margin-top:4px;
   border-top:1px solid var(--g200)}
 .nl-panel-h:first-child{border-top:none;margin-top:0;padding-top:2px}
+
+/* "View all …" — closes a group and spans the row, so it reads as the end of
+   the section rather than as one more item in the grid. */
+.nl-more{grid-column:1/-1;display:inline-flex;align-items:center;gap:5px;justify-self:start;
+  padding:8px 11px 2px;font-size:12px;font-weight:700;color:var(--org2);text-decoration:none;
+  border-radius:8px;transition:color .13s}
+.nl-more:hover{color:var(--orange);text-decoration:underline}
 
 /* Mobile toggle */
 .mob-toggle{display:none;background:none;border:none;color:var(--g600);cursor:pointer;padding:6px;border-radius:7px;margin-right:2px;flex-shrink:0}
@@ -185,14 +204,14 @@ button{font-family:var(--fb)}
 .hero-glow{position:absolute;inset:0;background:radial-gradient(ellipse 60% 55% at 76% 40%,rgba(232,93,0,.07) 0%,transparent 64%),radial-gradient(ellipse 35% 35% at 12% 75%,rgba(224,154,50,.09) 0%,transparent 58%)}
 .hero-grid{position:absolute;inset:0;opacity:.05;background-image:radial-gradient(circle,rgba(23,26,32,.55) 1px,transparent 1px);background-size:32px 32px}
 .hero-in{position:relative;z-index:2;max-width:1280px;margin:0 auto;display:grid;grid-template-columns:1fr 1.42fr;gap:44px;align-items:center;padding-bottom:80px;width:100%}
-.hero-tag{display:inline-flex;align-items:center;gap:7px;background:rgba(232,93,0,.14);border:1px solid rgba(232,93,0,.25);border-radius:100px;padding:5px 14px;font-size:11px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
-.hero-sub{font-size:16px;color:var(--g600);line-height:1.76;max-width:480px;margin-bottom:30px}
+.hero-tag{display:inline-flex;align-items:center;gap:7px;background:rgba(232,93,0,.14);border:1px solid rgba(232,93,0,.25);border-radius:100px;padding:6px 15px;font-size:12px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
+.hero-sub{font-size:19px;color:var(--g600);line-height:1.76;max-width:480px;margin-bottom:30px}
 .hero-ctas{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:44px}
 .hero-stats{display:flex;gap:0;background:#fff;border:1px solid var(--g200);border-radius:12px;overflow:hidden;width:fit-content;box-shadow:var(--s1)}
 .hs{padding:13px 24px;border-right:1px solid var(--g200)}
 .hs:last-child{border-right:none}
-.hs-v{font-family:var(--fh);font-size:27px;font-weight:800;color:var(--navy);line-height:1}
-.hs-l{font-size:11px;color:var(--g600);margin-top:4px}
+.hs-v{font-family:var(--fh);font-size:30px;font-weight:800;color:var(--navy);line-height:1}
+.hs-l{font-size:12.5px;color:var(--g600);margin-top:4px}
 
 /* hero screenshot */
 .hero-ss{border-radius:14px;overflow:hidden;box-shadow:var(--s3);border:1px solid var(--g200);animation:risein .72s ease both;width:100%;max-width:980px;margin-left:auto;transform:scale(1.04);transform-origin:center}
@@ -294,14 +313,6 @@ button{font-family:var(--fb)}
 .sol-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 55% 50% at 75% 40%,rgba(224,154,50,.16) 0%,transparent 62%)}
 .sol-hero::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 30% 30% at 10% 70%,rgba(232,93,0,.08) 0%,transparent 55%)}
 .sol-hero-in{position:relative;z-index:2;max-width:1160px;margin:0 auto}
-.platform-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:44px}
-.plat-card{background:var(--white);border:1px solid var(--g200);border-radius:16px;padding:22px 18px;transition:all .18s;position:relative;overflow:hidden}
-.plat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;opacity:0;transition:opacity .18s;background:linear-gradient(90deg,var(--blue),var(--teal))}
-.plat-card:hover{box-shadow:var(--s2);transform:translateY(-4px)}.plat-card:hover::after{opacity:1}
-.pc-ico{width:42px;height:42px;border-radius:11px;background:var(--bdim);display:flex;align-items:center;justify-content:center;margin-bottom:13px;color:var(--navy2)}
-.pc-title{font-family:var(--fh);font-size:13.5px;font-weight:700;color:var(--navy);margin-bottom:6px}
-.pc-text{font-size:12px;color:var(--g600);line-height:1.62}
-.pc-tag{font-size:10px;font-weight:700;color:var(--blue);margin-top:10px;text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;gap:3px}
 .sol-section{padding:72px 24px;background:var(--white)}
 .sol-section.alt{background:var(--g50)}
 .sol-layout{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:center}
@@ -330,7 +341,7 @@ button{font-family:var(--fb)}
 .svc-price-v{font-family:var(--fh);font-size:48px;font-weight:800;color:var(--navy);position:relative;z-index:1;line-height:1}
 .svc-price-u{font-size:15px;color:var(--g600);position:relative;z-index:1}
 .svc-dels{display:flex;flex-direction:column;gap:7px;margin-top:16px;position:relative;z-index:1}
-.svc-del{display:flex;align-items:center;gap:8px;background:var(--g100);border:1px solid var(--g200);border-radius:8px;padding:9px 12px;font-size:12.5px;color:var(--text)}
+.svc-del{display:flex;align-items:center;gap:8px;background:var(--g100);border:1px solid var(--g200);border-radius:8px;padding:10px 13px;font-size:13.5px;color:var(--text)}
 .svc-disc{background:rgba(21,128,61,.08);border:1px solid rgba(21,128,61,.2);border-radius:9px;padding:11px 14px;text-align:center;margin-top:12px;position:relative;z-index:1}
 .svc-disc-v{font-family:var(--fh);font-size:20px;font-weight:800;color:var(--green)}
 .svc-disc-t{font-size:11.5px;color:var(--g600);margin-top:2px}
@@ -338,8 +349,8 @@ button{font-family:var(--fb)}
 .svc-step{display:flex;gap:11px;padding:13px 15px;background:var(--white);border:1px solid var(--g200);border-radius:11px;transition:all .18s}
 .svc-step:hover{box-shadow:var(--s1);transform:translateX(3px);border-color:rgba(224,154,50,.2)}
 .svc-n{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;font-family:var(--fh);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.svc-t{font-size:12.5px;font-weight:700;color:var(--navy);margin-bottom:2px}
-.svc-s{font-size:12px;color:var(--g600);line-height:1.56}
+.svc-t{font-size:13.5px;font-weight:700;color:var(--navy);margin-bottom:2px}
+.svc-s{font-size:13px;color:var(--g600);line-height:1.56}
 
 /* ───── REQUEST FORM ───── */
 .rform-wrap{background:var(--g50);border:1px solid var(--g200);border-radius:20px;padding:34px;margin-top:44px}
@@ -499,17 +510,17 @@ button{font-family:var(--fb)}
 .ft-in{max-width:1160px;margin:0 auto}
 /* Five columns now the Features list is there: brand block plus four link
    lists. It drops to 2-up on tablet and 1-up on phones below. */
-.ft-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr 1fr;gap:28px;margin-bottom:36px}
-.ft-logo-wrap{margin-bottom:8px}
+.ft-grid{display:grid;grid-template-columns:1.6fr repeat(4,minmax(0,1fr));gap:28px;margin-bottom:36px}
+.ft-logo-wrap{text-decoration:none;margin-bottom:8px}
 .ft-logo-img{height:24px;display:block}
 .ft-logo-txt{font-family:var(--fh);font-size:16px;font-weight:800;color:var(--navy)}
 .ft-tag{font-size:12px;color:var(--g600);line-height:1.7;max-width:190px;margin-bottom:13px}
 .ft-badge{display:inline-flex;align-items:center;gap:5px;background:var(--odim);color:var(--orange);border:1px solid rgba(232,93,0,.2);border-radius:6px;font-size:10px;font-weight:600;padding:4px 8px}
 .ft-col-t{font-size:10.5px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px}
 .ft-links{list-style:none;display:flex;flex-direction:column;gap:7px}
-.ft-links li{font-size:12px;color:var(--g600);cursor:pointer;transition:color .14s}
+.ft-links li{font-size:13px;color:var(--g600);cursor:pointer;transition:color .14s}
 .ft-links li:hover{color:var(--navy)}
-.ft-links li a{display:block;font-size:12px;color:var(--g600);text-decoration:none;cursor:pointer;transition:color .14s}
+.ft-links li a{display:block;font-size:13px;color:var(--g600);text-decoration:none;cursor:pointer;transition:color .14s}
 .ft-links li a:hover{color:var(--navy)}
 /* The bottom bar carries only the copyright now that the socials and the
    market line are gone, so it simply centres. */
@@ -524,8 +535,9 @@ button{font-family:var(--fb)}
 
 /* ───── RESPONSIVE ───── */
 @media(max-width:1040px){
-  .platform-grid{grid-template-columns:repeat(2,1fr)}
-  .ft-grid{grid-template-columns:1fr 1fr}
+  /* Five footer columns need a step on the way down to two, or the link
+     lists wrap onto two lines each well before the layout is narrow enough. */
+  .ft-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
   .slide-pane.on{grid-template-columns:1fr}
   .sol-layout{grid-template-columns:1fr!important}
   .svc-layout{grid-template-columns:1fr}
@@ -672,7 +684,7 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
    bleeds off the right edge, fades out towards the text with a mask, and drops
    to a low opacity so it reads as texture instead of competing with the
    headline. .ft-vis is taken out of flow, so the copy gets the full column. */
-.ft-hero{position:relative;overflow:hidden;background:var(--dk);padding:96px 24px 104px;border-bottom:1px solid var(--g200);min-height:560px;display:flex;align-items:center}
+.ft-hero{position:relative;overflow:hidden;background:var(--dk);padding:72px 24px 80px;border-bottom:1px solid var(--g200);min-height:0;display:flex;align-items:center}
 /* Sits between the screenshot (z-index 1) and the copy (z-index 2). */
 /* Three layers, all inside .ft-hero-in so the order actually holds:
      0  the screenshot        .ft-vis
@@ -1069,3 +1081,439 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
   .cm-form{padding:14px}
   .cm-actions{gap:10px}
   }
+
+/* ═════════ SERVICES PAGES ═════════
+   The done-for-you pages — the services hub, the per-trade estimating and
+   takeoff pages, CAD and work samples — all repeat the same three shapes: a
+   feature card, a checked list inside it, and a divisions table. They are
+   classes here rather than twenty lines of inline style per tile, which is how
+   the older trade pages were built and why they are hard to edit. */
+.svcx-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.svcx-grid--2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.svcx-grid--4{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:980px){.svcx-grid,.svcx-grid--2,.svcx-grid--4{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.svcx-grid,.svcx-grid--2,.svcx-grid--4{grid-template-columns:1fr}}
+
+.svcx{background:var(--g50);border:1px solid var(--g200);border-radius:16px;padding:24px 20px;
+  display:flex;flex-direction:column;transition:border-color .16s,box-shadow .16s,transform .16s}
+.svcx:hover{border-color:var(--g300);box-shadow:var(--s1);transform:translateY(-2px)}
+/* The one card in a grid that carries the primary action. */
+.svcx--hl{background:var(--white);border:1.5px solid rgba(204,77,0,.28);box-shadow:var(--s1)}
+.svcx-ico{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;
+  margin-bottom:14px;background:var(--odim);color:var(--org2)}
+.svcx-ico--b{background:var(--bdim);color:var(--blue)}
+.svcx-ico--t{background:var(--tdim);color:var(--teal)}
+.svcx-t{font-family:var(--fh);font-size:16.5px;font-weight:700;color:var(--navy);margin-bottom:8px;line-height:1.3}
+.svcx-p{font-size:13.5px;color:var(--g600);line-height:1.68;margin-bottom:14px}
+.svcx-ul{list-style:none;display:flex;flex-direction:column;gap:6px}
+.svcx-ul li{display:flex;align-items:flex-start;gap:8px;font-size:13.5px;color:var(--text);line-height:1.5}
+.svcx-ul li svg{flex-shrink:0;margin-top:3px;color:var(--green)}
+/* margin-top:auto pins the link to the bottom so cards of different text
+   lengths still line their actions up. */
+.svcx-a{display:inline-flex;align-items:center;gap:5px;margin-top:auto;padding-top:16px;
+  font-size:13.5px;font-weight:700;color:var(--org2);text-decoration:none}
+.svcx-a:hover{color:var(--orange);text-decoration:underline}
+
+/* CSI coverage. The division number sits above its label rather than beside
+   it — a nowrap label next to wrapping text collided as soon as the text ran
+   to two lines, and no min-width fixes that reliably. Stacked, it cannot. */
+.csi-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 30px}
+@media(max-width:900px){.csi-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.csi-grid{grid-template-columns:1fr}}
+.csi-row{display:flex;flex-direction:column;gap:5px;padding:13px 2px;border-bottom:1px solid var(--g200)}
+.csi-n{font-family:var(--fh);font-size:10px;font-weight:700;letter-spacing:.09em;color:var(--orange);
+  text-transform:uppercase;white-space:nowrap}
+.csi-l{font-size:14px;color:var(--text);line-height:1.5}
+
+/* Long lists of project types — three columns of ruled rows, so twenty entries
+   read as a reference table rather than as a wall of bullets. */
+.plist{list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 26px}
+@media(max-width:900px){.plist{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.plist{grid-template-columns:1fr}}
+.plist li{display:flex;gap:9px;align-items:flex-start;padding:11px 2px;font-size:14px;
+  color:var(--text);line-height:1.5;border-bottom:1px solid var(--g200)}
+.plist li svg{flex-shrink:0;margin-top:3px;color:var(--orange)}
+
+/* Hero that runs the copy and a summary card side by side. */
+.hero-2col{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+@media(max-width:900px){.hero-2col{grid-template-columns:1fr;gap:32px}}
+
+/* Work samples. A card per deliverable, with its own thumbnail band. */
+.ws-card{background:var(--white);border:1px solid var(--g200);border-radius:16px;overflow:hidden;
+  box-shadow:var(--s1);display:flex;flex-direction:column}
+.ws-thumb{height:150px;background:var(--g100);position:relative;display:flex;align-items:center;
+  justify-content:center;border-bottom:1px solid var(--g200);overflow:hidden}
+.ws-thumb img{width:100%;height:100%;object-fit:cover}
+.ws-body{padding:18px 20px 20px;display:flex;flex-direction:column;flex:1}
+.ws-tag{align-self:flex-start;font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--org2);background:var(--odim);border:1px solid rgba(204,77,0,.2);border-radius:100px;
+  padding:3.5px 10px;margin-bottom:10px}
+.ws-cta{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:16px}
+/* Numbered "what you can review" rows, borrowed from the request-form steps. */
+.ws-num{display:flex;gap:12px;align-items:flex-start;background:var(--white);border:1px solid var(--g200);
+  border-radius:12px;padding:14px 16px}
+.ws-num-n{flex-shrink:0;width:26px;height:26px;border-radius:8px;background:var(--orange);color:#fff;
+  font-family:var(--fh);font-size:11.5px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.ws-num-t{font-size:13.5px;color:var(--text);line-height:1.6}
+
+/* ═════════ DIVISION-WISE TAKEOFF PAGE ═════════
+   One page carries every CSI division, so it needs a persistent way to move
+   between them. The sidebar is the navigator; on a phone it turns into a
+   horizontal chip strip above the content rather than disappearing. */
+.dv-layout{display:grid;grid-template-columns:minmax(0,1fr) 232px;gap:48px;
+  align-items:start;max-width:1160px;margin:0 auto;padding:0 24px}
+@media(max-width:980px){.dv-layout{grid-template-columns:1fr;gap:20px}}
+.dv-side{position:sticky;top:78px}
+/* order:-1 lifts the navigator above the content once the columns collapse. */
+@media(max-width:980px){.dv-side{position:sticky;top:62px;order:-1;background:var(--white);
+  padding:10px 0;z-index:10;border-bottom:1px solid var(--g200)}}
+.dv-side-t{font-family:var(--fh);font-size:10.5px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--navy);padding-bottom:11px;border-bottom:1px solid var(--g200)}
+@media(max-width:980px){.dv-side-t{display:none}}
+.dv-nav{display:flex;flex-direction:column}
+.dv-nav a{display:block;padding:10px 2px;font-size:12px;font-weight:600;color:var(--g600);
+  text-decoration:none;border-bottom:1px solid var(--g200);transition:color .13s,border-color .13s}
+.dv-nav a:hover{color:var(--orange)}
+.dv-nav a.on{color:var(--orange);font-weight:700;border-bottom-color:rgba(204,77,0,.35)}
+@media(max-width:980px){
+  .dv-nav{flex-direction:row;overflow-x:auto;gap:7px;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+  .dv-nav a{white-space:nowrap;border:1px solid var(--g200);border-radius:100px;padding:9px 15px;min-height:38px}
+  .dv-nav a.on{border-color:var(--orange);background:var(--odim)}
+}
+
+/* scroll-margin keeps a jumped-to division clear of the sticky header. */
+.dv-sec{padding:38px 0 34px;border-top:1px solid var(--g200);scroll-margin-top:84px}
+.dv-sec:first-child{border-top:none;padding-top:4px}
+.dv-head{display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:10px}
+.dv-num{font-family:var(--fh);font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--org2);background:var(--odim);border:1px solid rgba(204,77,0,.2);border-radius:100px;padding:4px 11px}
+.dv-t{font-family:var(--fh);font-size:clamp(19px,2.2vw,26px);font-weight:800;color:var(--navy);line-height:1.2}
+.dv-p{font-size:15px;color:var(--g600);line-height:1.75;margin-bottom:16px}
+.dv-sub{font-family:var(--fh);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--g400);margin:18px 0 8px}
+/* Two columns of what-we-measure, one on a phone. */
+.plist--2{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:640px){.plist--2{grid-template-columns:1fr}}
+/* Per-division software row — this is what stands in for a logo strip. */
+.dv-soft{display:flex;align-items:center;gap:9px;flex-wrap:wrap;background:var(--g50);
+  border:1px solid var(--g200);border-radius:11px;padding:11px 14px;margin-top:16px;font-size:12.5px;color:var(--g600)}
+.dv-soft b{color:var(--navy);font-weight:700}
+.dv-chip{display:inline-flex;align-items:center;gap:5px;background:var(--white);border:1px solid var(--g200);
+  border-radius:100px;padding:4px 11px;font-size:11.5px;font-weight:600;color:var(--navy);text-decoration:none}
+.dv-chip:hover{border-color:var(--orange);color:var(--org2)}
+.dv-links{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+
+/* Page banner — a photo band with the page title over it. Used at the top of
+   the per-division takeoff pages. The scrim is what keeps white type legible
+   over a photograph we do not control the exposure of. */
+.pg-banner{position:relative;height:clamp(190px,26vw,300px);overflow:hidden;background:var(--navy)}
+.pg-banner img{width:100%;height:100%;object-fit:cover}
+.pg-banner::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(23,26,32,.28) 0%,rgba(23,26,32,.62) 100%)}
+.pg-banner-in{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;padding:0 24px;gap:10px}
+.pg-banner-t{font-family:var(--fh);font-size:clamp(26px,4vw,50px);font-weight:800;color:#fff;
+  line-height:1.14;text-shadow:0 2px 18px rgba(0,0,0,.4)}
+.pg-banner-n{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;color:#fff;background:rgba(204,77,0,.9);
+  border-radius:100px;padding:5px 14px}
+
+/* Division hero: copy on the left, Trades pinned to the right edge. The wide
+   gap and the hairline rule are what stop the list reading as a continuation
+   of the paragraph beside it. */
+.hero-tr{display:grid;grid-template-columns:minmax(0,1fr) 272px;gap:80px;align-items:start}
+@media(max-width:1080px){.hero-tr{grid-template-columns:minmax(0,1fr) 240px;gap:48px}}
+@media(max-width:900px){.hero-tr{grid-template-columns:1fr;gap:30px}}
+
+/* Trades navigator sits directly on the hero surface — a ruled list, not a
+   card floating on top of the band. The rules are the only structure it needs. */
+.tr-card{justify-self:end;width:100%;padding-left:28px;border-left:1px solid rgba(23,26,32,.11)}
+.tr-card .dv-nav a{padding:12px 2px;font-size:13.5px;border-bottom-color:rgba(23,26,32,.1)}
+.tr-card .dv-nav a:last-child{border-bottom:none}
+@media(max-width:900px){
+  .tr-card{padding-left:0;padding-top:20px;border-left:none;border-top:1px solid rgba(23,26,32,.11)}
+  /* Inside the hero the list stays vertical even at phone widths — the chip
+     strip treatment belongs to the sticky rail, not to this block. */
+  .tr-card .dv-nav{flex-direction:column;overflow:visible;gap:0}
+  .tr-card .dv-nav a{white-space:normal;border:none;border-bottom:1px solid rgba(23,26,32,.1);
+    border-radius:0;background:none}
+  .tr-card .dv-nav a.on{background:none;border-color:rgba(204,77,0,.35)}
+}
+
+/* ───── READING SIZE ─────
+   Body copy across the site was authored between 11.5px and 15px, most of it
+   as inline styles on the marketing sections. The component rules above were
+   each raised a step; this block lifts the inline sizes, which are otherwise
+   unreachable, and holds a 15px floor for paragraph text everywhere. */
+p,li,td,th,label,input,select,textarea{font-size:inherit}
+section p[style*="font-size:12"],section p[style*="font-size:13"],
+section p[style*="font-size:14"],section p[style*="font-size:15"],
+section div[style*="font-size:12"],section div[style*="font-size:13"],
+section div[style*="font-size:14"],section div[style*="font-size:15"],
+section li[style*="font-size:12"],section li[style*="font-size:13"],
+section li[style*="font-size:14"],section li[style*="font-size:15"],
+section span[style*="font-size:12"],section span[style*="font-size:13"]{font-size:16.5px!important}
+/* Hero and page-intro paragraphs, which were authored at 16px inline. */
+.sol-hero-in p[style*="font-size:16"],section p[style*="font-size:16"],
+section p[style*="font-size:17"]{font-size:18px!important}
+/* Card and list components. */
+.svcx-p,.svcx-ul li,.plist li,.csi-l,.svc-del,.svc-s,.ws-num-t,.dv-p{font-size:15.5px}
+.svc-t,.svcx-t{font-size:17px}
+.ft-links li,.ft-links li a{font-size:14px}
+.nl-item-t{font-size:14.5px}
+.nl-item-d{font-size:12.5px}
+.tr-card .dv-nav a{font-size:14.5px}
+.rform-title{font-size:20px}
+.fg label{font-size:13px}
+
+@media(max-width:768px){
+  body{font-size:16.5px}
+  .hero-sub{font-size:17.5px;line-height:1.7}
+  .lead{font-size:17.5px;line-height:1.7}
+  /* Nothing paragraph-sized drops under 15px on a phone. */
+  .svcx-p,.svcx-ul li,.plist li,.csi-l,.svc-del,.svc-s,.ws-num-t,.dv-p{font-size:15px}
+  section p[style*="font-size:1"],section div[style*="font-size:1"],
+  section li[style*="font-size:1"]{font-size:16px!important}
+}
+
+/* ───── PROBLEM CARDS ─────
+   The "what we are solving" block. Each card leads with the problem in the
+   words an estimator would use, then names what replaces it — a bullet list of
+   features under a neutral title says far less than the sentence someone
+   actually said in a bid review. */
+.prob{position:relative;background:var(--white);border:1px solid var(--g200);border-radius:16px;
+  padding:26px 26px 22px 28px;overflow:hidden;transition:border-color .16s,box-shadow .16s,transform .16s}
+.prob:hover{border-color:var(--g300);box-shadow:var(--s1);transform:translateY(-2px)}
+.prob::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--orange)}
+/* The oversized numeral is decoration, so it sits behind the text and out of
+   the accessibility tree. */
+.prob-n{position:absolute;right:16px;top:6px;font-family:var(--fh);font-size:64px;font-weight:800;
+  color:var(--g100);line-height:1;user-select:none;pointer-events:none}
+.prob-in{position:relative;z-index:1}
+.prob-q{font-family:var(--fh);font-size:19.5px;font-weight:700;color:var(--navy);line-height:1.34;margin-bottom:11px}
+.prob-p{font-size:15.5px;color:var(--g600);line-height:1.72;margin-bottom:16px}
+.prob-fix{display:flex;gap:10px;align-items:flex-start;border-top:1px solid var(--g200);
+  padding-top:15px;font-size:15px;color:var(--g600);line-height:1.65}
+.prob-fix svg{flex-shrink:0;margin-top:4px;color:var(--orange)}
+.prob-fix b{color:var(--navy);font-weight:700}
+
+
+/* Agent tiles under the deck. */
+.agents{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border-top:1px solid var(--g200);margin-top:8px}
+@media(max-width:860px){.agents{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.agents{grid-template-columns:1fr}}
+.agent{padding:22px 20px;border-right:1px solid var(--g200)}
+.agent:last-child{border-right:none}
+@media(max-width:860px){.agent{border-bottom:1px solid var(--g200)}.agent:nth-child(2n){border-right:none}}
+.agent-t{display:flex;align-items:center;gap:9px;font-family:var(--fh);font-size:16px;font-weight:700;color:var(--navy);margin-bottom:7px}
+.agent-t svg{color:var(--orange);flex-shrink:0}
+.agent-p{font-size:14px;color:var(--g600);line-height:1.6}
+
+/* ───── STAGE PIPELINE ─────
+   The "what we do" graphic. A rail runs through four stages with a pulse
+   travelling along it, and each stage lights up as the pulse reaches it. The
+   motion carries the argument — work moves through one line rather than being
+   handed between four tools — and unlike overlapping cards, nothing covers
+   anything else, so every word stays readable. */
+.pipe{position:relative;padding:18px 0 8px}
+/* The rail sits behind the dot row. 42px is half the dot's height plus its top
+   offset, so the line passes through the centre of every node. */
+.pipe-rail{position:absolute;left:6%;right:6%;top:42px;height:2px;background:var(--g200);border-radius:2px;overflow:hidden}
+.pipe-pulse{position:absolute;top:0;left:0;height:100%;width:34%;border-radius:2px;
+  background:linear-gradient(90deg,transparent,var(--orange),transparent);
+  animation:pipeRun 5.6s linear infinite}
+@keyframes pipeRun{0%{transform:translateX(-100%)}100%{transform:translateX(340%)}}
+
+.pipe-stages{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
+@media(max-width:900px){.pipe-stages{grid-template-columns:1fr 1fr;gap:26px}}
+@media(max-width:560px){.pipe-stages{grid-template-columns:1fr}}
+/* Below the two-column break the rail no longer lines up with anything. */
+@media(max-width:900px){.pipe-rail{display:none}}
+
+.stage{text-align:center}
+.stage-dot{position:relative;width:56px;height:56px;margin:14px auto 0;border-radius:50%;
+  background:var(--white);border:2px solid var(--g200);color:var(--g400);
+  display:flex;align-items:center;justify-content:center;
+  transition:border-color .3s,color .3s,box-shadow .3s;animation:stageLit 5.6s ease-in-out infinite}
+/* Each stage lights a beat after the one before, so the sequence reads left to
+   right at the same pace as the pulse crossing the rail. */
+.stage:nth-child(1) .stage-dot{animation-delay:0s}
+.stage:nth-child(2) .stage-dot{animation-delay:1.1s}
+.stage:nth-child(3) .stage-dot{animation-delay:2.2s}
+.stage:nth-child(4) .stage-dot{animation-delay:3.3s}
+@keyframes stageLit{
+  0%,14%,100%{border-color:var(--g200);color:var(--g400);box-shadow:none}
+  6%{border-color:var(--orange);color:var(--orange);box-shadow:0 0 0 6px rgba(204,77,0,.1)}
+}
+.stage-n{font-family:var(--fh);font-size:10px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--org2);margin-top:16px}
+.stage-t{font-family:var(--fh);font-size:19px;font-weight:800;color:var(--navy);margin-top:5px;line-height:1.24}
+.stage-p{font-size:14.5px;color:var(--g600);line-height:1.65;margin-top:9px;max-width:270px;margin-inline:auto}
+/* Hovering a stage holds it lit, so a reader can stop the sequence to read. */
+.stage:hover .stage-dot{animation-play-state:paused;border-color:var(--orange);color:var(--orange);
+  box-shadow:0 0 0 6px rgba(204,77,0,.1)}
+
+@media(prefers-reduced-motion:reduce){
+  .pipe-pulse,.stage-dot{animation:none}
+  .stage-dot{border-color:var(--g300);color:var(--g600)}
+}
+
+/* Home page overflow guards, moved out of an inline <style> on index.html so
+   every page gets them. Nothing should be able to push the body sideways. */
+@media(max-width:768px){
+  section{max-width:100vw;overflow-x:hidden}
+  .con{padding-left:16px;padding-right:16px}
+}
+
+/* ───── PLATFORM HUB ─────
+   The eight capabilities laid out around the product rather than listed under
+   it: four cards each side of a ring, every one owning a colour that it shares
+   with its arc on the ring and the dot on its connector. One block replaces
+   the diagram-plus-card-grid pair, so nothing is described twice.
+
+   Deliberately still. A sequence running round the ring pulls the eye off
+   whatever is being read; colour does the separating and hover is the only
+   state that changes. */
+.hub{display:grid;grid-template-columns:1fr minmax(280px,400px) 1fr;gap:30px;align-items:center;
+  margin-top:30px;padding:34px 30px;border-radius:26px;
+  background:radial-gradient(ellipse 60% 70% at 50% 45%,rgba(224,154,50,.16) 0%,transparent 68%),
+             linear-gradient(180deg,rgba(204,77,0,.055) 0%,rgba(204,77,0,.02) 100%);
+  border:1px solid rgba(204,77,0,.1)}
+@media(max-width:640px){.hub{padding:22px 16px}}
+.hub-col{display:flex;flex-direction:column;gap:22px}
+@media(min-width:1081px){.hub-col--r{margin-top:52px}}
+
+.hub-card{position:relative;background:var(--white);border:1px solid var(--g200);border-radius:16px;
+  padding:20px 20px 18px 22px;box-shadow:var(--s1);transition:border-color .18s,box-shadow .18s,transform .18s}
+.hub-card:hover{border-color:var(--c);box-shadow:var(--s2);transform:translateY(-2px)}
+.hub-head{margin-bottom:9px}
+/* The badge sits proud of the card's top-left corner rather than inside it,
+   which is what gives the row its rhythm. */
+.hub-ico{position:absolute;top:-15px;left:-15px;width:42px;height:42px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;color:#fff;background:var(--c);
+  box-shadow:0 4px 14px color-mix(in srgb,var(--c) 34%,transparent);border:3px solid var(--white)}
+.hub-t{display:block;font-family:var(--fh);font-size:15.5px;font-weight:700;color:var(--c);line-height:1.25}
+.hub-p{font-size:13.5px;color:var(--g600);line-height:1.62}
+.hub-tag{display:inline-flex;align-items:center;gap:6px;margin-top:11px;
+  font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--c)}
+.hub-a{display:inline-flex;align-items:center;gap:5px;margin-top:10px;font-size:12.5px;
+  font-weight:700;color:var(--navy);text-decoration:none}
+.hub-a:hover{color:var(--c)}
+
+/* Connector stub on the inner edge of each card, pointing at the ring. */
+.hub-card::after{content:'';position:absolute;top:50%;width:26px;height:0;
+  border-top:1.5px dotted var(--c);opacity:.6}
+.hub-card::before{content:'';position:absolute;top:50%;width:7px;height:7px;border-radius:50%;
+  background:var(--white);border:1.5px solid var(--c);transform:translateY(-50%);z-index:1}
+.hub-col--l .hub-card::after{left:100%}
+.hub-col--l .hub-card::before{left:calc(100% + 23px)}
+.hub-col--r .hub-card::after{right:100%}
+.hub-col--r .hub-card::before{right:calc(100% + 23px)}
+
+.hub-ring{position:relative;width:100%;aspect-ratio:1;max-width:400px;margin:0 auto}
+.hub-svg{position:absolute;inset:0;width:100%;height:100%}
+.hub-track{fill:none;stroke:var(--g200);stroke-width:.5}
+.hub-track2{fill:none;stroke:var(--g100);stroke-width:.8}
+.hub-disc{fill:var(--white)}
+.hub-arc{fill:none;stroke:var(--c);stroke-width:3.4;stroke-linecap:round}
+.hub-core{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:74%;text-align:center}
+.hub-core-t{font-family:var(--fh);font-size:clamp(22px,3.4vw,30px);font-weight:800;color:var(--navy);line-height:1.1}
+.hub-core-s{font-size:clamp(12px,1.6vw,15px);color:var(--g600);margin-top:7px;line-height:1.45}
+.hub-core-b{font-size:clamp(11px,1.4vw,13px);font-weight:700;color:var(--org2);margin-top:12px;line-height:1.55}
+
+/* The ring only earns its space while the cards flank it. Below 1080px the
+   cards go two-up and it moves above them; below 640px everything stacks. */
+@media(max-width:1080px){
+  .hub{grid-template-columns:1fr 1fr;gap:16px}
+  .hub-ring{grid-column:1/-1;order:-1;max-width:330px;margin-bottom:14px}
+  .hub-card::after,.hub-card::before{display:none}
+}
+@media(max-width:640px){.hub{grid-template-columns:1fr}}
+
+
+
+
+/* Full-width illustration band. Unlike .pg-banner there is no text overlaid —
+   used where the image already carries its own wording and a second heading on
+   top of it would collide. */
+.pg-art{background:var(--dk);border-bottom:1px solid var(--g200);padding:0}
+.pg-art img{width:100%;height:auto;display:block;margin:0 auto;max-width:1440px}
+
+/* Pricing hero, with the plan illustration behind the copy. The wash is
+   heavier at the top, where the image carries its own headline that would
+   otherwise read through and collide with the page heading, and lighter at the
+   bottom so the plan cards in the artwork still show. */
+.price-hero{position:relative;padding:72px 24px 64px;text-align:center;
+  border-bottom:1px solid var(--g200);background-color:var(--dk);
+  background-image:radial-gradient(ellipse 44% 72% at 50% 50%,rgba(246,247,249,.96) 0%,rgba(246,247,249,.88) 52%,rgba(246,247,249,0) 100%),
+                   linear-gradient(180deg,rgba(246,247,249,.6) 0%,rgba(246,247,249,.44) 45%,rgba(246,247,249,.34) 100%),
+                   url("/images/Pricing.png");
+  background-size:cover,cover,cover;background-position:center,center,center top;background-repeat:no-repeat,no-repeat,no-repeat}
+@media(max-width:768px){.price-hero{padding:44px 16px 40px;background-position:center,center top}}
+
+/* ───── DIVISION CARDS ─────
+   The index grid on /construction-takeoff-services. Thirteen text cards in a
+   row read as a spreadsheet, so each one gets a colour, a badge and its
+   division number set large behind the copy — enough structure to scan by
+   without inventing an illustration per division that nobody would maintain.
+   Colours rotate through the four brand accents so no two neighbours match. */
+.divcard{position:relative;display:flex;flex-direction:column;overflow:hidden;
+  background:var(--white);border:1px solid var(--g200);border-radius:16px;
+  padding:26px 22px 20px;box-shadow:var(--s1);
+  transition:border-color .18s,box-shadow .18s,transform .18s}
+.divcard:hover{border-color:var(--c);box-shadow:var(--s2);transform:translateY(-3px)}
+/* Colour bar across the top edge, widening on hover. */
+.divcard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--c);
+  transition:height .18s}
+.divcard:hover::before{height:5px}
+/* Division number, set large and faint behind the text. Decorative only. */
+.divcard-n{position:absolute;top:8px;right:14px;font-family:var(--fh);font-size:56px;font-weight:800;
+  line-height:1;color:var(--c);opacity:.08;user-select:none;pointer-events:none}
+.divcard-ico{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;
+  color:#fff;background:var(--c);margin-bottom:14px;
+  box-shadow:0 4px 12px color-mix(in srgb,var(--c) 32%,transparent)}
+.divcard-k{font-family:var(--fh);font-size:10.5px;font-weight:700;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--c);margin-bottom:5px}
+.divcard-t{font-family:var(--fh);font-size:17px;font-weight:800;color:var(--navy);line-height:1.25;margin-bottom:9px}
+.divcard-p{font-size:14px;color:var(--g600);line-height:1.6;margin-bottom:14px}
+.divcard-ul{list-style:none;display:flex;flex-direction:column;gap:6px;margin-bottom:4px}
+.divcard-ul li{display:flex;align-items:flex-start;gap:8px;font-size:13.5px;color:var(--text);line-height:1.5}
+.divcard-ul li svg{flex-shrink:0;margin-top:3px;color:var(--c)}
+.divcard-a{display:inline-flex;align-items:center;gap:5px;margin-top:auto;padding-top:16px;
+  font-size:13.5px;font-weight:700;color:var(--c);text-decoration:none}
+.divcard-a:hover{text-decoration:underline}
+
+/* Contact hero, with the illustration behind the copy. Same three-layer build
+   as the pricing hero: a soft ellipse holding contrast directly behind the
+   text, a light overall wash so navy type never lands on a dark patch, then
+   the artwork. */
+.contact-hero{position:relative;padding:72px 24px 64px;text-align:center;overflow:hidden;
+  border-bottom:1px solid var(--g200);background-color:var(--dk);
+  background-image:radial-gradient(ellipse 46% 74% at 50% 50%,rgba(246,247,249,.96) 0%,rgba(246,247,249,.88) 52%,rgba(246,247,249,0) 100%),
+                   linear-gradient(180deg,rgba(246,247,249,.6) 0%,rgba(246,247,249,.44) 45%,rgba(246,247,249,.34) 100%),
+                   url("/images/Contact.png");
+  background-size:cover,cover,cover;background-position:center,center,center;background-repeat:no-repeat,no-repeat,no-repeat}
+@media(max-width:768px){.contact-hero{padding:48px 16px 44px}}
+
+/* Hint line under a form field. */
+.fg-hint{font-size:11.5px;color:var(--g400);margin-top:5px;line-height:1.45}
+
+@media(max-width:640px){
+  .divcard{padding:22px 18px 18px}
+  .divcard-n{font-size:44px;top:10px;right:12px}
+  .prob{padding:22px 20px 18px 22px}
+  .prob-n{font-size:48px;right:12px;top:8px}
+  .prob-q{font-size:18px}
+}
+
+/* ───── MOBILE: LONG BUTTON LABELS ─────
+   .btn is nowrap, which is right on a desktop row but clips on a phone: the
+   longest CTA on the site, "Request a Roofing & Waterproofing Takeoff", is
+   wider than a 360px viewport, and the overflow-x guard on section would have
+   cut the label rather than wrapped it. Below 600px buttons wrap and the
+   large ones go full width so two of them stack cleanly. */
+@media(max-width:600px){
+  .btn{white-space:normal;text-align:center;line-height:1.3}
+  .btn-lg{font-size:16px;padding:14px 22px}
+  .sol-hero-in .btn-lg,.pg-art + section .btn-lg{width:100%;justify-content:center}
+}

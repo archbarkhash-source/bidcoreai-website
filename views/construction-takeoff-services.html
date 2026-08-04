@@ -3,45 +3,20 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Construction Takeoff Services for US Contractors | BidcoreAI</title>
-<meta name="description" content="Professional construction takeoff services for general contractors and specialty subs. All CSI divisions, experienced US Estimators, 24-72hr turnaround. Results fed directly into BidcoreAI."/>
-<meta name="keywords" content="construction takeoff services, quantity takeoff service, outsource estimating, construction takeoff services, estimating services for contractors, AI takeoff software"/>
+<title>Construction Takeoff Services by CSI Division | BidcoreAI</title>
+<meta name="description" content="Construction takeoff services division by division — demolition, concrete, masonry, steel, lumber, roofing, doors, finishes, specialties, mechanical and electrical."/>
+<meta name="keywords" content="construction takeoff services, quantity takeoff by CSI division, concrete takeoff, masonry takeoff, lumber takeoff, drywall takeoff, MEP takeoff, electrical takeoff services"/>
 <link rel="canonical" href="https://www.bidcoreai.com/construction-takeoff-services"/>
-<meta property="og:title" content="Construction Takeoff Services for US Contractors | BidcoreAI"/>
-<meta property="og:description" content="Professional construction takeoff services for general contractors and specialty subs. All CSI divisions, experienced US Estimators, 24-72hr turnaround. Results fed directly into BidcoreAI."/>
+<meta property="og:title" content="Construction Takeoff Services by CSI Division | BidcoreAI"/>
+<meta property="og:description" content="Construction takeoff services division by division — demolition, concrete, masonry, steel, lumber, roofing, doors, finishes, specialties, mechanical and electrical."/>
 <meta property="og:url" content="https://www.bidcoreai.com/construction-takeoff-services"/>
 <meta property="og:type" content="website"/>
 <meta property="og:site_name" content="BidcoreAI"/>
 <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:title" content="Construction Takeoff Services for US Contractors | BidcoreAI"/>
-<meta name="twitter:description" content="Professional construction takeoff services for general contractors and specialty subs. All CSI divisions, experienced US Estimators, 24-72hr turnaround. Results fed directly into BidcoreAI."/>
+<meta name="twitter:title" content="Construction Takeoff Services by CSI Division | BidcoreAI"/>
+<meta name="twitter:description" content="Construction takeoff services division by division — demolition, concrete, masonry, steel, lumber, roofing, doors, finishes, specialties, mechanical and electrical."/>
 <link rel="icon" type="image/png" href="https://bidcoreai-assets.vercel.app/favicon.png"/>
 <link rel="stylesheet" href="../public/style.css"/>
-<style>
-/* ── Mobile fixes for takeoff sub-pages ── */
-@media(max-width:768px){
-  .sol-hero{padding:40px 16px 36px !important}
-  .sol-hero .h1{font-size:clamp(26px,7vw,38px) !important;line-height:1.15}
-  .sol-hero p{font-size:14px !important;margin-top:10px}
-  .sol-hero .pill{font-size:9.5px;padding:4px 10px}
-  .sol-hero [style*="display:flex;gap:10px"]{flex-direction:column;align-items:flex-start}
-  .svc-layout{grid-template-columns:1fr !important;gap:24px !important;margin-top:28px !important}
-  .trade-cards-grid{grid-template-columns:1fr !important}
-  section{padding-left:16px !important;padding-right:16px !important}
-  .rform-wrap{padding:20px 16px !important}
-  .fg2{grid-template-columns:1fr !important}
-  .fg3{grid-template-columns:1fr !important}
-  #faq{padding:48px 16px !important}
-}
-@media(max-width:480px){
-  .sol-hero{padding:32px 14px 28px !important}
-  .svc-price-v{font-size:38px !important}
-}
-/* Safety: ensure reveal animation never hides content */
-.rv{opacity:1 !important;transform:none !important}
-.rv.will-animate{opacity:0 !important;transform:translateY(18px) !important}
-.rv.will-animate.vis{opacity:1 !important;transform:none !important}
-</style>
 </head>
 <body>
 
@@ -93,8 +68,8 @@
 </svg>
 
 <!-- ══════════ MOBILE MENU OVERLAY ══════════ -->
-<div class="mob-overlay" id="mob-overlay" onclick="closeMob()"></div>
-<nav class="mob-nav" id="mob-nav">
+<div class="mob-overlay" id="mob-overlay" onclick="closeMob()" style="display:none"></div>
+<nav class="mob-nav" id="mob-nav" style="transform:translateX(-100%)">
   <div class="mob-nav-head">
     <a class="logo-wrap" href="/">
       <img class="logo-img" src="https://bidcoreai-assets.vercel.app/logo.png" alt="BidcoreAI"
@@ -122,8 +97,19 @@
       <a class="mob-nl" href="/solutions"><svg width="14" height="14"><use href="#ic-shield"/></svg> Federal Contractors</a>
       <a class="mob-nl" href="/solutions"><svg width="14" height="14"><use href="#ic-flag"/></svg> Prime Contractors</a>
       <a class="mob-nl" href="/solutions#subcontractors"><svg width="14" height="14"><use href="#ic-tool"/></svg> Subcontractors</a>
-      <a class="mob-nl" href="/takeoff-services"><svg width="14" height="14"><use href="#ic-users"/></svg> Takeoff Services</a>
-      <a class="mob-nl" href="/construction-estimating-services"><svg width="14" height="14"><use href="#ic-report"/></svg> Estimating Services</a>
+    </details>
+    <details class="mob-grp">
+      <summary class="mob-grp-s"><a class="mob-grp-l" href="/construction-takeoff-services">Services</a><svg class="mob-grp-c" width="13" height="13"><use href="#ic-caret"/></svg></summary>
+      <a class="mob-nl" href="/demolition-takeoff-services"><svg width="14" height="14"><use href="#ic-refresh"/></svg> Demolition</a>
+      <a class="mob-nl" href="/concrete-takeoff-services"><svg width="14" height="14"><use href="#ic-building"/></svg> Concrete</a>
+      <a class="mob-nl" href="/finishes-takeoff-services"><svg width="14" height="14"><use href="#ic-sparkle"/></svg> Drywall &amp; Finishes</a>
+      <a class="mob-nl" href="/mechanical-takeoff-services"><svg width="14" height="14"><use href="#ic-cloud"/></svg> HVAC</a>
+      <a class="mob-nl" href="/plumbing-takeoff-services"><svg width="14" height="14"><use href="#ic-filter"/></svg> Plumbing</a>
+      <a class="mob-nl" href="/electrical-takeoff-services"><svg width="14" height="14"><use href="#ic-cpu"/></svg> Electrical</a>
+      <a class="mob-nl mob-nl--more" href="/construction-takeoff-services">View All Divisions <span aria-hidden="true">→</span></a>
+      <a class="mob-nl" href="/architectural-cad-services"><svg width="14" height="14"><use href="#ic-home"/></svg> Architectural CAD</a>
+      <a class="mob-nl mob-nl--more" href="/cad-services">View All CAD Services <span aria-hidden="true">→</span></a>
+      <a class="mob-nl" href="/work-samples"><svg width="14" height="14"><use href="#ic-dl"/></svg> Work Samples</a>
     </details>
     <a class="mob-nl mob-nl--top" href="/pricing">Pricing</a>
     <details class="mob-grp">
@@ -194,7 +180,7 @@
       </div>
 
       <div class="nl-drop">
-        <a class="nl nl-drop-t on" id="nl-solutions" href="/solutions" aria-expanded="false" aria-haspopup="true">Solutions<svg width="10" height="10" class="nl-caret"><use href="#ic-caret"/></svg></a>
+        <a class="nl nl-drop-t" id="nl-solutions" href="/solutions" aria-expanded="false" aria-haspopup="true">Solutions<svg width="10" height="10" class="nl-caret"><use href="#ic-caret"/></svg></a>
         <div class="nl-panel nl-panel--wide" role="menu">
           <div class="nl-panel-h">By who you are</div>
           <a class="nl-item" href="/solutions">
@@ -213,51 +199,48 @@
             <span class="nl-item-ico"><svg width="15" height="15"><use href="#ic-tool"/></svg></span>
             <span class="nl-item-txt"><span class="nl-item-t">Subcontractors</span><span class="nl-item-d">Trade-scoped quantities and faster quoting</span></span>
           </a>
-          <a class="nl-item" href="/takeoff-services">
-            <span class="nl-item-ico"><svg width="15" height="15"><use href="#ic-users"/></svg></span>
-            <span class="nl-item-txt"><span class="nl-item-t">Owner-Operators</span><span class="nl-item-d">Counts and calibrated measurements, done for you</span></span>
+        </div>
+      </div>
+
+      <div class="nl-drop">
+        <a class="nl nl-drop-t on" id="nl-services" href="/construction-takeoff-services" aria-expanded="false" aria-haspopup="true">Services<svg width="10" height="10" class="nl-caret"><use href="#ic-caret"/></svg></a>
+        <div class="nl-panel nl-panel--wide" role="menu">
+          <div class="nl-panel-h">Takeoff &amp; estimating services</div>
+          <a class="nl-item" href="/demolition-takeoff-services">
+            <span class="nl-item-ico"><svg width="15" height="15"><use href="#ic-refresh"/></svg></span>
+            <span class="nl-item-txt"><span class="nl-item-t">Demolition</span><span class="nl-item-d">Division 02 — demolition, abatement and remediation</span></span>
           </a>
-          <div class="nl-panel-h">By trade</div>
-          <a class="nl-item" href="/construction-takeoff-services">
-            <span class="nl-item-ico"><svg width="15" height="15"><use href="#ic-layers"/></svg></span>
-            <span class="nl-item-txt"><span class="nl-item-t">Concrete & Structural Steel</span><span class="nl-item-d">Slab areas, member counts and framing lengths</span></span>
+          <a class="nl-item" href="/concrete-takeoff-services">
+            <span class="nl-item-ico"><svg width="15" height="15"><use href="#ic-building"/></svg></span>
+            <span class="nl-item-txt"><span class="nl-item-t">Concrete</span><span class="nl-item-d">Division 03 — concrete, rebar and formwork</span></span>
           </a>
-          <a class="nl-item" href="/drywall-takeoff-services">
-            <span class="nl-item-ico"><svg width="15" height="15"><use href="#ic-layout"/></svg></span>
-            <span class="nl-item-txt"><span class="nl-item-t">Drywall & Framing</span><span class="nl-item-d">Wall and ceiling geometry, track, stud and sheet counts</span></span>
-          </a>
-          <a class="nl-item" href="/flooring-takeoff-services">
-            <span class="nl-item-ico"><svg width="15" height="15"><use href="#ic-scan"/></svg></span>
-            <span class="nl-item-txt"><span class="nl-item-t">Flooring</span><span class="nl-item-d">Room-by-room areas, transitions and substrate prep</span></span>
-          </a>
-          <a class="nl-item" href="/doors-windows-takeoff-services">
-            <span class="nl-item-ico"><svg width="15" height="15"><use href="#ic-lock"/></svg></span>
-            <span class="nl-item-txt"><span class="nl-item-t">Doors & Windows</span><span class="nl-item-d">Door schedules, window counts, hardware and glazing</span></span>
-          </a>
-          <a class="nl-item" href="/construction-takeoff-services">
-            <span class="nl-item-ico"><svg width="15" height="15"><use href="#ic-cpu"/></svg></span>
-            <span class="nl-item-txt"><span class="nl-item-t">Electrical & Low Voltage</span><span class="nl-item-d">Device counts and measured runs by label</span></span>
-          </a>
-          <a class="nl-item" href="/construction-takeoff-services">
-            <span class="nl-item-ico"><svg width="15" height="15"><use href="#ic-cloud"/></svg></span>
-            <span class="nl-item-txt"><span class="nl-item-t">Plumbing & HVAC</span><span class="nl-item-d">Fixture counts, pipe runs and equipment routes</span></span>
-          </a>
-          <a class="nl-item" href="/construction-takeoff-services">
-            <span class="nl-item-ico"><svg width="15" height="15"><use href="#ic-shield"/></svg></span>
-            <span class="nl-item-txt"><span class="nl-item-t">Roofing & Fire Protection</span><span class="nl-item-d">Calibrated areas, edge runs and repeated items</span></span>
-          </a>
-          <a class="nl-item" href="/construction-takeoff-services">
+          <a class="nl-item" href="/finishes-takeoff-services">
             <span class="nl-item-ico"><svg width="15" height="15"><use href="#ic-sparkle"/></svg></span>
-            <span class="nl-item-txt"><span class="nl-item-t">Painting & Finishes</span><span class="nl-item-d">Finish areas, measured runs and repeated items</span></span>
+            <span class="nl-item-txt"><span class="nl-item-t">Drywall &amp; Finishes</span><span class="nl-item-d">Division 09 — drywall, paint and flooring</span></span>
           </a>
-          <div class="nl-panel-h">Done for you</div>
-          <a class="nl-item" href="/takeoff-services">
-            <span class="nl-item-ico"><svg width="15" height="15"><use href="#ic-scan"/></svg></span>
-            <span class="nl-item-txt"><span class="nl-item-t">Takeoff Services</span><span class="nl-item-d">Our estimators measure your drawings for you</span></span>
+          <a class="nl-item" href="/mechanical-takeoff-services">
+            <span class="nl-item-ico"><svg width="15" height="15"><use href="#ic-cloud"/></svg></span>
+            <span class="nl-item-txt"><span class="nl-item-t">HVAC</span><span class="nl-item-d">Divisions 21 & 23 — equipment, duct and controls</span></span>
           </a>
-          <a class="nl-item" href="/construction-estimating-services">
-            <span class="nl-item-ico"><svg width="15" height="15"><use href="#ic-report"/></svg></span>
-            <span class="nl-item-txt"><span class="nl-item-t">Estimating Services</span><span class="nl-item-d">Outsourced estimating, from quantities to priced estimate</span></span>
+          <a class="nl-item" href="/plumbing-takeoff-services">
+            <span class="nl-item-ico"><svg width="15" height="15"><use href="#ic-filter"/></svg></span>
+            <span class="nl-item-txt"><span class="nl-item-t">Plumbing</span><span class="nl-item-d">Division 22 — fixtures, water, waste and gas</span></span>
+          </a>
+          <a class="nl-item" href="/electrical-takeoff-services">
+            <span class="nl-item-ico"><svg width="15" height="15"><use href="#ic-cpu"/></svg></span>
+            <span class="nl-item-txt"><span class="nl-item-t">Electrical</span><span class="nl-item-d">Divisions 26–28 — devices, feeders and lighting</span></span>
+          </a>
+          <a class="nl-more" href="/construction-takeoff-services">View All Divisions <span aria-hidden="true">→</span></a>
+          <div class="nl-panel-h">CAD services</div>
+          <a class="nl-item" href="/architectural-cad-services">
+            <span class="nl-item-ico"><svg width="15" height="15"><use href="#ic-home"/></svg></span>
+            <span class="nl-item-txt"><span class="nl-item-t">Architectural CAD</span><span class="nl-item-d">Floor plans, elevations and sections to your standard</span></span>
+          </a>
+          <a class="nl-more" href="/cad-services">View All CAD Services <span aria-hidden="true">→</span></a>
+          <div class="nl-panel-h">Work samples</div>
+          <a class="nl-item" href="/work-samples">
+            <span class="nl-item-ico"><svg width="15" height="15"><use href="#ic-dl"/></svg></span>
+            <span class="nl-item-txt"><span class="nl-item-t">Work Samples</span><span class="nl-item-d">Real takeoff, estimate and CAD deliverables to review</span></span>
           </a>
         </div>
       </div>
@@ -311,78 +294,538 @@
 </nav>
 
 <!-- PAGE CONTENT -->
-<div class="sol-hero">
-  <div class="sol-hero-in">
-    <div class="rv">
-      <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(224,154,50,.14);border:1px solid var(--blue);border-radius:100px;padding:5px 13px;font-size:10.5px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px">
-        <svg width="11" height="11"><use href="#ic-scan"/></svg> All CSI Divisions (01–50)
-      </div>
-      <h1 class="h1" style="font-size:clamp(28px,3.8vw,52px)">Construction Takeoff Services<br><span style="color:var(--orange)">for US Contractors</span></h1>
-      <p style="font-size:16px;color:var(--g600);max-width:600px;line-height:1.74;margin-top:14px">Professional construction takeoff services for GCs, prime contractors, and specialty subcontractors across all CSI divisions. Our estimators, experienced in US construction standards, measure your drawings using the AI-powered BidcoreAI takeoff tool. Quantities are delivered in an organized format directly into your BidcoreAI project—ready for immediate cost estimating and bid package generation.</p>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:20px">
-        <span class="pill pill-o"><svg width="10" height="10"><use href="#ic-scan"/></svg> Professional Takeoff</span>
-        <span class="pill pill-t"><svg width="10" height="10"><use href="#ic-check"/></svg> Experienced US Estimators</span>
-      </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:24px">
-        <a href="services.html#svc-form-section" class="btn btn-p btn-lg">
-          <svg width="16" height="16"><use href="#ic-scan"/></svg> Request This Takeoff
-        </a>
-        <a href="/takeoff-services" class="btn btn-gh btn-lg">
-          View All Takeoff Services
-        </a>
-      </div>
-    </div>
-    <!-- Pricing card -->
-    <div style="margin-top:44px;max-width:480px">
-      <div class="svc-card rv">
-        <div style="position:relative;z-index:1">
-          <div class="eyebrow" style="color:var(--org2)"><svg width="11" height="11"><use href="#ic-scan"/></svg> Service Pricing</div>
-          <div class="svc-price-v" style="font-size:30px;line-height:1.15">Quoted per project</div>
-          <div class="svc-price-u">Send your drawings — we scope it and come back to you</div>
-        </div>
-        <div class="svc-dels">
-          <div class="svc-del"><svg width="13" height="13" style="color:var(--teal)"><use href="#ic-check"/></svg> Experienced US Estimators</div>
-          <div class="svc-del"><svg width="13" height="13" style="color:var(--teal)"><use href="#ic-check"/></svg> PDF, Excel &amp; marked-up drawings</div>
-          <div class="svc-del"><svg width="13" height="13" style="color:var(--teal)"><use href="#ic-check"/></svg> Results exported to BidcoreAI</div>
-          <div class="svc-del"><svg width="13" height="13" style="color:var(--teal)"><use href="#ic-check"/></svg> 24–72 hour turnaround</div>
-        </div>
-      </div>
-    </div>
+<div class="pg-banner">
+  <img src="/images/underconstruvtioncommercialsite.png" alt="Construction Estimating" fetchpriority="high"/>
+  <div class="pg-banner-in">
+    <span class="pg-banner-n">Every CSI Division</span>
+    <h1 class="pg-banner-t">Construction Estimating</h1>
   </div>
 </div>
 
-<!-- Related trade links -->
-<section style="background:var(--g50);padding:56px 24px">
-  <div class="con" style="text-align:center">
-    <div class="rv" style="margin-bottom:28px">
-      <div class="eyebrow" style="justify-content:center"><svg width="12" height="12"><use href="#ic-tool"/></svg> Other Takeoff Services</div>
-      <h2 class="h2" style="font-size:clamp(20px,2.4vw,30px)">We Cover Every Trade</h2>
+<div class="sol-hero" style="padding-top:52px">
+  <div class="sol-hero-in hero-tr">
+    <div>
+      <div class="rv">
+        <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(232,93,0,.14);border:1px solid rgba(232,93,0,.26);border-radius:100px;padding:5px 13px;font-size:10.5px;font-weight:700;color:var(--org2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px">
+          <svg width="11" height="11"><use href="#ic-layers"/></svg> All CSI Divisions
+        </div>
+        <h2 class="h1" style="font-size:clamp(26px,3.4vw,44px)">Takeoff Services for All CSI Divisions</h2>
+        <p style="font-size:16px;color:var(--g600);max-width:600px;line-height:1.74;margin-top:14px">A page for every trade we measure. Pick a division from the Trades list and you get exactly what we take off in it, the software it is measured in, sample deliverables, and a request form for that scope alone.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:18px">
+          <span class="pill pill-o"><svg width="10" height="10"><use href="#ic-layers"/></svg> All CSI Divisions</span>
+          <span class="pill pill-t"><svg width="10" height="10"><use href="#ic-check"/></svg> RFIs Raised Before Estimating</span>
+          <span class="pill pill-b"><svg width="10" height="10"><use href="#ic-refresh"/></svg> 24–72 Hour Turnaround</span>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:24px">
+        <a href="#trade-request" class="btn btn-p btn-lg"><svg width="16" height="16"><use href="#ic-upload"/></svg> Request a Takeoff</a>
+        <a href="/work-samples" class="btn btn-gh btn-lg">Request a Sample Takeoff</a>
+        </div>
+      </div>
+      <div style="margin-top:32px;max-width:520px">
+      <div class="svc-card rv">
+        <div style="position:relative;z-index:1">
+          <div class="eyebrow" style="color:var(--org2)"><svg width="11" height="11"><use href="#ic-calc"/></svg> Takeoff Pricing</div>
+          <div class="svc-price-v" style="font-size:30px;line-height:1.15">Quoted per project</div>
+          <div class="svc-price-u">Send the drawing set — we scope it and come back with a fixed quote</div>
+        </div>
+        <div class="svc-dels">
+          <div class="svc-del"><svg width="13" height="13" style="color:var(--teal)"><use href="#ic-check"/></svg> Measured by estimators working to US construction standards</div>
+          <div class="svc-del"><svg width="13" height="13" style="color:var(--teal)"><use href="#ic-check"/></svg> Every quantity traceable to the sheet it came from</div>
+          <div class="svc-del"><svg width="13" height="13" style="color:var(--teal)"><use href="#ic-check"/></svg> Measured in the BidcoreAI takeoff workspace</div>
+          <div class="svc-del"><svg width="13" height="13" style="color:var(--teal)"><use href="#ic-check"/></svg> Delivered in your own format, or Excel, CSV and PDF</div>
+          <div class="svc-del"><svg width="13" height="13" style="color:var(--teal)"><use href="#ic-check"/></svg> Exclusions and RFIs listed with the quantities</div>
+        </div>
+      </div>
+      </div>
     </div>
-    <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center" class="rv">
-      <a href="/construction-takeoff-services" style="display:inline-flex;align-items:center;gap:6px;background:var(--white);border:1px solid var(--g200);border-radius:8px;padding:9px 16px;font-size:12.5px;font-weight:600;color:var(--navy);text-decoration:none">Construction Takeoffs</a>
-      <a href="/drywall-takeoff-services" style="display:inline-flex;align-items:center;gap:6px;background:var(--white);border:1px solid var(--g200);border-radius:8px;padding:9px 16px;font-size:12.5px;font-weight:600;color:var(--navy);text-decoration:none">Drywall Takeoffs</a>
-      <a href="/flooring-takeoff-services" style="display:inline-flex;align-items:center;gap:6px;background:var(--white);border:1px solid var(--g200);border-radius:8px;padding:9px 16px;font-size:12.5px;font-weight:600;color:var(--navy);text-decoration:none">Flooring Takeoffs</a>
-      <a href="/doors-windows-takeoff-services" style="display:inline-flex;align-items:center;gap:6px;background:var(--white);border:1px solid var(--g200);border-radius:8px;padding:9px 16px;font-size:12.5px;font-weight:600;color:var(--navy);text-decoration:none">Doors &amp; Windows</a>
-      <a href="/construction-estimating-services" style="display:inline-flex;align-items:center;gap:6px;background:var(--white);border:1px solid var(--g200);border-radius:8px;padding:9px 16px;font-size:12.5px;font-weight:600;color:var(--navy);text-decoration:none">Estimating Services</a>
+      <div class="tr-card rv">
+        <div class="dv-side-t">Trades</div>
+        <nav class="dv-nav" aria-label="CSI divisions">
+          <a class="" href="/demolition-takeoff-services">Division 02 — Existing Conditions</a>
+          <a class="" href="/concrete-takeoff-services">Division 03 — Concrete</a>
+          <a class="" href="/masonry-takeoff-services">Division 04 — Masonry</a>
+          <a class="" href="/steel-takeoff-services">Division 05 — Metals</a>
+          <a class="" href="/lumber-takeoff-services">Division 06 — Lumber</a>
+          <a class="" href="/roofing-insulation-takeoff-services">Division 07 — Roofing & Waterproofing</a>
+          <a class="" href="/doors-windows-takeoff-services">Division 08 — Openings</a>
+          <a class="" href="/finishes-takeoff-services">Division 09 — Finishes</a>
+          <a class="" href="/specialties-takeoff-services">Division 10 — Specialties</a>
+          <a class="" href="/mechanical-takeoff-services">Divisions 21 & 23 — Mechanical/HVAC</a>
+          <a class="" href="/plumbing-takeoff-services">Division 22 — Plumbing</a>
+          <a class="" href="/electrical-takeoff-services">Divisions 26–28 — Electrical</a>
+          <a class="" href="/exterior-improvements-takeoff-services">Division 32 — Exterior Improvements</a>
+          <a class="on" href="/construction-takeoff-services">All divisions</a>
+        </nav>
+      </div>
+  </div>
+</div>
+
+<section id="divisions" style="background:var(--white);padding:80px 24px">
+  <div class="con">
+    <div class="rv" style="text-align:center;margin-bottom:44px">
+      <div class="eyebrow" style="justify-content:center"><svg width="12" height="12"><use href="#ic-report"/></svg> Takeoff by Trade</div>
+      <h2 class="h2">Every Trade, All CSI Divisions</h2>
+      <p class="lead" style="margin:12px auto 0">Output is organised by current CSI MasterFormat sections, and mapped to your own cost codes on request.</p>
     </div>
-    <div class="rv" style="margin-top:28px">
-      <a href="/takeoff-services" class="btn btn-p" style="margin:0 auto">
-        <svg width="14" height="14"><use href="#ic-scan"/></svg> View All Services &amp; Submit Request
-      </a>
+    <div class="svcx-grid">
+      <div class="divcard rv" style="--c:var(--orange)">
+        <span class="divcard-n" aria-hidden="true">02</span>
+        <span class="divcard-ico"><svg width="21" height="21"><use href="#ic-refresh"/></svg></span>
+        <div class="divcard-k">Division 02</div>
+        <div class="divcard-t">Existing Conditions</div>
+        <p class="divcard-p">Demolition, abatement and existing-conditions quantities for renovation, fit-out and adaptive reuse work.</p>
+        <ul class="divcard-ul">
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Selective demolition areas by room and level</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Structural demolition volumes</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Slab and pavement removal areas</li>
+        </ul>
+        <a class="divcard-a" href="/demolition-takeoff-services">What we take off →</a>
+      </div>
+      <div class="divcard rv" style="--c:var(--teal)">
+        <span class="divcard-n" aria-hidden="true">03</span>
+        <span class="divcard-ico"><svg width="21" height="21"><use href="#ic-building"/></svg></span>
+        <div class="divcard-k">Division 03</div>
+        <div class="divcard-t">Concrete</div>
+        <p class="divcard-p">Concrete volumes come from the structural sections rather than plan area, reinforcing is weighed off the bar schedules into tonnage, and formwork is measured as square feet of contact area with the reuse assumption written down instead of buried in a rate.</p>
+        <ul class="divcard-ul">
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Spread footings, continuous footings and pile caps</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Grade beams, foundation and stem walls</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Slab on grade by thickness, with sub-base and vapour barrier</li>
+        </ul>
+        <a class="divcard-a" href="/concrete-takeoff-services">What we take off →</a>
+      </div>
+      <div class="divcard rv" style="--c:var(--blue)">
+        <span class="divcard-n" aria-hidden="true">04</span>
+        <span class="divcard-ico"><svg width="21" height="21"><use href="#ic-layers"/></svg></span>
+        <div class="divcard-k">Division 04</div>
+        <div class="divcard-t">Masonry</div>
+        <p class="divcard-p">Wall areas are measured by wall type off the elevations, sections and wall schedule, so a 12-inch grouted shear wall is never counted at the same rate as a 6-inch interior partition.</p>
+        <ul class="divcard-ul">
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Net wall area by wall type and height</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> CMU units by nominal size and type</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Bond beam, lintel, sash, half and corner units</li>
+        </ul>
+        <a class="divcard-a" href="/masonry-takeoff-services">What we take off →</a>
+      </div>
+      <div class="divcard rv" style="--c:var(--green)">
+        <span class="divcard-n" aria-hidden="true">05</span>
+        <span class="divcard-ico"><svg width="21" height="21"><use href="#ic-tool"/></svg></span>
+        <div class="divcard-k">Division 05</div>
+        <div class="divcard-t">Metals</div>
+        <p class="divcard-p">Structural members are counted and measured against the framing plans and the schedules, with connection material and miscellaneous metals carried separately so the fabrication and the erection scopes can be priced apart from each other..</p>
+        <ul class="divcard-ul">
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Beams, columns and girders by shape and weight</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Total tonnage by member type</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Joists, joist girders and bridging</li>
+        </ul>
+        <a class="divcard-a" href="/steel-takeoff-services">What we take off →</a>
+      </div>
+      <div class="divcard rv" style="--c:var(--orange)">
+        <span class="divcard-n" aria-hidden="true">06</span>
+        <span class="divcard-ico"><svg width="21" height="21"><use href="#ic-layout"/></svg></span>
+        <div class="divcard-k">Division 06</div>
+        <div class="divcard-t">Lumber</div>
+        <p class="divcard-p">Framing is taken off member by member and returned as a purchasable material list — pieces by dimension and length, board feet by species and grade, sheathing in sheets, hardware counted — so a yard can quote it without redrawing your scope first.</p>
+        <ul class="divcard-ul">
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Studs by size, length and spacing</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Single and double top plates, blocking and nailers</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Headers, king studs, jack studs and cripples</li>
+        </ul>
+        <a class="divcard-a" href="/lumber-takeoff-services">What we take off →</a>
+      </div>
+      <div class="divcard rv" style="--c:var(--teal)">
+        <span class="divcard-n" aria-hidden="true">07</span>
+        <span class="divcard-ico"><svg width="21" height="21"><use href="#ic-shield"/></svg></span>
+        <div class="divcard-k">Division 07</div>
+        <div class="divcard-t">Roofing & Waterproofing</div>
+        <p class="divcard-p">Roof and envelope areas are measured off the roof plan and the elevations with slope accounted for, and the edge conditions that carry most of the labour — flashing, terminations, penetrations — are measured as real linear feet rather than allowanced..</p>
+        <ul class="divcard-ul">
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Roof area by system and slope</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Insulation area by R-value and thickness</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Tapered insulation and crickets</li>
+        </ul>
+        <a class="divcard-a" href="/roofing-insulation-takeoff-services">What we take off →</a>
+      </div>
+      <div class="divcard rv" style="--c:var(--blue)">
+        <span class="divcard-n" aria-hidden="true">08</span>
+        <span class="divcard-ico"><svg width="21" height="21"><use href="#ic-lock"/></svg></span>
+        <div class="divcard-k">Division 08</div>
+        <div class="divcard-t">Openings</div>
+        <p class="divcard-p">The door and window schedules are rebuilt from the drawings rather than transcribed, so a door shown on a plan but missing from the schedule gets caught, and hardware sets are carried to the opening they belong to..</p>
+        <ul class="divcard-ul">
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Door schedule by size, type and rating</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Frame types, materials and profiles</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Hardware sets by opening</li>
+        </ul>
+        <a class="divcard-a" href="/doors-windows-takeoff-services">What we take off →</a>
+      </div>
+      <div class="divcard rv" style="--c:var(--green)">
+        <span class="divcard-n" aria-hidden="true">09</span>
+        <span class="divcard-ico"><svg width="21" height="21"><use href="#ic-sparkle"/></svg></span>
+        <div class="divcard-k">Division 09</div>
+        <div class="divcard-t">Finishes</div>
+        <p class="divcard-p">Every wall type on the partition schedule is built as its own assembly, so a rated shaft wall is not measured like a single-layer office partition.</p>
+        <ul class="divcard-ul">
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Metal studs and track by gauge, width and spacing</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Deflection track, slip connections and backing</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Gypsum board by type, thickness and layer count</li>
+        </ul>
+        <a class="divcard-a" href="/finishes-takeoff-services">What we take off →</a>
+      </div>
+      <div class="divcard rv" style="--c:var(--orange)">
+        <span class="divcard-n" aria-hidden="true">10</span>
+        <span class="divcard-ico"><svg width="21" height="21"><use href="#ic-pkg"/></svg></span>
+        <div class="divcard-k">Division 10</div>
+        <div class="divcard-t">Specialties</div>
+        <p class="divcard-p">Specialty items are counted against the schedules and the enlarged plans, which is where they are actually drawn — a toilet accessory package taken off the floor plan alone is always short..</p>
+        <ul class="divcard-ul">
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Toilet partitions and accessories by room</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Lockers, shelving and storage units</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Signage, directories and room identification</li>
+        </ul>
+        <a class="divcard-a" href="/specialties-takeoff-services">What we take off →</a>
+      </div>
+      <div class="divcard rv" style="--c:var(--teal)">
+        <span class="divcard-n" aria-hidden="true">21 & 23</span>
+        <span class="divcard-ico"><svg width="21" height="21"><use href="#ic-cloud"/></svg></span>
+        <div class="divcard-k">Divisions 21 & 23</div>
+        <div class="divcard-t">Mechanical/HVAC</div>
+        <p class="divcard-p">Equipment comes off the schedules, ductwork is measured by size and gauge so the sheet metal weight is real, and hydronic piping is taken run by run with fittings counted rather than carried as a percentage.</p>
+        <ul class="divcard-ul">
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Rooftop, split, VRF and air handling equipment</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Boilers, chillers, pumps and cooling towers</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Rectangular and round duct by gauge and pressure class</li>
+        </ul>
+        <a class="divcard-a" href="/mechanical-takeoff-services">What we take off →</a>
+      </div>
+      <div class="divcard rv" style="--c:var(--blue)">
+        <span class="divcard-n" aria-hidden="true">22</span>
+        <span class="divcard-ico"><svg width="21" height="21"><use href="#ic-filter"/></svg></span>
+        <div class="divcard-k">Division 22</div>
+        <div class="divcard-t">Plumbing</div>
+        <p class="divcard-p">Fixtures are matched to the plumbing schedule tag by tag rather than counted off the floor plan, and piping is measured as routed runs with fittings, valves and hangers counted.</p>
+        <ul class="divcard-ul">
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Fixtures counted against the plumbing schedule</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Fixture carriers, trim and stops</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Domestic cold water piping by size and material</li>
+        </ul>
+        <a class="divcard-a" href="/plumbing-takeoff-services">What we take off →</a>
+      </div>
+      <div class="divcard rv" style="--c:var(--green)">
+        <span class="divcard-n" aria-hidden="true">26–28</span>
+        <span class="divcard-ico"><svg width="21" height="21"><use href="#ic-cpu"/></svg></span>
+        <div class="divcard-k">Divisions 26–28</div>
+        <div class="divcard-t">Electrical</div>
+        <p class="divcard-p">Devices are counted off the power and lighting plans, homeruns and feeders are measured as real routed lengths rather than straight-line distances, and the output is laid out the way an electrical contractor bids: item, quantity, material, labour unit, extended hours..</p>
+        <ul class="divcard-ul">
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Switchgear, distribution panels and panelboards</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Transformers, disconnects and metering</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Feeder conduit and conductor by size</li>
+        </ul>
+        <a class="divcard-a" href="/electrical-takeoff-services">What we take off →</a>
+      </div>
+      <div class="divcard rv" style="--c:var(--orange)">
+        <span class="divcard-n" aria-hidden="true">32</span>
+        <span class="divcard-ico"><svg width="21" height="21"><use href="#ic-home"/></svg></span>
+        <div class="divcard-k">Division 32</div>
+        <div class="divcard-t">Exterior Improvements</div>
+        <p class="divcard-p">Paving, site concrete, fencing, planting and irrigation measured off the civil and landscape sheets.</p>
+        <ul class="divcard-ul">
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Asphalt paving area by section and course</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Concrete paving, sidewalks and pads</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Curb and gutter linear feet by type</li>
+        </ul>
+        <a class="divcard-a" href="/exterior-improvements-takeoff-services">What we take off →</a>
+      </div>
     </div>
   </div>
 </section>
 
+<section style="background:var(--white);padding:80px 24px">
+  <div class="con">
+    <div class="rv" style="text-align:center;margin-bottom:44px">
+      <div class="eyebrow" style="justify-content:center"><svg width="12" height="12"><use href="#ic-shield"/></svg> Accuracy</div>
+      <h2 class="h2">Built So Nothing in the Set Gets Missed</h2>
+      <p class="lead" style="margin:12px auto 0">Missed scope is the expensive failure in a takeoff — not a wrong number, but a line that was never picked up at all. The platform closes that gap in two passes: the AI reads everything, and an estimator checks what it found.</p>
+    </div>
+    <div class="svcx-grid">
+      <div class="divcard rv" style="--c:var(--orange)">
+        <span class="divcard-n" aria-hidden="true">01</span>
+        <span class="divcard-ico"><svg width="21" height="21"><use href="#ic-brain"/></svg></span>
+        <div class="divcard-t">Every Sheet Read, Not Sampled</div>
+        <p class="divcard-p">The agent parses the whole set — drawings, schedules, legends, general notes and the specification — instead of the sheets an estimator has time to open. Scope buried in a keynote or a spec section still surfaces.</p>
+        <ul class="divcard-ul">
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Full drawing set parsed, sheet by sheet</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Schedules, legends and keynotes read</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Specification sections cross-referenced</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Nothing skipped for time</li>
+        </ul>
+        <a class="divcard-a" href="/ai-document-analysis">AI Document Analysis →</a>
+      </div>
+      <div class="divcard rv" style="--c:var(--teal)">
+        <span class="divcard-n" aria-hidden="true">02</span>
+        <span class="divcard-ico"><svg width="21" height="21"><use href="#ic-scan"/></svg></span>
+        <div class="divcard-t">Auto Takeoff Catches Repetition</div>
+        <p class="divcard-p">Conditions that repeat across a set are where manual measurement drifts. Auto takeoff recognises a condition once and applies it everywhere it occurs, at the same calibration, so floor 9 is measured exactly like floor 2.</p>
+        <ul class="divcard-ul">
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Pattern recognition across sheets</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Assemblies applied consistently</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Calibration held per sheet</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> No drift between similar areas</li>
+        </ul>
+        <a class="divcard-a" href="/ai-quantity-takeoff">AI Quantity Takeoff →</a>
+      </div>
+      <div class="divcard rv" style="--c:var(--blue)">
+        <span class="divcard-n" aria-hidden="true">03</span>
+        <span class="divcard-ico"><svg width="21" height="21"><use href="#ic-refresh"/></svg></span>
+        <div class="divcard-t">Addenda and Revisions Compared</div>
+        <p class="divcard-p">Revised sheets are compared against the set they replace, so a change buried in addendum three is flagged rather than quietly priced at the old quantity.</p>
+        <ul class="divcard-ul">
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Revised sheets diffed against the original</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Addendum changes surfaced as items</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Revision clouds cross-checked</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Superseded quantities replaced, not stacked</li>
+        </ul>
+
+      </div>
+      <div class="divcard rv" style="--c:var(--green)">
+        <span class="divcard-n" aria-hidden="true">04</span>
+        <span class="divcard-ico"><svg width="21" height="21"><use href="#ic-users"/></svg></span>
+        <div class="divcard-t">An Estimator Reviews the Output</div>
+        <p class="divcard-p">A trade estimator walks the agent output against the drawings line by line. The AI is fast and complete; a person makes the judgement calls — what the detail actually intends, what the spec really requires.</p>
+        <ul class="divcard-ul">
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Line-by-line review against the set</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Judgement calls made by a person</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Second-pass check before delivery</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Nothing shipped on the agent alone</li>
+        </ul>
+
+      </div>
+      <div class="divcard rv" style="--c:var(--orange)">
+        <span class="divcard-n" aria-hidden="true">05</span>
+        <span class="divcard-ico"><svg width="21" height="21"><use href="#ic-file"/></svg></span>
+        <div class="divcard-t">Ambiguity Raised, Never Assumed</div>
+        <p class="divcard-p">Where the drawings contradict themselves or leave something unstated, it goes on the RFI list instead of into a silent assumption. You decide the answer before it is priced.</p>
+        <ul class="divcard-ul">
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Conflicts between sheets flagged</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Missing information listed as RFIs</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Assumptions written down where carried</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Exclusions stated explicitly</li>
+        </ul>
+
+      </div>
+      <div class="divcard rv" style="--c:var(--teal)">
+        <span class="divcard-n" aria-hidden="true">06</span>
+        <span class="divcard-ico"><svg width="21" height="21"><use href="#ic-check"/></svg></span>
+        <div class="divcard-t">Every Quantity Traceable</div>
+        <p class="divcard-p">The measurement overlay comes back with the deliverable, so any number can be traced to the sheet and detail it came from. You can audit the result rather than trust it.</p>
+        <ul class="divcard-ul">
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Colour-coded overlays on the source set</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Sheet and detail reference per item</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Scale and calibration recorded</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Checkable without re-measuring</li>
+        </ul>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--g50);padding:80px 24px">
+  <div class="con">
+    <div class="rv" style="text-align:center;margin-bottom:44px">
+      <div class="eyebrow" style="justify-content:center"><svg width="12" height="12"><use href="#ic-cpu"/></svg> Software Used</div>
+      <h2 class="h2">Measured in BidcoreAI</h2>
+      <p class="lead" style="margin:12px auto 0">Every division is measured in the BidcoreAI workspace — the same tool you can run yourself. Nothing is done in a spreadsheet you cannot audit or on a licence you do not own.</p>
+    </div>
+    <div class="svcx-grid">
+      <div class="divcard rv" style="--c:var(--orange)">
+        <span class="divcard-ico"><svg width="21" height="21"><use href="#ic-scan"/></svg></span>
+        <div class="divcard-t">AI Quantity Takeoff</div>
+        <p class="divcard-p">Drawings are calibrated per sheet and measured in one workspace, with areas, runs and counts captured against the sheet they came from.</p>
+        <ul class="divcard-ul">
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Calibrated scale per sheet</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Area, linear and count measurement</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Assemblies for repeated elements</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Colour-coded overlays on the set</li>
+        </ul>
+        <a class="divcard-a" href="/ai-quantity-takeoff">AI Quantity Takeoff →</a>
+      </div>
+      <div class="divcard rv" style="--c:var(--teal)">
+        <span class="divcard-ico"><svg width="21" height="21"><use href="#ic-brain"/></svg></span>
+        <div class="divcard-t">AI Document Analysis</div>
+        <p class="divcard-p">Specifications, schedules and general notes are read alongside the drawings, so scope buried in the spec does not get missed.</p>
+        <ul class="divcard-ul">
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Schedules and legends read</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> General notes parsed</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Spec sections cross-referenced</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Ambiguities surfaced as RFIs</li>
+        </ul>
+        <a class="divcard-a" href="/ai-document-analysis">AI Document Analysis →</a>
+      </div>
+      <div class="divcard rv" style="--c:var(--blue)">
+        <span class="divcard-ico"><svg width="21" height="21"><use href="#ic-db"/></svg></span>
+        <div class="divcard-t">CSI Cost Estimation</div>
+        <p class="divcard-p">Quantities drop straight into a priced estimate on your own cost library when you want the takeoff carried through to a number.</p>
+        <ul class="divcard-ul">
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Output organised by CSI section</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Your cost database or benchmark</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Markup and overhead applied</li>
+          <li><svg width="12" height="12"><use href="#ic-check"/></svg> Export to Excel, CSV or your project</li>
+        </ul>
+        <a class="divcard-a" href="/csi-cost-estimation">Cost Estimation →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--white);padding:80px 24px">
+  <div class="con">
+    <div class="rv" style="text-align:center;margin-bottom:44px">
+      <div class="eyebrow" style="justify-content:center"><svg width="12" height="12"><use href="#ic-star"/></svg> Project Types</div>
+      <h2 class="h2">Projects We Take Off</h2>
+      <p class="lead" style="margin:12px auto 0">We provide takeoff and estimation services across these project types, and anything else a client needs.</p>
+    </div>
+    <ul class="plist rv">
+      <li><svg width="12" height="12"><use href="#ic-check"/></svg> High-rise buildings</li>
+      <li><svg width="12" height="12"><use href="#ic-check"/></svg> Parking structures</li>
+      <li><svg width="12" height="12"><use href="#ic-check"/></svg> Condominiums</li>
+      <li><svg width="12" height="12"><use href="#ic-check"/></svg> Residential buildings</li>
+      <li><svg width="12" height="12"><use href="#ic-check"/></svg> Star hotels</li>
+      <li><svg width="12" height="12"><use href="#ic-check"/></svg> Multiplex and cinemas</li>
+      <li><svg width="12" height="12"><use href="#ic-check"/></svg> Art galleries and museums</li>
+      <li><svg width="12" height="12"><use href="#ic-check"/></svg> Health clubs and spas</li>
+      <li><svg width="12" height="12"><use href="#ic-check"/></svg> Recreation centers</li>
+      <li><svg width="12" height="12"><use href="#ic-check"/></svg> Sports clubs and stadiums</li>
+      <li><svg width="12" height="12"><use href="#ic-check"/></svg> Entertainment parks</li>
+      <li><svg width="12" height="12"><use href="#ic-check"/></svg> Hospitals</li>
+      <li><svg width="12" height="12"><use href="#ic-check"/></svg> Bio-medical research centers</li>
+      <li><svg width="12" height="12"><use href="#ic-check"/></svg> Institutional buildings</li>
+      <li><svg width="12" height="12"><use href="#ic-check"/></svg> Water treatment plants</li>
+      <li><svg width="12" height="12"><use href="#ic-check"/></svg> Reservoirs and tanks</li>
+      <li><svg width="12" height="12"><use href="#ic-check"/></svg> Power plant structures</li>
+      <li><svg width="12" height="12"><use href="#ic-check"/></svg> Bridges and flyovers</li>
+      <li><svg width="12" height="12"><use href="#ic-check"/></svg> Industrial structures</li>
+      <li><svg width="12" height="12"><use href="#ic-check"/></svg> Renovation and additions to existing buildings</li>
+    </ul>
+  </div>
+</section>
+
+<section style="background:var(--g50);padding:80px 24px">
+  <div class="con">
+    <div class="rv" style="text-align:center;margin-bottom:44px">
+      <div class="eyebrow" style="justify-content:center"><svg width="12" height="12"><use href="#ic-refresh"/></svg> How It Works</div>
+      <h2 class="h2">From Drawing Set to Measured Quantities</h2>
+
+    </div>
+    <div class="svc-steps rv" style="max-width:760px;margin:0 auto">
+      <div class="svc-step"><div class="svc-n">1</div><div><div class="svc-t">Send the drawing set</div><div class="svc-s">Upload the plans, schedules, specifications and any addenda — or paste a Dropbox, WeTransfer, Google Drive or OneDrive link if the set is large.</div></div></div>
+      <div class="svc-step"><div class="svc-n">2</div><div><div class="svc-t">Scope analysed by the platform agent, then reviewed manually</div><div class="svc-s">The BidcoreAI agent reads every sheet, schedule and specification section and returns the full scope by division. An estimator then reviews that scope line by line against the drawings, so nothing is carried on the agent alone and nothing in the set gets missed. You get a fixed quote and a delivery date before any work starts.</div></div></div>
+      <div class="svc-step"><div class="svc-n">3</div><div><div class="svc-t">RFIs raised before measuring</div><div class="svc-s">Anything the drawings leave ambiguous is written up as an RFI rather than assumed, so the quantities are not built on a guess.</div></div></div>
+      <div class="svc-step"><div class="svc-n">4</div><div><div class="svc-t">Measured and delivered</div><div class="svc-s">Quantities are measured in BidcoreAI and delivered in your own format, with the marked-up set, the assumptions memo and the exclusions list.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="trade-request" style="background:var(--g50);padding:76px 24px">
+  <div class="con">
+    <div class="rv" style="text-align:center;margin-bottom:32px">
+      <div class="eyebrow" style="justify-content:center"><svg width="12" height="12"><use href="#ic-upload"/></svg> Request a Sample or a Takeoff</div>
+      <h2 class="h2">Send Us the Drawing Set</h2>
+      <p class="lead" style="margin:10px auto 0">Three fields and your drawings. An estimator confirms scope and comes back with a fixed quote within 4 business hours.</p>
+    </div>
+    <div class="rform-wrap rv" style="max-width:660px;margin:0 auto">
+      <div id="q-form-body">
+        <div class="rform-title">Construction Takeoff Request</div>
+        <div class="rform-sub">Tell us which divisions you need and send the drawings. Ask for a sample in the notes if you want to see the output format first.</div>
+        <div class="fg2">
+          <div class="fg"><label>Your Name *</label><input type="text" id="q-name" placeholder="Mike Rodriguez"/></div>
+          <div class="fg"><label>Work Email *</label><input type="email" id="q-email" placeholder="mike@company.com"/></div>
+        </div>
+        <div class="fg2">
+          <div class="fg"><label>Company</label><input type="text" id="q-company" placeholder="Rodriguez GC LLC"/></div>
+          <div class="fg"><label>Project Name</label><input type="text" id="q-project" placeholder="Riverside Mixed-Use Phase II"/></div>
+        </div>
+        <!-- The two project-shaped fields share a row rather than leaving the
+             date stranded beside an empty cell. -->
+        <div class="fg2">
+          <div class="fg"><label>Trade / Division *</label>
+            <select id="q-trade">
+              <option>Division 02 — Existing Conditions</option>
+              <option>Division 03 — Concrete</option>
+              <option>Division 04 — Masonry</option>
+              <option>Division 05 — Metals</option>
+              <option>Division 06 — Lumber</option>
+              <option>Division 07 — Roofing & Waterproofing</option>
+              <option>Division 08 — Openings</option>
+              <option>Division 09 — Finishes</option>
+              <option>Division 10 — Specialties</option>
+              <option>Divisions 21 & 23 — Mechanical/HVAC</option>
+              <option>Division 22 — Plumbing</option>
+              <option>Divisions 26–28 — Electrical</option>
+              <option>Division 32 — Exterior Improvements</option>
+              <option selected>Multiple divisions</option>
+              <option>CAD drafting</option>
+              <option>Not sure yet</option>
+            </select>
+          </div>
+          <div class="fg"><label>Bid Due Date</label><input type="date" id="q-due"/>
+            <div class="fg-hint">Optional — it tells us how to queue the work.</div>
+          </div>
+        </div>
+        <div class="fg">
+          <label>Drawings *</label>
+          <input type="file" id="q-file" multiple accept=".pdf,.dwg,.dxf,.xls,.xlsx,.jpg,.jpeg,.png,.tif,.tiff,.zip,.rvt,.ifc,.csv,.doc,.docx" onchange="showQuickFiles()"/>
+          <div id="q-file-list" style="margin-top:6px;display:flex;flex-direction:column;gap:4px"></div>
+          <div style="font-size:11px;color:var(--g400);margin-top:5px">PDF, DWG, DXF, XLS, JPG, PNG, ZIP, RVT — or paste a link below instead.</div>
+        </div>
+        <div class="fg">
+          <label>Or paste a Dropbox / WeTransfer / Drive link</label>
+          <input type="text" id="q-cloud" placeholder="https://www.dropbox.com/…"/>
+          <div style="font-size:11px;color:var(--g400);margin-top:5px">Use this for sets over 100MB.</div>
+        </div>
+        <div class="fg"><label>Anything else we should know?</label><textarea id="q-notes" rows="2" placeholder="Ask for a sample here, or tell us the output format you bid from…"></textarea></div>
+        <div class="ferr" id="q-err">Please add your name, email and the drawings.</div>
+        <button class="fsub" id="q-btn" onclick="submitQuickSvc()">
+          <svg width="15" height="15"><use href="#ic-send"/></svg> Send Request
+        </button>
+        <div class="fnote">Goes to barkha@bidcoreai.com · Reply within 4 business hours</div>
+      </div>
+      <div class="f-success" id="q-ok" style="display:none">
+        <div class="f-success-ico">🎉</div>
+        <div class="f-success-t">Request Sent</div>
+        <div class="f-success-s">Your takeoff request has been received. Our estimator team will review the drawings and respond within 4 business hours with a quote and timeline.</div>
+        <a class="btn btn-n" style="margin-top:18px" href="/construction-takeoff-services">Browse All Divisions</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--g50);padding:56px 24px">
+  <div class="con" style="text-align:center">
+    <div class="rv" style="margin-bottom:24px">
+      <div class="eyebrow" style="justify-content:center"><svg width="12" height="12"><use href="#ic-tool"/></svg> Other services</div>
+    </div>
+    <div class="rv" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center">
+      <a href="/construction-estimating-services" style="display:inline-flex;align-items:center;gap:6px;background:var(--white);border:1px solid var(--g200);border-radius:8px;padding:10px 16px;font-size:12.5px;font-weight:600;color:var(--navy);text-decoration:none">Estimating Services</a>
+      <a href="/takeoff-services" style="display:inline-flex;align-items:center;gap:6px;background:var(--white);border:1px solid var(--g200);border-radius:8px;padding:10px 16px;font-size:12.5px;font-weight:600;color:var(--navy);text-decoration:none">Takeoff Services Overview</a>
+      <a href="/cad-services" style="display:inline-flex;align-items:center;gap:6px;background:var(--white);border:1px solid var(--g200);border-radius:8px;padding:10px 16px;font-size:12.5px;font-weight:600;color:var(--navy);text-decoration:none">CAD Services</a>
+      <a href="/architectural-cad-services" style="display:inline-flex;align-items:center;gap:6px;background:var(--white);border:1px solid var(--g200);border-radius:8px;padding:10px 16px;font-size:12.5px;font-weight:600;color:var(--navy);text-decoration:none">Architectural CAD</a>
+      <a href="/work-samples" style="display:inline-flex;align-items:center;gap:6px;background:var(--white);border:1px solid var(--g200);border-radius:8px;padding:10px 16px;font-size:12.5px;font-weight:600;color:var(--navy);text-decoration:none">Work Samples</a>
+      <a href="/services" style="display:inline-flex;align-items:center;gap:6px;background:var(--white);border:1px solid var(--g200);border-radius:8px;padding:10px 16px;font-size:12.5px;font-weight:600;color:var(--navy);text-decoration:none">All Services</a>
+    </div>
+  </div>
+</section>
 <!-- ════════ FOOTER ════════ -->
 <footer class="footer">
   <div class="ft-in">
     <div class="ft-grid">
       <div>
-        <div class="ft-logo-wrap">
+        <a class="ft-logo-wrap" href="/" aria-label="BidcoreAI home">
           <img class="ft-logo-img" src="https://bidcoreai-assets.vercel.app/logo.png" alt="BidcoreAI"
             onerror="this.style.display='none';this.nextElementSibling.style.display='block'"/>
           <span class="ft-logo-txt" style="display:none">BidcoreAI</span>
-        </div>
+        </a>
         <div class="ft-tag">AI-powered end-to-end preconstruction platform. Built exclusively for US contractors.</div>
         <div class="ft-socials">
           <a class="ft-social ft-yt" href="https://www.youtube.com/@bidcoreai" target="_blank" rel="noopener" aria-label="BidcoreAI on YouTube" title="YouTube">
@@ -397,19 +840,9 @@
         </div>
       </div>
       <div>
-        <div class="ft-col-t">Platform</div>
-        <ul class="ft-links">
-          <li><a href="/">Home</a></li>
-          <li><a href="/solutions">Solutions</a></li>
-          <li><a href="/pricing">Pricing</a></li>
-          <li><a href="/go-no-go">Free Go/No-Go</a></li>
-          <li><a href="/takeoff-services">Takeoff Services</a></li>
-        </ul>
-      </div>
-      <div>
         <div class="ft-col-t">Features</div>
         <ul class="ft-links">
-          <li><a href="/go-no-go">Go/No-Go Analyzer</a></li>
+          <li><a href="/go-no-go">Free Go/No-Go Analyzer</a></li>
           <li><a href="/ai-quantity-takeoff">AI Quantity Takeoff</a></li>
           <li><a href="/ai-document-analysis">AI Document Analysis</a></li>
           <li><a href="/ai-risk-compliance-analyser">AI Risk &amp; Compliance</a></li>
@@ -419,27 +852,46 @@
         </ul>
       </div>
       <div>
-        <div class="ft-col-t">For You</div>
+        <div class="ft-col-t">Solutions</div>
         <ul class="ft-links">
           <li><a href="/solutions">General Contractors</a></li>
           <li><a href="/solutions">Federal Contractors</a></li>
           <li><a href="/solutions">Prime Contractors</a></li>
           <li><a href="/solutions#subcontractors">Subcontractors</a></li>
-          
-          
         </ul>
       </div>
       <div>
-        <div class="ft-col-t">Community</div>
+        <div class="ft-col-t">Services</div>
         <ul class="ft-links">
+          <li><a href="/construction-takeoff-services">Takeoff by CSI Division</a></li>
+          <li><a href="/concrete-takeoff-services">Concrete Estimating</a></li>
+          <li><a href="/finishes-takeoff-services">Finishes Estimating</a></li>
+          <li><a href="/mechanical-takeoff-services">Mechanical &amp; Plumbing</a></li>
+          <li><a href="/electrical-takeoff-services">Electrical Estimating</a></li>
+          <li><a href="/cad-services">CAD Services</a></li>
+          <li><a href="/work-samples">Work Samples</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="ft-col-t">Quick Links</div>
+        <ul class="ft-links">
+          <li><a href="/#about">About Us</a></li>
+          <li><a href="/pricing">Pricing</a></li>
           <li><a href="/blog">Blog</a></li>
           <li><a href="/guide">Guide</a></li>
           <li><a href="https://www.youtube.com/@bidcoreai" target="_blank" rel="noopener">Learn</a></li>
           <li><a href="/feedback">Feedback</a></li>
-          <li><a href="/contact">Contact</a></li>
+          <li><a href="/contact">Contact Us</a></li>
         </ul>
       </div>
-    </div>
+</div>
+
+
+
+
+
+
+
     <div class="ft-bot">
       <div class="ft-copy">© 2026 BidcoreAI · All rights reserved</div>
     </div>
@@ -502,24 +954,5 @@
 </div>
 
 <script src="../public/script.js"></script>
-
-<script>
-/* Local preview helper — rewrites clean URLs to .html when opened via file:// */
-if(window.location.protocol === 'file:'){
-  document.querySelectorAll('a[href]').forEach(function(a){
-    var h = a.getAttribute('href');
-    var map = {'/':' index.html','/solutions':'solutions.html','/pricing':'pricing.html','/go-no-go':'go-no-go.html',
-      '/takeoff-services':'services.html','/feedback':'feedback.html','/contact':'contact.html',
-      '/drywall-takeoff-services':'drywall-takeoff-services.html',
-      '/flooring-takeoff-services':'flooring-takeoff-services.html',
-      '/doors-windows-takeoff-services':'doors-windows-takeoff-services.html',
-      '/construction-takeoff-services':'construction-takeoff-services.html',
-      '/construction-estimating-services':'construction-estimating-services.html'
-    };
-    if(map[h]) a.setAttribute('href', map[h]);
-  });
-}
-</script>
-
 </body>
 </html>
