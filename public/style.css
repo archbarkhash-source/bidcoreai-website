@@ -989,7 +989,6 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
   /* Prose sized for a phone rather than scaled down from desktop. */
   .bp-lead{font-size:16.5px;line-height:1.75}
   .bp-body p,.bp-body li{font-size:15px;line-height:1.8}
-  .lead{font-size:15px}
   /* The hero stat strip stops being a rigid 3-up row. */
   .hero-stats{width:100%}
   .hero-stats .hs{flex:1 1 33%;text-align:center;padding:12px 8px}
@@ -1447,7 +1446,7 @@ section p[style*="font-size:17"]{font-size:18px!important}
   border-bottom:1px solid var(--g200);background-color:var(--dk);
   background-image:radial-gradient(ellipse 44% 72% at 50% 50%,rgba(246,247,249,.96) 0%,rgba(246,247,249,.88) 52%,rgba(246,247,249,0) 100%),
                    linear-gradient(180deg,rgba(246,247,249,.6) 0%,rgba(246,247,249,.44) 45%,rgba(246,247,249,.34) 100%),
-                   url("/images/Pricing.png");
+                   url("/images/Pricing.jpg");
   background-size:cover,cover,cover;background-position:center,center,center top;background-repeat:no-repeat,no-repeat,no-repeat}
 @media(max-width:768px){.price-hero{padding:44px 16px 40px;background-position:center,center top}}
 
@@ -1491,7 +1490,7 @@ section p[style*="font-size:17"]{font-size:18px!important}
   border-bottom:1px solid var(--g200);background-color:var(--dk);
   background-image:radial-gradient(ellipse 46% 74% at 50% 50%,rgba(246,247,249,.96) 0%,rgba(246,247,249,.88) 52%,rgba(246,247,249,0) 100%),
                    linear-gradient(180deg,rgba(246,247,249,.6) 0%,rgba(246,247,249,.44) 45%,rgba(246,247,249,.34) 100%),
-                   url("/images/Contact.png");
+                   url("/images/Contact.jpg");
   background-size:cover,cover,cover;background-position:center,center,center;background-repeat:no-repeat,no-repeat,no-repeat}
 @media(max-width:768px){.contact-hero{padding:48px 16px 44px}}
 
