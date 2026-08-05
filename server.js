@@ -36,8 +36,22 @@ app.use(express.urlencoded({ extended: true, limit: '200mb' }));
 // Handles both:
 //   /style.css        (when accessed via server at bidcoreai.com/style.css)
 //   ../public/style.css  (when views/*.html are opened directly in browser)
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/public', express.static(path.join(__dirname, 'public')));
+const staticOpts = { maxAge: '7d' };
+app.use(express.static(path.join(__dirname, 'public'), staticOpts));
+app.use('/public', express.static(path.join(__dirname, 'public'), staticOpts));
+
+/* HTML always revalidates; assets may be held for a week.
+   Renaming an image is a one-line change inside a page, but a browser holding
+   a week-old copy of that page keeps requesting a file that no longer exists
+   and renders a broken image with no way for the visitor to know why — which
+   is exactly what happened when the png images became jpgs. no-cache still
+   permits a 304, so this costs a round trip, not a re-download. */
+app.use((req, res, next) => {
+  if (!path.extname(req.path)) {
+    res.set('Cache-Control', 'no-cache, must-revalidate');
+  }
+  next();
+});
 
 const TO_EMAIL   = process.env.TO_EMAIL || 'barkha@bidcoreai.com';
 const VIEWS_DIR  = path.join(__dirname, 'views');
