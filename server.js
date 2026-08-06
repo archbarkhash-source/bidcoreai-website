@@ -136,6 +136,8 @@ app.get('/pricing', (req, res) =>
    description, canonical and keywords — no shared template at runtime. */
 const SERVICE_PAGES = [
   'takeoff-services',
+  // Combined takeoff + estimating landing page, linking down to both sides
+  'quantity-takeoff-estimating-services',
   // Takeoff — an index plus one page per CSI division
   'construction-takeoff-services',
   'demolition-takeoff-services',
