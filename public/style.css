@@ -1133,6 +1133,35 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
   color:var(--text);line-height:1.5;border-bottom:1px solid var(--g200)}
 .plist li svg{flex-shrink:0;margin-top:3px;color:var(--orange)}
 
+/* Project types, grouped. The flat twenty-row version of this list scanned as a
+   wall — a visitor looking for their own building type had to read all of it.
+   Titled groups let them find the group first and stop there. Deliberately no
+   card chrome and no rules anywhere — the uppercase group label against the
+   sentence-case rows is contrast enough, and spacing does the separating.
+   Two columns. */
+/* Columns are sized to their content, not to a share of the container, and the
+   pair is centred as a unit. A fixed or fractional column width is wider than
+   the longest entry, and all that slack piles up at the end of the right-hand
+   column — which drags the visible text left of the centred heading even though
+   the grid box itself is dead centre. max-content leaves no slack to pile up. */
+.ptg{display:grid;grid-template-columns:repeat(2,minmax(0,max-content));
+  justify-content:center;gap:6px 80px}
+@media(max-width:860px){.ptg{grid-template-columns:minmax(0,max-content);gap:0}}
+.ptg-group{padding:26px 0 4px}
+.ptg-head{display:flex;align-items:center;gap:8px;padding-bottom:9px}
+.ptg-ic{flex-shrink:0;display:flex;color:var(--orange)}
+.ptg-t{font-family:var(--fh);font-size:12.5px;font-weight:700;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--navy);line-height:1.25}
+.ptg-ul{list-style:none}
+.ptg-ul li{display:flex;gap:9px;align-items:flex-start;padding:9px 2px;font-size:15px;
+  color:var(--text);line-height:1.5}
+.ptg-ul li svg{flex-shrink:0;margin-top:4px;color:var(--orange)}
+/* Closing line so the grid does not end on a hard edge. Width-capped and
+   auto-margined rather than left to fill the container, so it reads as a
+   deliberate centred line on the same axis as the section heading. */
+.ptg-note{max-width:620px;margin:30px auto 0;text-align:center;font-size:14.5px;color:var(--g600)}
+.ptg-note b{color:var(--navy);font-weight:600}
+
 /* Hero that runs the copy and a summary card side by side. */
 .hero-2col{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
 @media(max-width:900px){.hero-2col{grid-template-columns:1fr;gap:32px}}
@@ -1224,18 +1253,22 @@ body.ui-locked .nl-panel{opacity:0!important;visibility:hidden!important;pointer
 @media(max-width:1080px){.hero-tr{grid-template-columns:minmax(0,1fr) 240px;gap:48px}}
 @media(max-width:900px){.hero-tr{grid-template-columns:1fr;gap:30px}}
 
-/* Trades navigator sits directly on the hero surface — a ruled list, not a
-   card floating on top of the band. The rules are the only structure it needs. */
-.tr-card{justify-self:end;width:100%;padding-left:28px;border-left:1px solid rgba(23,26,32,.11)}
-.tr-card .dv-nav a{padding:12px 2px;font-size:13.5px;border-bottom-color:rgba(23,26,32,.1)}
-.tr-card .dv-nav a:last-child{border-bottom:none}
+/* Trades navigator sits directly on the hero surface — a plain list, not a
+   card floating on top of the band. No rules at all: no divider between it and
+   the hero copy, no underline on the label, no separators between rows. The
+   column of links reads as its own block on the strength of its position and
+   the gap alone. The dv-side-t and dv-nav borders are scoped away here rather
+   than dropped at source, because the sticky rail on the division-wise page
+   still wants them. */
+.tr-card{justify-self:end;width:100%;padding-left:28px}
+.tr-card .dv-side-t{border-bottom:none;padding-bottom:6px}
+.tr-card .dv-nav a{padding:10px 2px;font-size:13.5px;border-bottom:none}
 @media(max-width:900px){
-  .tr-card{padding-left:0;padding-top:20px;border-left:none;border-top:1px solid rgba(23,26,32,.11)}
+  .tr-card{padding-left:0;padding-top:20px}
   /* Inside the hero the list stays vertical even at phone widths — the chip
      strip treatment belongs to the sticky rail, not to this block. */
   .tr-card .dv-nav{flex-direction:column;overflow:visible;gap:0}
-  .tr-card .dv-nav a{white-space:normal;border:none;border-bottom:1px solid rgba(23,26,32,.1);
-    border-radius:0;background:none}
+  .tr-card .dv-nav a{white-space:normal;border:none;border-radius:0;background:none}
   .tr-card .dv-nav a.on{background:none;border-color:rgba(204,77,0,.35)}
 }
 
@@ -1256,7 +1289,7 @@ section span[style*="font-size:12"],section span[style*="font-size:13"]{font-siz
 .sol-hero-in p[style*="font-size:16"],section p[style*="font-size:16"],
 section p[style*="font-size:17"]{font-size:18px!important}
 /* Card and list components. */
-.svcx-p,.svcx-ul li,.plist li,.csi-l,.svc-del,.svc-s,.ws-num-t,.dv-p{font-size:15.5px}
+.svcx-p,.svcx-ul li,.plist li,.ptg-ul li,.csi-l,.svc-del,.svc-s,.ws-num-t,.dv-p{font-size:15.5px}
 .svc-t,.svcx-t{font-size:17px}
 .ft-links li,.ft-links li a{font-size:14px}
 .nl-item-t{font-size:14.5px}
@@ -1270,7 +1303,7 @@ section p[style*="font-size:17"]{font-size:18px!important}
   .hero-sub{font-size:17.5px;line-height:1.7}
   .lead{font-size:17.5px;line-height:1.7}
   /* Nothing paragraph-sized drops under 15px on a phone. */
-  .svcx-p,.svcx-ul li,.plist li,.csi-l,.svc-del,.svc-s,.ws-num-t,.dv-p{font-size:15px}
+  .svcx-p,.svcx-ul li,.plist li,.ptg-ul li,.csi-l,.svc-del,.svc-s,.ws-num-t,.dv-p{font-size:15px}
   section p[style*="font-size:1"],section div[style*="font-size:1"],
   section li[style*="font-size:1"]{font-size:16px!important}
 }
@@ -1481,6 +1514,25 @@ section p[style*="font-size:17"]{font-size:18px!important}
 .divcard-a{display:inline-flex;align-items:center;gap:5px;margin-top:auto;padding-top:16px;
   font-size:13.5px;font-weight:700;color:var(--c);text-decoration:none}
 .divcard-a:hover{text-decoration:underline}
+
+/* ───── HUMAN + TOOL EQUATION ─────
+   Three panels read as a formula on /construction-estimating-services: the
+   estimator, the tool, and what the pair produces. The operators are their own
+   grid cells rather than pseudo-elements so they survive the collapse to one
+   column on a phone, where the formula reads top to bottom instead. */
+.eqn{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:14px;max-width:960px;margin:0 auto}
+.eqn-c{background:var(--white);border:1px solid var(--g200);border-radius:14px;
+  padding:24px 20px;box-shadow:var(--s1);text-align:center}
+/* The result panel carries the accent so the eye lands on the outcome. */
+.eqn-c.sum{border-color:rgba(204,77,0,.3);background:var(--odim)}
+.eqn-ico{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;
+  justify-content:center;margin:0 auto 13px;background:var(--g100);color:var(--navy)}
+.eqn-c.sum .eqn-ico{background:var(--orange);color:#fff}
+.eqn-t{font-family:var(--fh);font-size:15.5px;font-weight:800;color:var(--navy);margin-bottom:7px}
+.eqn-s{font-size:13.5px;color:var(--g600);line-height:1.62}
+.eqn-op{display:flex;align-items:center;justify-content:center;
+  font-family:var(--fh);font-size:27px;font-weight:800;color:var(--g300)}
+@media(max-width:820px){.eqn{grid-template-columns:1fr;gap:10px}}
 
 /* Contact hero, with the illustration behind the copy. Same three-layer build
    as the pricing hero: a soft ellipse holding contrast directly behind the

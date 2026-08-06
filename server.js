@@ -36,11 +36,26 @@ app.use(express.urlencoded({ extended: true, limit: '200mb' }));
 // Handles both:
 //   /style.css        (when accessed via server at bidcoreai.com/style.css)
 //   ../public/style.css  (when views/*.html are opened directly in browser)
-const staticOpts = { maxAge: '7d' };
+/* Images and fonts may be held for a week; CSS and JS always revalidate.
+   A stylesheet is the one asset whose staleness breaks a page silently: fresh
+   HTML naming classes a week-old stylesheet has never heard of renders as
+   unstyled bullets, and the visitor has no way to know a hard refresh would
+   fix it. Cache-busting query strings only work if you remember to bump them
+   on every edit, and one missed bump costs a week — so the revalidation is
+   enforced here rather than left to discipline. no-cache still permits a 304,
+   so an unchanged stylesheet costs a round trip, not a re-download. */
+const staticOpts = {
+  maxAge: '7d',
+  setHeaders(res, filePath) {
+    if (/\.(css|js)$/i.test(filePath)) {
+      res.set('Cache-Control', 'no-cache, must-revalidate');
+    }
+  }
+};
 app.use(express.static(path.join(__dirname, 'public'), staticOpts));
 app.use('/public', express.static(path.join(__dirname, 'public'), staticOpts));
 
-/* HTML always revalidates; assets may be held for a week.
+/* HTML always revalidates; images may be held for a week.
    Renaming an image is a one-line change inside a page, but a browser holding
    a week-old copy of that page keeps requesting a file that no longer exists
    and renders a broken image with no way for the visitor to know why — which
