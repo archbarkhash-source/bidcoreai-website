@@ -161,9 +161,6 @@ const SERVICE_PAGES = [
   'electrical-estimating-services',
   'hvac-estimating-services',
   'concrete-estimating-services',
-  // CAD
-  'cad-services',
-  'architectural-cad-services',
   // Samples
   'work-samples',
 ];
@@ -181,6 +178,11 @@ const LEGACY_TAKEOFF_URLS = {
   'flooring-takeoff-services': '/finishes-takeoff-services',
   'hvac-takeoff-services': '/mechanical-takeoff-services',
   'mechanical-plumbing-takeoff-services': '/mechanical-takeoff-services',
+  // CAD services were withdrawn. Both URLs were live and indexed, so they
+  // redirect rather than 404 — anyone arriving from a bookmark or a stale
+  // search result lands on the services hub instead of a dead end.
+  'cad-services': '/takeoff-services',
+  'architectural-cad-services': '/takeoff-services',
 };
 
 for (const [slug, target] of Object.entries(LEGACY_TAKEOFF_URLS)) {
