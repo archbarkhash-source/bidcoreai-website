@@ -511,6 +511,11 @@ button{font-family:var(--fb)}
 /* Five columns now the Features list is there: brand block plus four link
    lists. It drops to 2-up on tablet and 1-up on phones below. */
 .ft-grid{display:grid;grid-template-columns:1.6fr repeat(4,minmax(0,1fr));gap:28px;margin-bottom:36px}
+/* Six columns for the /software pages, which add a Software list to the five.
+   It sits here rather than after the media queries on purpose: those restate
+   .ft-grid at 1040px and below, and at equal specificity the later rule wins —
+   so this has to come first to keep the responsive collapse working. */
+.ft-grid--6{grid-template-columns:1.4fr repeat(5,minmax(0,1fr));gap:24px}
 .ft-logo-wrap{text-decoration:none;margin-bottom:8px}
 .ft-logo-img{height:24px;display:block}
 .ft-logo-txt{font-family:var(--fh);font-size:16px;font-weight:800;color:var(--navy)}
