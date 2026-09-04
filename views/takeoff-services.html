@@ -416,14 +416,25 @@
   <section style="background:var(--g50);padding:72px 24px">
     <div class="con">
       <div class="rv" style="text-align:center;margin-bottom:36px">
-        <div class="eyebrow"><svg width="12" height="12"><use href="#ic-upload"/></svg> Request Takeoff Service</div>
-        <h2 class="h2">Submit a Takeoff Request</h2>
-        <p class="lead" style="margin:10px auto 0">Complete the form below. We respond within 4 business hours.</p>
+        <div class="eyebrow"><svg width="12" height="12"><use href="#ic-upload"/></svg> <span id="q-eyebrow">Request Takeoff Service</span></div>
+        <h2 class="h2" id="q-h2">Submit a Takeoff Request</h2>
+        <p class="lead" style="margin:10px auto 0" id="q-lead">Complete the form below. We respond within 4 business hours.</p>
       </div>
       <div class="rform-wrap rv" style="max-width:660px;margin:0 auto" id="svc-form-section">
       <div id="q-form-body">
-        <div class="rform-title">Takeoff Service Request</div>
-        <div class="rform-sub">Send the drawings and we take it from there. An estimator confirms scope and comes back with a fixed quote within 4 business hours.</div>
+        <div class="rform-title" id="q-rform-title">Takeoff Service Request</div>
+        <div class="rform-sub" id="q-rform-sub">Send the drawings and we take it from there. An estimator confirms scope and comes back with a fixed quote within 4 business hours.</div>
+        <!-- Carries which sample was asked for, set by initSampleRequest() when
+             a work-samples.html card links here with ?sample=…. Read by
+             submitQuickSvc() in script.js to change the email subject and drop
+             the drawings requirement. -->
+        <input type="hidden" id="q-sample" value=""/>
+        <!-- Shown only in sample mode (see initSampleRequest in script.js), so
+             it is obvious this is "send me the example," not "quote my job" —
+             the two forms share markup but must never look like the same ask. -->
+        <div id="q-sample-banner" style="display:none;background:#FFF4E9;border:1px solid #FBD7AE;border-radius:10px;padding:12px 14px;margin-bottom:18px;font-size:13px;color:var(--navy)">
+          <strong>📦 Sample request</strong> — no drawings needed. We'll email the sample straight to the address below.
+        </div>
         <div class="fg2">
           <div class="fg"><label>Your Name *</label><input type="text" id="q-name" placeholder="Mike Rodriguez"/></div>
           <div class="fg"><label>Work Email *</label><input type="email" id="q-email" placeholder="mike@company.com"/></div>
@@ -458,28 +469,28 @@
             <div class="fg-hint">Optional — it tells us how to queue the work.</div>
           </div>
         </div>
-        <div class="fg">
-          <label>Drawings *</label>
+        <div class="fg" id="q-file-group">
+          <label id="q-file-label">Drawings *</label>
           <input type="file" id="q-file" multiple accept=".pdf,.dwg,.dxf,.xls,.xlsx,.jpg,.jpeg,.png,.tif,.tiff,.zip,.rvt,.ifc,.csv,.doc,.docx" onchange="showQuickFiles()"/>
           <div id="q-file-list" style="margin-top:6px;display:flex;flex-direction:column;gap:4px"></div>
-          <div style="font-size:11px;color:var(--g400);margin-top:5px">PDF, DWG, DXF, XLS, JPG, PNG, ZIP, RVT — or paste a link below instead.</div>
+          <div style="font-size:11px;color:var(--g400);margin-top:5px" id="q-file-hint">PDF, DWG, DXF, XLS, JPG, PNG, ZIP, RVT — or paste a link below instead.</div>
         </div>
-        <div class="fg">
+        <div class="fg" id="q-cloud-group">
           <label>Or paste a Dropbox / WeTransfer / Drive link</label>
           <input type="text" id="q-cloud" placeholder="https://www.dropbox.com/…"/>
           <div style="font-size:11px;color:var(--g400);margin-top:5px">Use this for sets over 100MB.</div>
         </div>
-        <div class="fg"><label>Anything else we should know?</label><textarea id="q-notes" rows="2" placeholder="Trades or divisions you need, or ask for a sample…"></textarea></div>
+        <div class="fg"><label id="q-notes-label">Anything else we should know?</label><textarea id="q-notes" rows="2" placeholder="Trades or divisions you need, or ask for a sample…"></textarea></div>
         <div class="ferr" id="q-err">Please add your name, email and the drawings.</div>
         <button class="fsub" id="q-btn" onclick="submitQuickSvc()">
-          <svg width="15" height="15"><use href="#ic-send"/></svg> Send Request
+          <svg width="15" height="15"><use href="#ic-send"/></svg> <span id="q-btn-label">Send Request</span>
         </button>
-        <div class="fnote">Goes to barkha@bidcoreai.com · Reply within 4 business hours</div>
+        <div class="fnote" id="q-fnote">Goes to barkha@bidcoreai.com · Reply within 4 business hours</div>
       </div>
       <div class="f-success" id="q-ok" style="display:none">
-        <div class="f-success-ico">🎉</div>
-        <div class="f-success-t">Request Sent</div>
-        <div class="f-success-s">Your takeoff request has been received. Our estimator team will review the drawings and respond within 4 business hours with a quote and timeline.</div>
+        <div class="f-success-ico" id="q-ok-ico">🎉</div>
+        <div class="f-success-t" id="q-ok-t">Request Sent</div>
+        <div class="f-success-s" id="q-ok-s">Your takeoff request has been received. Our estimator team will review the drawings and respond within 4 business hours with a quote and timeline.</div>
         <a class="btn btn-n" style="margin-top:18px" href="/construction-takeoff-services">Browse All Divisions</a>
       </div>
     </div>

@@ -582,6 +582,59 @@ function initToc(){
 }
 document.addEventListener('DOMContentLoaded', initToc);
 
+/* ─── SAMPLE REQUEST MODE (work-samples.html → /takeoff-services) ───
+   Every "Request This Sample" card on work-samples.html links here as
+   /takeoff-services?division=<trade>&sample=<name>#svc-form-section instead of
+   opening the generic "Get Started" modal. That link carries two things: which
+   Trade / Division option to preselect, and — when a sample name is present —
+   that this is "send me the example," not "quote my job."
+
+   Those are different asks. A sample visitor has no drawings to attach, so the
+   drawings field and its "or paste a cloud link" fallback are hidden rather
+   than just relabeled — asking for an attachment nobody has is what the report
+   flagged. Everything else (name, email, heading, success copy, the email
+   subject line) switches to match. Leaving the page without either query
+   param leaves the form exactly as it was: the ordinary takeoff-quote request. */
+function initSampleRequest(){
+  const tradeSel = document.getElementById('q-trade');
+  if(!tradeSel) return;                 // not on /takeoff-services
+
+  const params   = new URLSearchParams(location.search);
+  const division = params.get('division');
+  const sample   = params.get('sample');
+
+  if(division){
+    const match = [...tradeSel.options].find(o => o.value === division);
+    if(match) tradeSel.value = division;
+  }
+
+  if(!sample) return;
+
+  document.getElementById('q-sample').value = sample;
+
+  const set = (id, text) => { const el = document.getElementById(id); if(el) el.textContent = text; };
+  set('q-eyebrow', 'Request a Sample');
+  set('q-h2', `Request the ${sample} Sample`);
+  set('q-lead', "Tell us where to send it — we'll email the sample within 4 business hours.");
+  set('q-rform-title', `${sample} — Sample Request`);
+  set('q-rform-sub', "No drawings to submit — just your name and email, and we'll send the measured quantities, notes and marked-up sheet.");
+  set('q-notes-label', 'Anything specific you want the sample to show?');
+  set('q-btn-label', 'Send Me the Sample');
+  set('q-fnote', 'Goes to barkha@bidcoreai.com · Sample sent within 4 business hours');
+  set('q-err', 'Please add your name and email.');
+
+  const banner = document.getElementById('q-sample-banner');
+  if(banner) banner.style.display = 'block';
+
+  // No attachment to give and nothing to validate — hide both fields rather
+  // than leave a required "Drawings *" input in a form that has no drawings.
+  const fileGroup  = document.getElementById('q-file-group');
+  const cloudGroup = document.getElementById('q-cloud-group');
+  if(fileGroup)  fileGroup.style.display  = 'none';
+  if(cloudGroup) cloudGroup.style.display = 'none';
+}
+document.addEventListener('DOMContentLoaded', initSampleRequest);
+
 /* ─── QUICK TAKEOFF REQUEST (division pages) ───
    The full form on /takeoff-services asks for thirteen fields, most of which a
    division page already knows: the trade is the page you are standing on. This
@@ -608,30 +661,38 @@ function removeQuickFile(i){
 }
 
 async function submitQuickSvc(){
-  const name = v('q-name'), em = v('q-email');
-  const err  = document.getElementById('q-err');
-  const dr   = document.getElementById('q-file');
-  const files = (window._quickFiles && window._quickFiles.length) ? window._quickFiles : (dr ? [...dr.files] : []);
-  const link  = v('q-cloud');
+  const name   = v('q-name'), em = v('q-email');
+  const err    = document.getElementById('q-err');
+  const sample = v('q-sample');                       // set by initSampleRequest() above
+  const dr     = document.getElementById('q-file');
+  const files  = (window._quickFiles && window._quickFiles.length) ? window._quickFiles : (dr ? [...dr.files] : []);
+  const link   = v('q-cloud');
 
   const fail = m => { err.innerHTML = m; err.style.display = 'block'; };
-  if(!name || !em)              return fail('Please add your name and email.');
-  if(!isEmail(em))              return fail('Please enter a valid email address.');
-  if(!files.length && !link)    return fail('Please attach a drawing or paste a cloud link.');
+  if(!name || !em)                              return fail('Please add your name and email.');
+  if(!isEmail(em))                               return fail('Please enter a valid email address.');
+  // A sample request has nothing to attach — that field is hidden in sample
+  // mode (see initSampleRequest), so it can't be what's missing here.
+  if(!sample && !files.length && !link)          return fail('Please attach a drawing or paste a cloud link.');
   err.style.display = 'none';
 
-  const trade = v('q-trade') || 'Takeoff';
+  const trade     = v('q-trade') || 'Takeoff';
+  const btnLabel  = document.getElementById('q-btn-label');
+  const idleLabel = btnLabel ? btnLabel.textContent : (sample ? 'Send Me the Sample' : 'Send Request');
   const btn = document.getElementById('q-btn');
-  const reset = () => { if(btn){ btn.disabled=false; btn.innerHTML='<svg width="15" height="15"><use href="#ic-send"/></svg> Send Request'; } };
+  const reset = () => { if(btn){ btn.disabled=false; btn.innerHTML=`<svg width="15" height="15"><use href="#ic-send"/></svg> <span id="q-btn-label">${idleLabel}</span>`; } };
   if(btn){ btn.disabled=true; btn.innerHTML='<svg width="14" height="14" style="animation:spin 1s linear infinite;display:inline-block"><use href="#ic-refresh"/></svg> Sending…'; }
 
   const fd = new FormData();
   fd.append('meta', JSON.stringify({
-    subject: `Takeoff Request — ${trade}${v('q-project') ? ' — ' + v('q-project') : ''}`,
+    subject: sample
+      ? `Sample Request — ${sample}`
+      : `Takeoff Request — ${trade}${v('q-project') ? ' — ' + v('q-project') : ''}`,
     name, email: em, company: v('q-company'), trade,
+    sample: sample || undefined,
     project_name: v('q-project'), bid_due: v('q-due'),
     cloud_link: link, notes: v('q-notes'),
-    source: 'Division Page Quick Form',
+    source: sample ? 'Work Samples — Request This Sample' : 'Division Page Quick Form',
   }));
   files.forEach(f => fd.append('files', f));
 
@@ -645,6 +706,12 @@ async function submitQuickSvc(){
   }catch(e){ errorMsg = e.message; }
 
   if(sent){
+    if(sample){
+      const set = (id, text) => { const el = document.getElementById(id); if(el) el.textContent = text; };
+      set('q-ok-ico', '📬');
+      set('q-ok-t', 'Sample On Its Way');
+      set('q-ok-s', `We'll email the ${sample} sample to ${em} within 4 business hours.`);
+    }
     document.getElementById('q-form-body').style.display = 'none';
     document.getElementById('q-ok').style.display = 'block';
   }else{
