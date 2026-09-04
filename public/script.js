@@ -81,10 +81,62 @@ function closeModal(){
   unlockScroll();
 }
 
+/* ─── FREE SAMPLE REQUEST MODAL (work-samples.html) ───
+   Opens the pop-out form in place instead of navigating to /takeoff-services.
+   Its fields share ids with that page's form (q-name, q-trade, q-file, …), so
+   submitQuickSvc() and showQuickFiles() below drive this modal unmodified —
+   this function's only job is to preselect the division, label the offer, and
+   reset the form each time it opens (it can be opened more than once per
+   visit, for different trades, and a stale value or a prior success screen
+   left showing would follow the visitor into the next request). */
+function openSampleModal(division, sample){
+  const modal = document.getElementById('sample-modal');
+  if(!modal) return;
+
+  const formBody = document.getElementById('q-form-body');
+  const ok       = document.getElementById('q-ok');
+  const err      = document.getElementById('q-err');
+  if(formBody) formBody.style.display = '';
+  if(ok)       ok.style.display = 'none';
+  if(err)      err.style.display = 'none';
+
+  ['q-name','q-email','q-company','q-project','q-due','q-cloud','q-notes'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.value = '';
+  });
+  window._quickFiles = [];
+  const fileInput = document.getElementById('q-file');
+  if(fileInput) fileInput.value = '';
+  renderQuickFiles();
+
+  const tradeSel = document.getElementById('q-trade');
+  if(tradeSel && division){
+    const match = [...tradeSel.options].find(o => o.value === division);
+    if(match) tradeSel.value = division;
+  }
+  const sampleField = document.getElementById('q-sample');
+  if(sampleField) sampleField.value = sample || '';
+
+  const set = (id, text) => { const el = document.getElementById(id); if(el) el.textContent = text; };
+  set('q-rform-title', `${sample} — Free Sample Project`);
+  set('q-rform-sub', "Send the drawings for this division and an estimator delivers the takeoff free, within 4 business hours — a real sample of the work, on your own project.");
+
+  modal.classList.add('on');
+  lockScroll();
+}
+function closeSampleModal(){
+  const modal = document.getElementById('sample-modal');
+  if(!modal) return;
+  modal.classList.remove('on');
+  unlockScroll();
+}
+
 document.addEventListener('DOMContentLoaded', function(){
   // Modal close on backdrop click
   const modal = document.getElementById('modal');
   if(modal) modal.addEventListener('click', function(e){ if(e.target===this) closeModal(); });
+  const sampleModal = document.getElementById('sample-modal');
+  if(sampleModal) sampleModal.addEventListener('click', function(e){ if(e.target===this) closeSampleModal(); });
 
   // Strip any leftover inline styles from mobile nav elements (safety net)
   const mobNav = document.getElementById('mob-nav');
@@ -582,19 +634,21 @@ function initToc(){
 }
 document.addEventListener('DOMContentLoaded', initToc);
 
-/* ─── SAMPLE REQUEST MODE (work-samples.html → /takeoff-services) ───
+/* ─── FREE SAMPLE PROJECT MODE (work-samples.html → /takeoff-services) ───
    Every "Request This Sample" card on work-samples.html links here as
    /takeoff-services?division=<trade>&sample=<name>#svc-form-section instead of
    opening the generic "Get Started" modal. That link carries two things: which
    Trade / Division option to preselect, and — when a sample name is present —
-   that this is "send me the example," not "quote my job."
+   that the visitor arrived asking for the free sample offer.
 
-   Those are different asks. A sample visitor has no drawings to attach, so the
-   drawings field and its "or paste a cloud link" fallback are hidden rather
-   than just relabeled — asking for an attachment nobody has is what the report
-   flagged. Everything else (name, email, heading, success copy, the email
-   subject line) switches to match. Leaving the page without either query
-   param leaves the form exactly as it was: the ordinary takeoff-quote request. */
+   The offer runs on the visitor's own project, not a canned example: they
+   upload their drawings and BidcoreAI delivers that one division's takeoff
+   free, as a sample of the work, before they commit to anything paid. So
+   Drawings stays required exactly as it is for a normal request — only the
+   framing changes, to make clear the "quote a fixed price" ask and the "try
+   it free first" ask are different things wearing the same form. Leaving the
+   page without either query param leaves the form exactly as it was: the
+   ordinary takeoff-quote request. */
 function initSampleRequest(){
   const tradeSel = document.getElementById('q-trade');
   if(!tradeSel) return;                 // not on /takeoff-services
@@ -613,25 +667,18 @@ function initSampleRequest(){
   document.getElementById('q-sample').value = sample;
 
   const set = (id, text) => { const el = document.getElementById(id); if(el) el.textContent = text; };
-  set('q-eyebrow', 'Request a Sample');
-  set('q-h2', `Request the ${sample} Sample`);
-  set('q-lead', "Tell us where to send it — we'll email the sample within 4 business hours.");
-  set('q-rform-title', `${sample} — Sample Request`);
-  set('q-rform-sub', "No drawings to submit — just your name and email, and we'll send the measured quantities, notes and marked-up sheet.");
+  set('q-eyebrow', 'Free Sample Project');
+  set('q-h2', `Request a Free ${sample} Sample`);
+  set('q-lead', "Send your drawings and we'll deliver this division's takeoff free — no cost, no obligation.");
+  set('q-rform-title', `${sample} — Free Sample Project`);
+  set('q-rform-sub', "Send the drawings for this division and an estimator delivers the takeoff free, within 4 business hours — a real sample of the work, on your own project.");
   set('q-notes-label', 'Anything specific you want the sample to show?');
-  set('q-btn-label', 'Send Me the Sample');
-  set('q-fnote', 'Goes to barkha@bidcoreai.com · Sample sent within 4 business hours');
-  set('q-err', 'Please add your name and email.');
+  set('q-btn-label', 'Send My Free Sample Request');
+  set('q-fnote', 'Goes to barkha@bidcoreai.com · Free sample delivered within 4 business hours');
+  set('q-err', 'Please add your name, email and the drawings.');
 
   const banner = document.getElementById('q-sample-banner');
   if(banner) banner.style.display = 'block';
-
-  // No attachment to give and nothing to validate — hide both fields rather
-  // than leave a required "Drawings *" input in a form that has no drawings.
-  const fileGroup  = document.getElementById('q-file-group');
-  const cloudGroup = document.getElementById('q-cloud-group');
-  if(fileGroup)  fileGroup.style.display  = 'none';
-  if(cloudGroup) cloudGroup.style.display = 'none';
 }
 document.addEventListener('DOMContentLoaded', initSampleRequest);
 
@@ -669,16 +716,16 @@ async function submitQuickSvc(){
   const link   = v('q-cloud');
 
   const fail = m => { err.innerHTML = m; err.style.display = 'block'; };
-  if(!name || !em)                              return fail('Please add your name and email.');
-  if(!isEmail(em))                               return fail('Please enter a valid email address.');
-  // A sample request has nothing to attach — that field is hidden in sample
-  // mode (see initSampleRequest), so it can't be what's missing here.
-  if(!sample && !files.length && !link)          return fail('Please attach a drawing or paste a cloud link.');
+  if(!name || !em)              return fail('Please add your name and email.');
+  if(!isEmail(em))              return fail('Please enter a valid email address.');
+  // The free sample runs on the visitor's own drawings, same as a paid
+  // request — see initSampleRequest() — so this check applies either way.
+  if(!files.length && !link)    return fail('Please attach a drawing or paste a cloud link.');
   err.style.display = 'none';
 
   const trade     = v('q-trade') || 'Takeoff';
   const btnLabel  = document.getElementById('q-btn-label');
-  const idleLabel = btnLabel ? btnLabel.textContent : (sample ? 'Send Me the Sample' : 'Send Request');
+  const idleLabel = btnLabel ? btnLabel.textContent : (sample ? 'Send My Free Sample Request' : 'Send Request');
   const btn = document.getElementById('q-btn');
   const reset = () => { if(btn){ btn.disabled=false; btn.innerHTML=`<svg width="15" height="15"><use href="#ic-send"/></svg> <span id="q-btn-label">${idleLabel}</span>`; } };
   if(btn){ btn.disabled=true; btn.innerHTML='<svg width="14" height="14" style="animation:spin 1s linear infinite;display:inline-block"><use href="#ic-refresh"/></svg> Sending…'; }
@@ -686,13 +733,13 @@ async function submitQuickSvc(){
   const fd = new FormData();
   fd.append('meta', JSON.stringify({
     subject: sample
-      ? `Sample Request — ${sample}`
+      ? `Free Sample Request — ${sample}`
       : `Takeoff Request — ${trade}${v('q-project') ? ' — ' + v('q-project') : ''}`,
     name, email: em, company: v('q-company'), trade,
     sample: sample || undefined,
     project_name: v('q-project'), bid_due: v('q-due'),
     cloud_link: link, notes: v('q-notes'),
-    source: sample ? 'Work Samples — Request This Sample' : 'Division Page Quick Form',
+    source: sample ? 'Work Samples — Free Sample Request' : 'Division Page Quick Form',
   }));
   files.forEach(f => fd.append('files', f));
 
@@ -708,9 +755,9 @@ async function submitQuickSvc(){
   if(sent){
     if(sample){
       const set = (id, text) => { const el = document.getElementById(id); if(el) el.textContent = text; };
-      set('q-ok-ico', '📬');
-      set('q-ok-t', 'Sample On Its Way');
-      set('q-ok-s', `We'll email the ${sample} sample to ${em} within 4 business hours.`);
+      set('q-ok-ico', '🎁');
+      set('q-ok-t', 'Free Sample Request Received');
+      set('q-ok-s', `Our estimator team will review the drawings and deliver your free ${sample} sample within 4 business hours.`);
     }
     document.getElementById('q-form-body').style.display = 'none';
     document.getElementById('q-ok').style.display = 'block';
