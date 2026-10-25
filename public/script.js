@@ -782,3 +782,35 @@ window.addEventListener('pageshow', function(){
   document.querySelectorAll('.country-sw-s').forEach(function(sel){ sel.value = 'US'; });
 });
 
+/* Header menus (Features, Solutions, Community): a click on the tab opens its menu, and it closes on a click anywhere else, on Escape, or when another tab is opened. */
+(function(){
+  function closeAll(except){
+    document.querySelectorAll('.nl-drop.open').forEach(function(d){
+      if(d === except) return;
+      d.classList.remove('open');
+      var t = d.querySelector('.nl-drop-t');
+      if(t) t.setAttribute('aria-expanded', 'false');
+    });
+  }
+  document.addEventListener('click', function(e){
+    var el = e.target;
+    var trigger = el.closest ? el.closest('.nl-drop-t') : null;
+    if(trigger){
+      e.preventDefault();
+      var drop = trigger.closest('.nl-drop');
+      var willOpen = !drop.classList.contains('open');
+      closeAll(drop);
+      if(willOpen){
+        // The header is two rows tall, so pin the menu to the bottom of the whole header (the tab row stays clickable).
+        var bar = document.querySelector('header.nav') || document.querySelector('.nav');
+        var panel = drop.querySelector('.nl-panel');
+        if(bar && panel) panel.style.top = Math.round(bar.getBoundingClientRect().bottom) + 'px';
+      }
+      drop.classList.toggle('open', willOpen);
+      trigger.setAttribute('aria-expanded', String(willOpen));
+      return;
+    }
+    closeAll(); // a click anywhere else, including inside the open menu, closes it (a link in it still navigates)
+  });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeAll(); });
+})();

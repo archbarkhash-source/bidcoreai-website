@@ -101,15 +101,16 @@ button{font-family:var(--fb)}
 }
 
 /* ───── NAV DROPDOWNS (mega-menu) ─────
-   Opens on hover for the mouse and on :focus-within for the keyboard, so the
-   menu needs no JavaScript at all — it survives script errors and works before
-   any JS has loaded. The panel is hidden with visibility+opacity rather than
-   display:none so the transition can run and so its links stay in the tab order
-   only while it is open (pointer-events guards the closed state). */
+   A menu opens when its tab is clicked (script.js toggles .open on .nl-drop) and
+   closes on a click anywhere else, on Escape, or when another tab is opened.
+   Without JavaScript the tab is still an ordinary link to its page. The panel is
+   hidden with visibility+opacity rather than display:none so the transition can
+   run and so its links stay in the tab order only while it is open. */
 .nl-drop{position:relative}
 .nl-drop-t{font-family:inherit}
 .nl-caret{margin-left:3px;opacity:.75;transition:transform .16s}
-.nl-drop:hover .nl-caret,.nl-drop:focus-within .nl-caret{transform:rotate(180deg)}
+.nl-drop.open .nl-caret{transform:rotate(180deg)}
+.nl-drop.open>.nl-drop-t{color:var(--navy);background:rgba(23,26,32,.06)}
 
 /* Procore's geometry: the menu is a full-width band pinned under the nav bar,
    not a small panel floating over the page. It reads as part of the header
@@ -129,25 +130,14 @@ button{font-family:var(--fb)}
   z-index:600;
   display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px 22px;
   max-width:1160px;margin:0 auto;
-  /* Closing is delayed; opening is not. Aiming at a menu item means travelling
-     diagonally, which briefly leaves both the tab and the panel — with an
-     instant close the menu vanishes mid-reach. The grace period makes it hold
-     still long enough to actually click something. */
-  transition:opacity .16s .25s,transform .16s .25s,visibility 0s .41s;
+  transition:opacity .14s,transform .14s,visibility 0s .14s;
 }
-/* The panel is pinned to the bottom of the nav bar, so the pointer has to cross
-   the rest of that bar to reach it. This covers the gap from directly under the
-   tab down into the panel, and overhangs sideways for diagonal approaches. */
-.nl-drop::after{content:'';position:absolute;left:-14px;right:-14px;top:100%;height:24px}
-.nl-panel::before{content:'';position:absolute;top:-24px;left:0;right:0;height:24px}
 /* The band is white against the cream header, so it needs its own top edge. */
 .nl-panel{border-top-color:var(--cream2)}
-.nl-drop:hover .nl-panel,.nl-drop:focus-within .nl-panel{
+.nl-drop.open .nl-panel{
   opacity:1;visibility:visible;pointer-events:auto;transform:translateY(0);
-  transition:opacity .15s .12s,transform .15s .12s,visibility 0s .12s;
+  transition:opacity .14s,transform .14s,visibility 0s;
 }
-/* Keyboard focus should never wait. */
-.nl-drop:focus-within .nl-panel{transition:opacity .12s,transform .12s,visibility 0s}
 
 .nl-item{display:flex;gap:11px;align-items:flex-start;padding:9px 11px;border-radius:9px;text-decoration:none;transition:background .13s}
 .nl-item:hover,.nl-item:focus-visible{background:var(--g100);outline:none}
