@@ -230,6 +230,26 @@ for (const slug of SOFTWARE_PAGES) {
 page('/feedback', 'feedback.html', { priority: 0.5 });
 page('/contact', 'contact.html', { priority: 0.6 });
 
+/* Site search: /search (results page) and /api/site-search (JSON). The index comes from the SITEMAP list above, so it only ever finds pages that exist. */
+const { createSiteSearch, renderBody, renderFaqBody } = require('./lib/site-search');
+const siteSearch = createSiteSearch({ sitemap: SITEMAP, viewsDir: VIEWS_DIR });
+app.get('/search', (req, res) => {
+  const q = String(req.query.q || '').trim().slice(0, 80);
+  const tpl = fs.readFileSync(path.join(VIEWS_DIR, 'search.html'), 'utf8');
+  res.set('Cache-Control', 'no-store');
+  res.type('html').send(tpl.replace('<!--SEARCH_BODY-->', () => renderBody(q, q ? siteSearch.search(q) : null)));
+});
+// /faq collects every FAQ on the site into one page. It is in the sitemap like any other page.
+SITEMAP.push({ url: '/faq', file: 'faq.html', priority: 0.6, changefreq: 'monthly' });
+app.get('/faq', (req, res) => {
+  const tpl = fs.readFileSync(path.join(VIEWS_DIR, 'faq.html'), 'utf8');
+  res.type('html').send(tpl.replace('<!--FAQ_BODY-->', () => renderFaqBody(siteSearch.faqs())));
+});
+app.get('/api/site-search', (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  res.json(siteSearch.search(String(req.query.q || '')));
+});
+
 /* ─────────────────────────────────────
    FREE GO/NO-GO — the interactive lead
    magnet. A visitor connects their own

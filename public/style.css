@@ -203,7 +203,7 @@ button{font-family:var(--fb)}
 .hero{background:var(--dk);padding:82px 24px 0;overflow:hidden;position:relative;min-height:88vh;display:flex;align-items:center}
 .hero-glow{position:absolute;inset:0;background:radial-gradient(ellipse 60% 55% at 76% 40%,rgba(232,93,0,.07) 0%,transparent 64%),radial-gradient(ellipse 35% 35% at 12% 75%,rgba(224,154,50,.09) 0%,transparent 58%)}
 .hero-grid{position:absolute;inset:0;opacity:.05;background-image:radial-gradient(circle,rgba(23,26,32,.55) 1px,transparent 1px);background-size:32px 32px}
-.hero-in{position:relative;z-index:2;max-width:1280px;margin:0 auto;display:grid;grid-template-columns:1fr 1.42fr;gap:44px;align-items:center;padding-bottom:80px;width:100%}
+.hero-in{position:relative;z-index:2;max-width:1112px;margin:0 auto;display:grid;grid-template-columns:1fr 1.42fr;gap:44px;align-items:center;padding-bottom:80px;width:100%}
 .hero-tag{display:inline-flex;align-items:center;gap:7px;background:rgba(232,93,0,.14);border:1px solid rgba(232,93,0,.25);border-radius:100px;padding:6px 15px;font-size:12px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
 .hero-sub{font-size:19px;color:var(--g600);line-height:1.76;max-width:480px;margin-bottom:30px}
 .hero-ctas{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:44px}
@@ -510,7 +510,7 @@ button{font-family:var(--fb)}
 .ft-in{max-width:1160px;margin:0 auto}
 /* Five columns now the Features list is there: brand block plus four link
    lists. It drops to 2-up on tablet and 1-up on phones below. */
-.ft-grid{display:grid;grid-template-columns:1.6fr repeat(4,minmax(0,1fr));gap:28px;margin-bottom:36px}
+.ft-grid{display:grid;grid-template-columns:1.6fr repeat(3,minmax(0,1fr));gap:28px;margin-bottom:36px}
 /* Six columns for the /software pages, which add a Software list to the five.
    It sits here rather than after the media queries on purpose: those restate
    .ft-grid at 1040px and below, and at equal specificity the later rule wins —
@@ -1573,3 +1573,58 @@ section p[style*="font-size:17"]{font-size:18px!important}
   .btn-lg{font-size:16px;padding:14px 22px}
   .sol-hero-in .btn-lg,.pg-art + section .btn-lg{width:100%;justify-content:center}
 }
+
+/* ───── COUNTRY SWITCH (BidcoreAI US site <-> bidcore.in) ─────
+   Choosing IN goes straight to bidcore.in (script.js). Desktop: in the top row beside the demo button. Phone: in the menu above the demo button. */
+.country-sw{display:inline-flex;align-items:center;gap:6px;color:var(--g600);font-size:13px;font-weight:700}
+.country-sw-s{font:inherit;color:inherit;background:transparent;border:none;cursor:pointer;padding:3px 2px;border-radius:5px}
+.country-sw-s:hover{color:var(--navy)}
+.country-sw-s:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+.nav-cta{align-items:center}
+.mob-country{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-top:1px solid var(--cream2);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--g600)}
+
+/* ───── TWO-TIER HEADER (desktop) ─────
+   Top row: logo on the left, country + demo button on the right. Second row: the main navigation under a hairline. Phones keep the single row + menu (<=768px). */
+@media(min-width:769px){
+  .nav-in{height:auto;flex-wrap:wrap;align-items:center;padding-top:0;padding-bottom:0}
+  .logo-wrap{order:1;padding:11px 0}
+  .nav-search{order:2}
+  .nav-cta{order:3;margin-left:0;padding:11px 0}
+  .nav-links{order:4;flex:0 0 100%;margin-left:-12px;border-top:1px solid var(--cream2);padding:3px 0}
+}
+
+
+/* ───── SITE SEARCH ─────
+   Top row, between the logo and the country / demo buttons. Phones put it at the top of the menu instead. */
+.nav-search,.mob-search{position:relative;display:flex;align-items:center}
+.nav-search{flex:1 1 260px;max-width:440px;margin:0 auto 0 28px;padding:9px 0}
+.nav-search input,.mob-search input{width:100%;font:inherit;font-size:14px;color:var(--navy);background:#fff;border:1px solid var(--g200);border-radius:8px;padding:9px 12px 9px 38px;outline:none;-webkit-appearance:none;appearance:none}
+.nav-search input::placeholder,.mob-search input::placeholder{color:var(--g400)}
+.nav-search input:focus,.mob-search input:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(232,93,0,.14)}
+.nav-search-b{position:absolute;left:4px;top:50%;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;width:32px;height:32px;border:none;background:none;color:var(--g600);cursor:pointer;border-radius:6px}
+.nav-search-b:hover{color:var(--orange)}
+.nav-search{margin-top:0}
+@media(max-width:768px){.nav-search{display:none}}
+.mob-search{margin:14px 18px 6px}
+@media(min-width:769px){.mob-search{display:none}}
+
+/* /search results page */
+.sr-hero{background:var(--cream);border-bottom:1px solid var(--cream2);padding:44px 24px 34px}
+.sr-in{max-width:760px;margin:0 auto}
+.sr-hero h1{font-family:var(--fh);font-size:30px;font-weight:800;color:var(--navy);margin:0 0 16px}
+.sr-form{display:flex;gap:10px}
+.sr-form input{flex:1;font:inherit;font-size:16px;padding:12px 14px;border:1px solid var(--g200);border-radius:10px;background:#fff;color:var(--navy)}
+.sr-form input:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 3px rgba(232,93,0,.14)}
+.sr-wrap{max-width:760px;margin:0 auto;padding:30px 24px 70px}
+.sr-count{font-size:14px;color:var(--g600);margin:0 0 18px}
+.sr-h{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g400);margin:26px 0 10px}
+.sr-item{display:block;padding:14px 16px;border:1px solid var(--g200);border-radius:10px;background:#fff;margin-bottom:10px;text-decoration:none}
+.sr-item:hover{border-color:var(--orange)}
+.sr-item--hl{border-color:rgba(232,93,0,.45);background:rgba(232,93,0,.05)}
+.sr-t{font-family:var(--fh);font-size:16px;font-weight:700;color:var(--navy)}
+.sr-u{font-size:12px;color:var(--g400);margin-top:2px;word-break:break-all}
+.sr-x{font-size:14px;line-height:1.55;color:var(--g600);margin-top:6px}
+.sr-empty{padding:26px;border:1px dashed var(--g200);border-radius:10px;color:var(--g600);font-size:15px}
+.sr-sug{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.sr-sug a{padding:6px 12px;border:1px solid var(--g200);border-radius:100px;font-size:13px;color:var(--navy);text-decoration:none;background:#fff}
+.sr-sug a:hover{border-color:var(--orange);color:var(--orange)}

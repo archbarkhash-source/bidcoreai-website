@@ -767,3 +767,18 @@ async function submitQuickSvc(){
   }
   reset();
 }
+
+/* ─── COUNTRY SWITCH ───
+   This is the US site; choosing IN sends the visitor to bidcore.in. */
+const BIDCORE_IN_URL = 'https://www.bidcore.in';
+document.addEventListener('change', function(e){
+  const t = e.target;
+  if(t && t.classList && t.classList.contains('country-sw-s') && t.value === 'IN'){
+    window.location.href = BIDCORE_IN_URL;
+  }
+});
+// back/forward cache: show this site's own country again when the visitor comes back
+window.addEventListener('pageshow', function(){
+  document.querySelectorAll('.country-sw-s').forEach(function(sel){ sel.value = 'US'; });
+});
+

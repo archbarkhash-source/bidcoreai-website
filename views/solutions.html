@@ -81,6 +81,7 @@
       <svg width="18" height="18"><use href="#ic-x"/></svg>
     </button>
   </div>
+  <form class="mob-search" action="/search" method="get" role="search"><button type="submit" class="nav-search-b" aria-label="Search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button><input type="search" name="q" placeholder="Search BidcoreAI" aria-label="Search BidcoreAI" autocomplete="off" maxlength="80"/></form>
   <div class="mob-links">
     <details class="mob-grp">
       <summary class="mob-grp-s"><span class="mob-grp-l">Features</span><svg class="mob-grp-c" width="13" height="13"><use href="#ic-caret"/></svg></summary>
@@ -106,17 +107,6 @@
       <a class="mob-nl" href="/solutions"><svg width="14" height="14"><use href="#ic-flag"/></svg> Prime Contractors</a>
       <a class="mob-nl" href="/solutions#subcontractors"><svg width="14" height="14"><use href="#ic-tool"/></svg> Subcontractors</a>
     </details>
-    <details class="mob-grp">
-      <summary class="mob-grp-s"><span class="mob-grp-l">Services</span><svg class="mob-grp-c" width="13" height="13"><use href="#ic-caret"/></svg></summary>
-      <a class="mob-nl" href="/demolition-takeoff-services"><svg width="14" height="14"><use href="#ic-refresh"/></svg> Demolition</a>
-      <a class="mob-nl" href="/concrete-takeoff-services"><svg width="14" height="14"><use href="#ic-building"/></svg> Concrete</a>
-      <a class="mob-nl" href="/finishes-takeoff-services"><svg width="14" height="14"><use href="#ic-sparkle"/></svg> Drywall &amp; Finishes</a>
-      <a class="mob-nl" href="/mechanical-takeoff-services"><svg width="14" height="14"><use href="#ic-cloud"/></svg> HVAC</a>
-      <a class="mob-nl" href="/plumbing-takeoff-services"><svg width="14" height="14"><use href="#ic-filter"/></svg> Plumbing</a>
-      <a class="mob-nl" href="/electrical-takeoff-services"><svg width="14" height="14"><use href="#ic-cpu"/></svg> Electrical</a>
-      <a class="mob-nl mob-nl--more" href="/construction-takeoff-services">View All Divisions <span aria-hidden="true">→</span></a>
-      <a class="mob-nl" href="/work-samples"><svg width="14" height="14"><use href="#ic-dl"/></svg> Work Samples</a>
-    </details>
     <a class="mob-nl mob-nl--top" href="/pricing">Pricing</a>
     <details class="mob-grp">
       <summary class="mob-grp-s"><span class="mob-grp-l">Community</span><svg class="mob-grp-c" width="13" height="13"><use href="#ic-caret"/></svg></summary>
@@ -132,6 +122,7 @@
     </details>
     <a class="mob-nl mob-nl--top" href="/contact">Contact</a>
   </div>
+  <div class="mob-country"><span>Country</span><label class="country-sw" title="Country / region"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg><select class="country-sw-s" aria-label="Country or region"><option value="US" selected>US</option><option value="IN">IN</option></select></label></div>
   <div class="mob-cta">
     <button class="btn btn-p" style="width:100%;justify-content:center" onclick="openModal('Book Live Demo')">
       <svg width="14" height="14"><use href="#ic-play"/></svg> Request a Demo
@@ -150,6 +141,7 @@
         onerror="this.style.display='none';this.nextElementSibling.style.display='block'"/>
       <span class="logo-txt" style="display:none">BidcoreAI</span>
     </a>
+    <form class="nav-search" action="/search" method="get" role="search"><button type="submit" class="nav-search-b" aria-label="Search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button><input type="search" name="q" placeholder="Search BidcoreAI" aria-label="Search BidcoreAI" autocomplete="off" maxlength="80"/></form>
     <div class="nav-links" id="nav-links">
       <div class="nl-drop">
         <a class="nl nl-drop-t" id="nl-features" href="/features" aria-haspopup="true">Features<svg width="10" height="10" class="nl-caret"><use href="#ic-caret"/></svg></a>
@@ -230,51 +222,6 @@
         </div>
       </div>
 
-      <div class="nl-drop">
-        <a class="nl nl-drop-t" id="nl-services" href="/construction-takeoff-services" aria-expanded="false" aria-haspopup="true">Services<svg width="10" height="10" class="nl-caret"><use href="#ic-caret"/></svg></a>
-        <div class="nl-panel nl-panel--wide" role="menu">
-          <div class="nl-panel-h">Takeoff &amp; estimating services</div>
-          <a class="nl-item" href="/demolition-takeoff-services">
-            <span class="nl-item-ico"><svg width="15" height="15"><use href="#ic-refresh"/></svg></span>
-            <span class="nl-item-txt"><span class="nl-item-t">Demolition</span><span class="nl-item-d">Division 02 — demolition, abatement and remediation</span></span>
-          </a>
-          <a class="nl-item" href="/concrete-takeoff-services">
-            <span class="nl-item-ico"><svg width="15" height="15"><use href="#ic-building"/></svg></span>
-            <span class="nl-item-txt"><span class="nl-item-t">Concrete</span><span class="nl-item-d">Division 03 — concrete, rebar and formwork</span></span>
-          </a>
-          <a class="nl-item" href="/finishes-takeoff-services">
-            <span class="nl-item-ico"><svg width="15" height="15"><use href="#ic-sparkle"/></svg></span>
-            <span class="nl-item-txt"><span class="nl-item-t">Drywall &amp; Finishes</span><span class="nl-item-d">Division 09 — drywall, paint and flooring</span></span>
-          </a>
-          <a class="nl-item" href="/mechanical-takeoff-services">
-            <span class="nl-item-ico"><svg width="15" height="15"><use href="#ic-cloud"/></svg></span>
-            <span class="nl-item-txt"><span class="nl-item-t">HVAC</span><span class="nl-item-d">Divisions 21 & 23 — equipment, duct and controls</span></span>
-          </a>
-          <a class="nl-item" href="/plumbing-takeoff-services">
-            <span class="nl-item-ico"><svg width="15" height="15"><use href="#ic-filter"/></svg></span>
-            <span class="nl-item-txt"><span class="nl-item-t">Plumbing</span><span class="nl-item-d">Division 22 — fixtures, water, waste and gas</span></span>
-          </a>
-          <a class="nl-item" href="/electrical-takeoff-services">
-            <span class="nl-item-ico"><svg width="15" height="15"><use href="#ic-cpu"/></svg></span>
-            <span class="nl-item-txt"><span class="nl-item-t">Electrical</span><span class="nl-item-d">Divisions 26–28 — devices, feeders and lighting</span></span>
-          </a>
-          <a class="nl-more" href="/construction-takeoff-services">View All Divisions <span aria-hidden="true">→</span></a>
-          <div class="nl-panel-h">Request takeoff service</div>
-          <a class="nl-item" href="/takeoff-services#svc-form-section">
-            <span class="nl-item-ico"><svg width="15" height="15"><use href="#ic-upload"/></svg></span>
-            <span class="nl-item-txt"><span class="nl-item-t">Submit a Takeoff Request</span><span class="nl-item-d">Live project, send drawings, get a fixed quote</span></span>
-          </a>
-          <a class="nl-item" href="/work-samples#takeoff">
-            <span class="nl-item-ico"><svg width="15" height="15"><use href="#ic-mail"/></svg></span>
-            <span class="nl-item-txt"><span class="nl-item-t">Free Sample Project</span><span class="nl-item-d">Send drawings, get one division free</span></span>
-          </a>
-          <div class="nl-panel-h">Work samples</div>
-          <a class="nl-item" href="/work-samples">
-            <span class="nl-item-ico"><svg width="15" height="15"><use href="#ic-dl"/></svg></span>
-            <span class="nl-item-txt"><span class="nl-item-t">Work Samples</span><span class="nl-item-d">Real takeoff and estimate deliverables to review</span></span>
-          </a>
-        </div>
-      </div>
 
       <a class="nl" id="nl-pricing" href="/pricing">Pricing</a>
       <div class="nl-drop">
@@ -319,6 +266,7 @@
       <a class="nl" id="nl-contact" href="/contact">Contact</a>
     </div>
     <div class="nav-cta">
+      <label class="country-sw" title="Country / region"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg><select class="country-sw-s" aria-label="Country or region"><option value="US" selected>US</option><option value="IN">IN</option></select></label>
       <button class="btn btn-p btn-sm nav-demo" onclick="openModal('Book Live Demo')">Request a Demo</button>
     </div>
   </div>
@@ -793,18 +741,6 @@ function toggleFaq(btn){
         </ul>
       </div>
       <div>
-        <div class="ft-col-t">Services</div>
-        <ul class="ft-links">
-          <li><a href="/quantity-takeoff-estimating-services">Takeoff &amp; Estimating Services</a></li>
-          <li><a href="/construction-takeoff-services">Takeoff by CSI Division</a></li>
-          <li><a href="/concrete-takeoff-services">Concrete Estimating</a></li>
-          <li><a href="/finishes-takeoff-services">Finishes Estimating</a></li>
-          <li><a href="/mechanical-takeoff-services">Mechanical &amp; Plumbing</a></li>
-          <li><a href="/electrical-takeoff-services">Electrical Estimating</a></li>
-          <li><a href="/work-samples">Work Samples</a></li>
-        </ul>
-      </div>
-      <div>
         <div class="ft-col-t">Quick Links</div>
         <ul class="ft-links">
           <li><a href="/#about">About Us</a></li>
@@ -813,6 +749,7 @@ function toggleFaq(btn){
           <li><a href="/guide">Guide</a></li>
           <li><a href="https://www.youtube.com/@bidcoreai" target="_blank" rel="noopener">Learn</a></li>
           <li><a href="/feedback">Feedback</a></li>
+          <li><a href="/faq">FAQ</a></li>
           <li><a href="/contact">Contact Us</a></li>
         </ul>
       </div>
