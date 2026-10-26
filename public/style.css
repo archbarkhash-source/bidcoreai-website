@@ -1618,3 +1618,19 @@ section p[style*="font-size:17"]{font-size:18px!important}
 .sr-sug{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
 .sr-sug a{padding:6px 12px;border:1px solid var(--g200);border-radius:100px;font-size:13px;color:var(--navy);text-decoration:none;background:#fff}
 .sr-sug a:hover{border-color:var(--orange);color:var(--orange)}
+
+/* ───── HEADER SIZES = bidcore.in (desktop) ─────
+   The two sites share one header design, so the sizes match (the width stays the page width so the logo lines up with the content below): a 70px top row (36px demo button, 42px search, 32px logo), a 41px tab row with
+   14px / 500 tabs and 14px / 600 buttons. Colours stay BidcoreAI's own. Phones keep their single row and menu. */
+@media(min-width:769px){
+  .nav-in{row-gap:0}
+  .logo-wrap{padding:19px 0}
+  .logo-img{height:32px}
+  .nav-search{max-width:576px;margin:0 auto 0 20px;padding:14px 0}
+  .nav-search input{font-size:14px;line-height:20px;padding:10px 12px 10px 36px;border-radius:6px}
+  .nav-cta{padding:17px 0}
+  .nav-cta .btn{font-size:14px;font-weight:600;padding:8px 20px;border-radius:6px;line-height:20px}
+  .country-sw{font-size:14px;font-weight:500}
+  .nav-links{margin-left:-16px;padding:0}
+  .nl{font-size:14px;font-weight:500;padding:10px 16px;border-radius:6px;line-height:20px}
+}
