@@ -13,6 +13,12 @@
  *
  *   node tools/add-software-nav.js
  */
+/* Retired: the Products menu now lists only the five platform products (Bid Connect, Bid Management, Project Management,
+   Procurement Management, Site Operations). The software pages stay reachable from /software and the footer. Running this would
+   put the software group back into every menu, so it stops here. */
+console.log('add-software-nav is retired: the Products menu no longer includes the software group.');
+process.exit(0);
+
 const fs = require('fs');
 const path = require('path');
 

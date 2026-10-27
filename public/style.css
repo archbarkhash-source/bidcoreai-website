@@ -80,7 +80,7 @@ button{font-family:var(--fb)}
 .nav{position:sticky;top:0;z-index:500;background:var(--cream);backdrop-filter:blur(20px);border-bottom:1px solid var(--cream2)}
 .nav-in{max-width:1160px;margin:0 auto;padding:0 24px;height:62px;display:flex;align-items:center;gap:8px}
 .logo-wrap{display:flex;align-items:center;gap:8px;cursor:pointer;flex-shrink:0;text-decoration:none}
-.logo-img{height:30px;width:auto;display:block}
+.logo-img{height:30px;width:auto;display:block;border-radius:8px}
 .logo-txt{font-family:var(--fh);font-size:18px;font-weight:800;color:var(--navy)}
 .nav-links{display:flex;gap:1px;margin-left:auto}
 /* The tabs are anchors, so they inherited the browser's underline — struck off
@@ -193,10 +193,11 @@ button{font-family:var(--fb)}
 .hero{background:var(--dk);padding:82px 24px 0;overflow:hidden;position:relative;min-height:88vh;display:flex;align-items:center}
 .hero-glow{position:absolute;inset:0;background:radial-gradient(ellipse 60% 55% at 76% 40%,rgba(232,93,0,.07) 0%,transparent 64%),radial-gradient(ellipse 35% 35% at 12% 75%,rgba(224,154,50,.09) 0%,transparent 58%)}
 .hero-grid{position:absolute;inset:0;opacity:.05;background-image:radial-gradient(circle,rgba(23,26,32,.55) 1px,transparent 1px);background-size:32px 32px}
-.hero-in{position:relative;z-index:2;max-width:1112px;margin:0 auto;display:grid;grid-template-columns:1fr 1.42fr;gap:44px;align-items:center;padding-bottom:80px;width:100%}
+.hero-in{position:relative;z-index:2;max-width:1112px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);gap:48px;align-items:center;padding-bottom:80px;width:100%}
 .hero-tag{display:inline-flex;align-items:center;gap:7px;background:rgba(232,93,0,.14);border:1px solid rgba(232,93,0,.25);border-radius:100px;padding:6px 15px;font-size:12px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
-.hero-sub{font-size:19px;color:var(--g600);line-height:1.76;max-width:480px;margin-bottom:30px}
-.hero-ctas{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:44px}
+.hero .h1{font-size:clamp(32px,3.7vw,52px);line-height:1.12;letter-spacing:-.01em;margin-bottom:18px;max-width:560px}
+.hero-sub{font-size:17.5px;color:var(--g600);line-height:1.7;max-width:520px;margin-bottom:28px}
+.hero-ctas{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:36px}
 .hero-stats{display:flex;gap:0;background:#fff;border:1px solid var(--g200);border-radius:12px;overflow:hidden;width:fit-content;box-shadow:var(--s1)}
 .hs{padding:13px 24px;border-right:1px solid var(--g200)}
 .hs:last-child{border-right:none}
@@ -204,7 +205,7 @@ button{font-family:var(--fb)}
 .hs-l{font-size:12.5px;color:var(--g600);margin-top:4px}
 
 /* hero screenshot */
-.hero-ss{border-radius:14px;overflow:hidden;box-shadow:var(--s3);border:1px solid var(--g200);animation:risein .72s ease both;width:100%;max-width:980px;margin-left:auto;transform:scale(1.04);transform-origin:center}
+.hero-ss{border-radius:14px;overflow:hidden;box-shadow:var(--s3);border:1px solid var(--g200);animation:risein .72s ease both;width:100%;max-width:980px;margin-left:auto}
 @keyframes risein{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
 .ss-chrome{background:rgba(28,32,38,.92);padding:9px 14px;display:flex;align-items:center;gap:6px;border-bottom:1px solid rgba(255,255,255,.06)}
 .ssdot{width:9px;height:9px;border-radius:50%}
@@ -450,7 +451,7 @@ button{font-family:var(--fb)}
 @keyframes minIn{from{opacity:0;transform:scale(.92) translateY(14px)}to{opacity:1;transform:scale(1) translateY(0)}}
 .mclose{position:absolute;top:12px;right:12px;background:var(--g100);border:none;border-radius:7px;width:29px;height:29px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--g400);transition:all .14s}
 .mclose:hover{background:var(--g200);color:var(--navy)}
-.m-logo-img{height:22px;display:block;margin-bottom:5px}
+.m-logo-img{height:22px;display:block;margin-bottom:5px;border-radius:5px}
 .m-title{font-family:var(--fh);font-size:21px;font-weight:800;color:var(--navy);margin-bottom:5px}
 .m-sub{font-size:13px;color:var(--g600);margin-bottom:18px;line-height:1.6}
 
@@ -507,7 +508,7 @@ button{font-family:var(--fb)}
    so this has to come first to keep the responsive collapse working. */
 .ft-grid--6{grid-template-columns:1.4fr repeat(5,minmax(0,1fr));gap:24px}
 .ft-logo-wrap{text-decoration:none;margin-bottom:8px}
-.ft-logo-img{height:24px;display:block}
+.ft-logo-img{height:24px;display:block;border-radius:6px}
 .ft-logo-txt{font-family:var(--fh);font-size:16px;font-weight:800;color:var(--navy)}
 .ft-tag{font-size:12px;color:var(--g600);line-height:1.7;max-width:190px;margin-bottom:13px}
 .ft-badge{display:inline-flex;align-items:center;gap:5px;background:var(--odim);color:var(--orange);border:1px solid rgba(232,93,0,.2);border-radius:6px;font-size:10px;font-weight:600;padding:4px 8px}
@@ -611,7 +612,7 @@ button{font-family:var(--fb)}
    a button, which a table cell handles awkwardly, and the group rows need to
    span the full width. Four columns — the feature, then one per plan. */
 .pt-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--r2);border:1px solid var(--g200);background:var(--white)}
-.pt-table{min-width:720px;display:grid;grid-template-columns:minmax(240px,1.6fr) repeat(3,minmax(120px,1fr))}
+.pt-table{min-width:840px;display:grid;grid-template-columns:minmax(240px,1.5fr) repeat(4,minmax(110px,1fr))}
 
 .pt-head{display:contents}
 .pt-hf{padding:22px 20px;background:var(--g100);border-bottom:1px solid var(--g200)}
@@ -1345,13 +1346,13 @@ section p[style*="font-size:17"]{font-size:18px!important}
 .pipe{position:relative;padding:18px 0 8px}
 /* The rail sits behind the dot row. 42px is half the dot's height plus its top
    offset, so the line passes through the centre of every node. */
-.pipe-rail{position:absolute;left:6%;right:6%;top:42px;height:2px;background:var(--g200);border-radius:2px;overflow:hidden}
+.pipe-rail{position:absolute;left:8%;right:8%;top:42px;height:2px;background:var(--g200);border-radius:2px;overflow:hidden}
 .pipe-pulse{position:absolute;top:0;left:0;height:100%;width:34%;border-radius:2px;
   background:linear-gradient(90deg,transparent,var(--orange),transparent);
   animation:pipeRun 5.6s linear infinite}
 @keyframes pipeRun{0%{transform:translateX(-100%)}100%{transform:translateX(340%)}}
 
-.pipe-stages{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
+.pipe-stages{position:relative;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:18px}
 @media(max-width:900px){.pipe-stages{grid-template-columns:1fr 1fr;gap:26px}}
 @media(max-width:560px){.pipe-stages{grid-template-columns:1fr}}
 /* Below the two-column break the rail no longer lines up with anything. */
@@ -1368,6 +1369,7 @@ section p[style*="font-size:17"]{font-size:18px!important}
 .stage:nth-child(2) .stage-dot{animation-delay:1.1s}
 .stage:nth-child(3) .stage-dot{animation-delay:2.2s}
 .stage:nth-child(4) .stage-dot{animation-delay:3.3s}
+.stage:nth-child(5) .stage-dot{animation-delay:4.4s}
 @keyframes stageLit{
   0%,14%,100%{border-color:var(--g200);color:var(--g400);box-shadow:none}
   6%{border-color:var(--orange);color:var(--orange);box-shadow:0 0 0 6px rgba(204,77,0,.1)}
@@ -1375,7 +1377,7 @@ section p[style*="font-size:17"]{font-size:18px!important}
 .stage-n{font-family:var(--fh);font-size:10px;font-weight:700;letter-spacing:.14em;
   text-transform:uppercase;color:var(--org2);margin-top:16px}
 .stage-t{font-family:var(--fh);font-size:19px;font-weight:800;color:var(--navy);margin-top:5px;line-height:1.24}
-.stage-p{font-size:14.5px;color:var(--g600);line-height:1.65;margin-top:9px;max-width:270px;margin-inline:auto}
+.stage-p{font-size:14px;color:var(--g600);line-height:1.65;margin-top:9px;max-width:240px;margin-inline:auto}
 /* Hovering a stage holds it lit, so a reader can stop the sequence to read. */
 .stage:hover .stage-dot{animation-play-state:paused;border-color:var(--orange);color:var(--orange);
   box-shadow:0 0 0 6px rgba(204,77,0,.1)}
@@ -1633,4 +1635,7 @@ section p[style*="font-size:17"]{font-size:18px!important}
   .country-sw{font-size:14px;font-weight:500}
   .nav-links{margin-left:-16px;padding:0}
   .nl{font-size:14px;font-weight:500;padding:10px 16px;border-radius:6px;line-height:20px}
+  /* The tab row is pulled 16px left so the tab text lines up with the logo; its hairline is drawn from the logo edge to the button edge instead of riding along with it. */
+  .nav-links{position:relative;border-top:none}
+  .nav-links::before{content:"";position:absolute;top:0;left:16px;right:-16px;border-top:1px solid var(--cream2)}
 }

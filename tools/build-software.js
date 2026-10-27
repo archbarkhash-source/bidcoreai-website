@@ -242,7 +242,7 @@ function hero(p) {
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:24px">
         <button class="btn btn-p btn-lg" onclick="openModal('Book Live Demo')">${ico('play', 16)} Book a Demo</button>
         <a href="/go-no-go" class="btn btn-gh btn-lg">Try the Free Analyzer</a>
-        <a href="/features" class="btn btn-gh btn-lg">Explore Features</a>
+        <a href="/products" class="btn btn-gh btn-lg">Explore Products</a>
       </div>
       <div style="font-size:11.5px;color:var(--g400);margin-top:12px">Free Go/No-Go Analyzer &middot; no card required &middot; a specialist replies within 1 business day</div>
     </div>
