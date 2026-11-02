@@ -18,7 +18,7 @@
 <meta name="twitter:title" content="BidcoreAI – AI-Powered End to End Preconstruction to Construction Platform"/>
 <meta name="twitter:description" content="BidcoreAI is an AI-powered platform built to integrate preconstruction and construction in one workspace, streamlining the complete project life cycle: faster takeoffs, structured estimates aligned with CSI MasterFormat, bid workflows, project budgets, procurement and site operations."/>
 <link rel="icon" type="image/png" href="https://bidcoreai-assets.vercel.app/favicon.png"/>
-<link rel="stylesheet" href="../public/style.css?v=20261102b"/>
+<link rel="stylesheet" href="../public/style.css?v=20261102e"/>
 
 <!-- Structured data. Only the site-level entities live here: the Go/No-Go
      SoftwareApplication and its FAQ sit on /go-no-go, so this page keeps its
@@ -115,7 +115,6 @@
       <summary class="mob-grp-s"><span class="mob-grp-l">Products</span><svg class="mob-grp-c" width="13" height="13"><use href="#ic-caret"/></svg></summary>
       <a class="mob-nl" href="/products/scale"><svg width="14" height="14"><use href="#ic-scan"/></svg> BidcoreAI Scale</a>
       <a class="mob-nl" href="/products/sync"><svg width="14" height="14"><use href="#ic-layers"/></svg> BidcoreAI Sync</a>
-      <a class="mob-nl" href="/products/bid-connect"><svg width="14" height="14"><use href="#ic-pkg"/></svg> Bid Connect</a>
     </details>
     <details class="mob-grp">
       <summary class="mob-grp-s"><span class="mob-grp-l">Solutions</span><svg class="mob-grp-c" width="13" height="13"><use href="#ic-caret"/></svg></summary>
@@ -169,10 +168,6 @@
           <a class="nl-item" href="/products/sync">
             <span class="nl-item-ico"><svg width="15" height="15"><use href="#ic-layers"/></svg></span>
             <span class="nl-item-txt"><span class="nl-item-t">BidcoreAI Sync</span><span class="nl-item-d">End to end: bid, budget, build and site</span></span>
-          </a>
-          <a class="nl-item" href="/products/bid-connect">
-            <span class="nl-item-ico"><svg width="15" height="15"><use href="#ic-pkg"/></svg></span>
-            <span class="nl-item-txt"><span class="nl-item-t">Bid Connect</span><span class="nl-item-d">Invite subs, level bids, find federal opportunities</span></span>
           </a>
         </div>
       </div>
@@ -285,7 +280,7 @@
         </a>
       </div>
       <div class="hero-stats">
-        <div class="hs"><div class="hs-v">3</div><div class="hs-l">Products</div></div>
+        <div class="hs"><div class="hs-v">2</div><div class="hs-l">Products</div></div>
         <div class="hs"><div class="hs-v">17</div><div class="hs-l">Trade Solutions</div></div>
         <div class="hs"><div class="hs-v">50</div><div class="hs-l">CSI Divisions</div></div>
       </div>
@@ -377,7 +372,7 @@
           <li>Takeoff</li>
           <li>Cost Estimation</li>
           <li>Bid Cost</li>
-          <li>Bid Connect</li>
+          <li>Bid Packages and Leveling</li>
           <li>AI Bid Proposal</li>
         </ul>
       </a>
@@ -415,10 +410,10 @@
   <div class="con">
     <div class="rv" style="text-align:center">
       <div class="eyebrow" style="justify-content:center"><svg width="12" height="12"><use href="#ic-layout"/></svg> Products</div>
-      <h2 class="h2" style="font-size:clamp(23px,2.9vw,38px)">Start with Scale. Grow into Sync.</h2>
-      <p class="lead" style="margin:12px auto 0;max-width:680px">Each product stands on its own, and BidcoreAI Sync includes the other two.</p>
+      <h2 class="h2" style="font-size:clamp(23px,2.9vw,38px)">Two products. Start with Scale, grow into Sync.</h2>
+      <p class="lead" style="margin:12px auto 0;max-width:680px">BidcoreAI Scale stands on its own, and BidcoreAI Sync includes it.</p>
     </div>
-    <div class="ft-hub rv" style="margin-top:34px">
+    <div class="ft-hub ft-hub--2 rv" style="margin-top:34px">
       <a class="ft-hub-c" href="/products/scale">
         <div class="ft-hub-i"><svg width="20" height="20"><use href="#ic-scan"/></svg></div>
         <div class="spec-cat">Takeoff and cost estimating</div>
@@ -429,13 +424,7 @@
         <div class="ft-hub-i"><svg width="20" height="20"><use href="#ic-layers"/></svg></div>
         <div class="spec-cat">End to end, bid to built</div>
         <div class="ft-hub-t">BidcoreAI Sync</div>
-        <div class="ft-hub-x">Everything in Scale and Bid Connect, then budget, schedule, pay apps, procurement and site operations on the same numbers.</div>
-      </a>
-      <a class="ft-hub-c" href="/products/bid-connect">
-        <div class="ft-hub-i"><svg width="20" height="20"><use href="#ic-pkg"/></svg></div>
-        <div class="spec-cat">Bidding</div>
-        <div class="ft-hub-t">Bid Connect</div>
-        <div class="ft-hub-x">Invite subs, track and level their bids, and watch federal opportunities.</div>
+        <div class="ft-hub-x">Everything in Scale, bidding with your subs, then budget, schedule, pay apps, procurement and site operations on the same numbers.</div>
       </a>
     </div>
   </div>
@@ -467,7 +456,7 @@
         <div class="stage">
           <div class="stage-dot"><svg width="20" height="20"><use href="#ic-pkg"/></svg></div>
           <div class="stage-n">Section 02</div>
-          <div class="stage-t">Bid Connect</div>
+          <div class="stage-t">Sync: Bid Packages</div>
           <p class="stage-p">Packages issued by trade, ITBs sent with the documents attached, and every sub bid logged and levelled as it returns. Federal opportunities are watched here too.</p>
         </div>
         <div class="stage">
@@ -534,7 +523,7 @@
         <div class="hiw-step" onclick="setStep(2)"><div class="hs-num">3</div><div><div class="hs-label">AI Analysis</div><div class="hs-sub">Scope and risk extracted</div></div></div>
         <div class="hiw-step" onclick="setStep(3)"><div class="hs-num">4</div><div><div class="hs-label">Takeoff</div><div class="hs-sub">Drawings and quantities</div></div></div>
         <div class="hiw-step" onclick="setStep(4)"><div class="hs-num">5</div><div><div class="hs-label">Cost Estimation</div><div class="hs-sub">Your rates, CSI-structured</div></div></div>
-        <div class="hiw-step" onclick="setStep(5)"><div class="hs-num">6</div><div><div class="hs-label">Bid Connect</div><div class="hs-sub">Packages and subs</div></div></div>
+        <div class="hiw-step" onclick="setStep(5)"><div class="hs-num">6</div><div><div class="hs-label">Bid Packages</div><div class="hs-sub">Packages and subs</div></div></div>
         <div class="hiw-step" onclick="setStep(6)"><div class="hs-num">7</div><div><div class="hs-label">Bid Cost</div><div class="hs-sub">Breakdown and margin</div></div></div>
         <div class="hiw-step" onclick="setStep(7)"><div class="hs-num">8</div><div><div class="hs-label">AI Bid Proposal</div><div class="hs-sub">Drafted, export-ready</div></div></div>
         <div class="hiw-step" onclick="setStep(8)"><div class="hs-num">9</div><div><div class="hs-label">Project Management</div><div class="hs-sub">Budget, schedule, billing, logs</div></div></div>
@@ -672,7 +661,6 @@
         <ul class="ft-links">
           <li><a href="/products/scale">BidcoreAI Scale</a></li>
           <li><a href="/products/sync">BidcoreAI Sync</a></li>
-          <li><a href="/products/bid-connect">Bid Connect</a></li>
           <li><a href="/go-no-go">Free Go/No-Go Analyzer</a></li>
           <li><a href="/ai-quantity-takeoff">AI Quantity Takeoff</a></li>
           <li><a href="/ai-document-analysis">AI Document Analysis</a></li>

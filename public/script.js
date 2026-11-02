@@ -173,7 +173,7 @@ const HIW_DATA = [
    pts:[{t:'Your rates',s:'Materials, labor, equipment, assemblies'},
         {t:'50 CSI divisions',s:'Cost codes and assemblies you control'},
         {t:'Conceptual or detailed',s:'Area cost/SF early, line items later'}]},
-  {badge:'Stage 6',title:'Bid Connect',desc:'Build bid packages by trade, invite subcontractors and level what comes back.',
+  {badge:'Stage 6',title:'Bid Packages',desc:'Build bid packages by trade, invite subcontractors and level what comes back.',
    pts:[{t:'CSI-structured packages',s:'Scoped by trade, generated together'},
         {t:'Invite and track',s:'Your directory or a radius search, ITBs, addenda and a Sub Bid Log'},
         {t:'Level the bids',s:'Side by side, with scope gaps flagged'}]},

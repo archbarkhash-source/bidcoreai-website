@@ -1,5 +1,5 @@
 /**
- * Puts the three products (BidcoreAI Scale, BidcoreAI Sync, Bid Connect) into the Products menu of every page in /views,
+ * Puts the two products (BidcoreAI Scale, BidcoreAI Sync) into the Products menu of every page in /views,
  * and updates the footer. Every page carries its own copy of the nav,
  * so this walks the files. Idempotent: running it again changes nothing.
  *
@@ -9,12 +9,11 @@ const fs = require('fs');
 const path = require('path');
 
 const VIEWS = path.join(__dirname, '..', 'views');
-const NEW_VER = '20261102d';
+const NEW_VER = '20261102e';
 
 const ITEMS = [
   ['/products/scale', 'ic-scan', 'BidcoreAI Scale', 'AI takeoff and cost estimating'],
   ['/products/sync', 'ic-layers', 'BidcoreAI Sync', 'End to end: bid, budget, build and site'],
-  ['/products/bid-connect', 'ic-pkg', 'Bid Connect', 'Invite subs, level bids, find federal opportunities'],
 ];
 
 const desktopItems = ITEMS.map(([href, ic, t, d]) => `          <a class="nl-item" href="${href}">
@@ -25,7 +24,6 @@ const mobileItems = ITEMS.map(([href, ic, t]) => `      <a class="mob-nl" href="
 
 const FOOT_LI = `          <li><a href="/products/scale">BidcoreAI Scale</a></li>
           <li><a href="/products/sync">BidcoreAI Sync</a></li>
-          <li><a href="/products/bid-connect">Bid Connect</a></li>
 `;
 
 function walk(dir, out = []) {
@@ -70,6 +68,8 @@ for (const file of walk(VIEWS)) {
   s = s.replace(/\n    <span class="mkt-tag"[^>]*>[^<]*<\/span>/g, '');
 
   // Footer.
+  // Bid Connect is no longer a separate product: its features sit under BidcoreAI Sync.
+  s = s.replace(/ *<li><a href="\/products\/bid-connect">Bid Connect<\/a><\/li>\n/g, '');
   s = s.replace('Built exclusively for US contractors.', 'Built for US and global contractors.');
   if (!s.includes('href="/products/scale">BidcoreAI Scale</a></li>')) {
     s = s.replace('<div class="ft-col-t">Products</div>\n        <ul class="ft-links">\n', (m) => m + FOOT_LI);

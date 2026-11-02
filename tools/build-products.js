@@ -1,11 +1,11 @@
 /**
- * Builds the three product pages (Bid Connect, BidcoreAI Scale, BidcoreAI Sync) under /products/<slug> from one template.
+ * Builds the two product pages (BidcoreAI Scale, BidcoreAI Sync) under /products/<slug> from one template.
  *
  *   node tools/build-products.js
  *
  * The page chrome (nav, footer, symbols) is copied from an existing feature page, so a nav change made to every page
  * is picked up the next time this runs. The wording describes what the BidcoreAI application's US workspace does today:
- * keep it to features that exist in the app (Bid Connect, takeoff and estimating = Scale, the rest of the lifecycle = Sync)
+ * keep it to features that exist in the app (takeoff and estimating = Scale, the whole lifecycle including bidding = Sync)
  * and say nothing about what is not built.
  */
 const fs = require('fs');
@@ -22,35 +22,6 @@ const ICONS = {
 };
 
 const PRODUCTS = [
-  {
-    slug: 'bid-connect',
-    name: 'Bid Connect',
-    image: 'Bidworkspace.jpg',
-    imageAlt: 'Bid packages and subcontractor leveling in the bid workspace',
-    headline: 'Invite subs.<br>Find opportunities.<br>Level every bid.',
-    lead: 'Send bid invitations, track what comes back, compare subcontractor bids and watch federal opportunities, all from one section of the project.',
-    keywords: 'bid invitations, subcontractor ITB, bid leveling, federal opportunities, sub bid log',
-    pillars: [
-      ['pkg', 'Start from a project or an opportunity', 'Create a project that opens straight in its Bid Invite, or create an opportunity with no project at all.'],
-      ['layers', 'Bid packages by trade', 'One package per trade, with its scope, due date and bid instructions.'],
-      ['users', 'Invite subcontractors', 'Send ITBs with the documents attached, from your own directory or a radius search by trade.'],
-      ['report', 'Sub Bid Log', 'Track each bid per package, then send acknowledgement, clarification, addendum, award and regret notices from templates.'],
-      ['filter', 'Bid leveling', 'Compare bids side by side with exclusions, alternates and clarifications, then carry the chosen amount into Bid Cost.'],
-      ['flag', 'Opportunities and Federal Opportunities', 'See bid invitations other companies sent you, and a federal feed with match scoring, Go/No-Go, saved searches and alerts.'],
-    ],
-    steps: [
-      ['Create the packages', 'One package per trade, from the project scope.'],
-      ['Invite and track', 'ITBs go out with the current documents. Log each bid as it returns and send addenda to every invited sub at once.'],
-      ['Level and award', 'Compare the bids on the same scope, award the package and send regret notices.'],
-    ],
-    faqs: [
-      ['Where does the sub list come from?', 'Your own directory, plus a radius search by trade when you need coverage in an area you have not bid in before.'],
-      ['Can I receive bid invitations as well as send them?', 'Yes. Opportunities lists the bid invitations other companies have sent you.'],
-      ['Is there a calendar of deadlines?', 'Yes. The Preconstruction Calendar shows bid deadlines, queries, site visits, openings and award formalities across all your tenders.'],
-      ['Is Bid Connect part of BidcoreAI Scale and Sync?', 'Bid Connect is its own product. BidcoreAI Sync includes it, and the bids it levels carry into the estimate you built in BidcoreAI Scale.'],
-    ],
-    related: ['scale', 'sync'],
-  },
   {
     slug: 'scale',
     name: 'BidcoreAI Scale',
@@ -79,7 +50,7 @@ const PRODUCTS = [
       ['Can someone else do the takeoff?', 'Yes. Our US estimators can measure the set for you and deliver the quantities into your project. See Takeoff Services.'],
       ['How is Scale different from BidcoreAI Sync?', 'Scale stops at the priced bid. Sync includes everything in Scale and carries the numbers on into budgeting, scheduling, billing, procurement and the site.'],
     ],
-    related: ['sync', 'bid-connect', 'ai-quantity-takeoff', 'csi-cost-estimation', 'ai-bid-proposal', 'go-no-go'],
+    related: ['sync', 'ai-quantity-takeoff', 'csi-cost-estimation', 'ai-bid-proposal', 'go-no-go'],
   },
   {
     slug: 'sync',
@@ -87,7 +58,7 @@ const PRODUCTS = [
     image: 'Project_Documets.jpg',
     imageAlt: 'Project documents and records in a BidcoreAI project',
     headline: 'From bid to built,<br>on one set<br>of numbers.',
-    lead: 'BidcoreAI Sync is the end-to-end lifecycle: it includes everything in BidcoreAI Scale and Bid Connect, then carries the estimate you bid with into the budget, schedule, billing, procurement and the site.',
+    lead: 'BidcoreAI Sync is the end-to-end lifecycle: it includes everything in BidcoreAI Scale and adds bidding with your subcontractors, then carries the estimate you bid with into the budget, schedule, billing, procurement and the site.',
     keywords: 'BidcoreAI Sync, end to end construction software, preconstruction to construction, construction project management, budgeting, pay application, procurement, site operations',
     groups: [
       {
@@ -98,7 +69,7 @@ const PRODUCTS = [
           ['scan', 'Takeoff', 'Measure counts, lengths and areas on screen. AI symbol detection proposes counts for you to review and apply.'],
           ['db', 'Cost Estimation', 'Price on your own cost database across the CSI divisions, with markup factors, overrides and a Final Estimate.'],
           ['calc', 'Bid Cost', 'General conditions, equipment, subs, materials, labor, payroll, alternates and markups, carried into the bid.'],
-          ['pkg', 'Bid Connect', 'Packages by trade, ITBs, the Sub Bid Log, bid leveling and federal opportunities.'],
+          ['pkg', 'Bid Packages and Leveling', 'Packages by trade, ITBs to your subs, the Sub Bid Log, bid leveling and federal opportunities.'],
           ['file', 'AI Bid Proposal', 'Cover letter through price schedule, drafted from the bid you priced and edited by your team.'],
         ],
       },
@@ -133,12 +104,12 @@ const PRODUCTS = [
     ],
     faqs: [
       ['What is BidcoreAI Sync?', 'The end-to-end product: preconstruction through construction on one platform, so the numbers you bid with are the numbers you build and bill against.'],
-      ['Does Sync include Scale?', 'Yes. Everything in BidcoreAI Scale and Bid Connect is part of Sync. Scale on its own is for teams that only need takeoff and estimating.'],
+      ['Does Sync include Scale?', 'Yes. Everything in BidcoreAI Scale is part of Sync, together with bid packages and subcontractor bid leveling. Scale on its own is for teams that only need takeoff and estimating.'],
       ['Is it the same project as the bid?', 'Yes. The budget can be synced from the estimate, so there is no re-entry between bidding and the job.'],
       ['Is the monthly report written by AI?', 'It is drafted from the records of the month, and every number in the text is checked against them. A person edits and approves it before it locks.'],
       ['Which billing format does the pay app follow?', 'An AIA G702/G703-style application built on the Schedule of Values. An approved application is frozen and the next one carries its figures forward.'],
     ],
-    related: ['scale', 'bid-connect', 'ai-bid-proposal', 'bid-packages-leveling'],
+    related: ['scale', 'ai-bid-proposal', 'bid-packages-leveling'],
   },
 ];
 
