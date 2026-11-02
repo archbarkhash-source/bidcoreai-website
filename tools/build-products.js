@@ -27,28 +27,30 @@ const PRODUCTS = [
     name: 'BidcoreAI Scale',
     image: 'takeoff_markup.jpg',
     imageAlt: 'Takeoff markup on a drawing in BidcoreAI Scale',
-    headline: 'Measure it.<br>Price it.<br>Scale your bids.',
-    lead: 'BidcoreAI Scale is takeoff and estimating in one workspace: read the documents, measure the drawings on screen, price the work on your own cost database and draft the proposal from the bid you priced.',
-    keywords: 'BidcoreAI Scale, construction takeoff software, construction estimating software, AI takeoff, cost estimation, CSI estimating, bid proposal',
+    headline: 'Count it in minutes.<br>Price it on your<br>own numbers.',
+    lead: 'BidcoreAI Scale is AI-powered takeoff, auto takeoff, AI agents and cost estimating in one workspace. It solves the slow, error-prone part of bidding: counting and measuring drawings by hand, and pricing the result.',
+    keywords: 'BidcoreAI Scale, AI takeoff, auto takeoff, automatic takeoff software, AI agents construction, construction cost estimating software, quantity takeoff, CSI estimating, electrical takeoff software',
+    pillarsHeading: 'Problems it solves',
     pillars: [
-      ['scan', 'Takeoff on screen', 'Measure counts, lengths and areas on PDF drawings. AI symbol detection proposes counts for you to review and apply, so nothing is accepted without a person.'],
-      ['brain', 'AI Analysis of the documents', 'Specs, SOWs and addenda read end to end: scope by trade, risk at clause level with the page cited, and a Go/No-Go decision before you spend estimating time.'],
-      ['db', 'Cost Estimation on your own database', 'Price quantities on a cost database you own across the CSI divisions, with markup factors, overrides and a Final Estimate. Start from benchmark data or build it from your historical costs.'],
-      ['calc', 'Bid Cost', 'Build the bid from general conditions, equipment, subcontractors, materials, labor, payroll, alternates and markups, on top of the estimate.'],
-      ['file', 'AI Bid Proposal', 'Cover letter through price schedule, drafted from the bid you priced. Your estimators edit it before it goes out.'],
-      ['users', 'Takeoff Services when you need hands', 'Our US estimators can measure the set for you and deliver the quantities straight into your project.'],
+      ['scan', 'AI-powered takeoff', 'Problem: counting symbols and measuring runs by hand takes days and misses things. AI symbol detection reads the drawing and proposes counts and measurements, and your estimator reviews and applies every one.'],
+      ['filter', 'Auto takeoff', 'Problem: the same device appears on every sheet. Pick a symbol once and Auto Count finds the matching symbols across the drawing for you to confirm, so repeat counts stop being repeat work.'],
+      ['brain', 'Agents', 'Problem: finding and checking a figure in a big estimate is slow. Ask the Agent X assistant about the project and the estimate, or connect your own AI assistant with your own key. Agents propose, a person approves, and nothing changes silently.'],
+      ['db', 'Cost estimation on your own database', 'Problem: quantities are only half the bid. Price on a cost database you own across the CSI divisions, with unit costs for material, labor and equipment, and start from benchmark data or build it from your historical costs.'],
+      ['calc', 'Assemblies, markups and a Final Estimate', 'Problem: the same items are rebuilt on every job. Reuse assemblies, apply markup factors and overrides, and finish with a Final Estimate you can defend line by line.'],
+      ['layers', 'Takeoff to estimate with no re-entry', 'Problem: retyping quantities into a spreadsheet causes the errors. Quantities from the takeoff workspace flow straight into the estimate, by trade and CSI division, in the same project.'],
     ],
     steps: [
-      ['Set up and read', 'Upload the drawings and documents. AI Analysis pulls out scope, risk and the Go/No-Go view.'],
-      ['Measure and price', 'Takeoff quantities flow into the estimate on your own rates, with markups applied once.'],
-      ['Build the bid', 'Bid Cost totals the job and the proposal is drafted from the same numbers.'],
+      ['Measure', 'Open the drawings. AI and auto takeoff propose counts, lengths and areas for review.'],
+      ['Review', 'Accept, correct or reject each proposal. The estimator stays in control.'],
+      ['Price', 'Quantities flow into the estimate on your own rates, with markups applied once.'],
     ],
     faqs: [
-      ['What is BidcoreAI Scale?', 'The takeoff and estimating product of BidcoreAI: documents, takeoff, cost estimation, bid cost and proposal in one project. It is the part of the platform estimators and preconstruction teams use every day.'],
-      ['Does the AI make the decisions?', 'No. The AI reads and measures. Your estimators review it and decide.'],
+      ['What is BidcoreAI Scale?', 'The takeoff and cost estimating product of BidcoreAI: AI-powered takeoff, auto takeoff, AI agents and cost estimating on a database you own.'],
+      ['Does the AI make the decisions?', 'No. The AI proposes counts and measurements and your estimators review and apply them. Agents propose, and a person approves.'],
+      ['How is auto takeoff different from AI takeoff?', 'AI takeoff detects symbols and measures from the drawing. Auto takeoff finds more of the same symbol you already picked, across the sheets, so you count a device once and confirm the rest.'],
       ['Do I have to use my own cost data?', 'No. Build the database from your historical costs and keep it private to your organisation, or start from benchmark data.'],
       ['Can someone else do the takeoff?', 'Yes. Our US estimators can measure the set for you and deliver the quantities into your project. See Takeoff Services.'],
-      ['How is Scale different from BidcoreAI Sync?', 'Scale stops at the priced bid. Sync includes everything in Scale and carries the numbers on into budgeting, scheduling, billing, procurement and the site.'],
+      ['How is Scale different from BidcoreAI Sync?', 'Scale is takeoff and cost estimating. Sync includes everything in Scale and carries the numbers on into bidding with your subs, the proposal, budget, schedule, billing, procurement and the site.'],
     ],
     related: ['sync', 'ai-quantity-takeoff', 'csi-cost-estimation', 'ai-bid-proposal', 'go-no-go'],
   },
@@ -218,7 +220,7 @@ function body(p) {
 
 <section class="overview">
   <div class="con">
-${p.groups ? groupSections(p) : `    <div class="rv" style="text-align:center"><h2 class="h2">What you can do</h2></div>
+${p.groups ? groupSections(p) : `    <div class="rv" style="text-align:center"><h2 class="h2">${esc(p.pillarsHeading || 'What you can do')}</h2></div>
     <div class="ov-pillars rv" style="margin-top:40px">
 ${pillars}
     </div>`}
