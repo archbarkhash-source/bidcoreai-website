@@ -1670,3 +1670,5 @@ section p[style*="font-size:17"]{font-size:18px!important}
 /* Pricing table with two product columns (Scale and Sync). */
 .pt-table--2{min-width:520px;grid-template-columns:minmax(220px,1.6fr) repeat(2,minmax(150px,1fr))}
 .pt-hp-s{font-size:12px;color:var(--g600);margin-top:-6px}
+
+.pt-trial{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#15803D;background:rgba(21,128,61,.09);border:1px solid rgba(21,128,61,.22);border-radius:100px;padding:2px 9px;margin-top:-4px}
