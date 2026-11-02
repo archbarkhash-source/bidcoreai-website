@@ -1,11 +1,11 @@
 /**
- * Builds the five product pages under /products/<slug> from one template.
+ * Builds the three product pages (Bid Connect, BidcoreAI Scale, BidcoreAI Sync) under /products/<slug> from one template.
  *
  *   node tools/build-products.js
  *
  * The page chrome (nav, footer, symbols) is copied from an existing feature page, so a nav change made to every page
  * is picked up the next time this runs. The wording describes what the BidcoreAI application's US workspace does today:
- * keep it to features that exist in the app's sidebar (Bid Connect, Bid Management, Project Management, Site Operations)
+ * keep it to features that exist in the app (Bid Connect, takeoff and estimating = Scale, the rest of the lifecycle = Sync)
  * and say nothing about what is not built.
  */
 const fs = require('fs');
@@ -47,121 +47,71 @@ const PRODUCTS = [
       ['Where does the sub list come from?', 'Your own directory, plus a radius search by trade when you need coverage in an area you have not bid in before.'],
       ['Can I receive bid invitations as well as send them?', 'Yes. Opportunities lists the bid invitations other companies have sent you.'],
       ['Is there a calendar of deadlines?', 'Yes. The Preconstruction Calendar shows bid deadlines, queries, site visits, openings and award formalities across all your tenders.'],
+      ['Is Bid Connect part of BidcoreAI Scale and Sync?', 'Bid Connect is its own product. BidcoreAI Sync includes it, and the bids it levels carry into the estimate you built in BidcoreAI Scale.'],
     ],
-    related: ['bid-management', 'project-management', 'procurement-management'],
+    related: ['scale', 'sync'],
   },
   {
-    slug: 'bid-management',
-    name: 'Bid Management',
+    slug: 'scale',
+    name: 'BidcoreAI Scale',
     image: 'takeoff_markup.jpg',
-    imageAlt: 'Takeoff markup on a drawing in the bid workspace',
-    headline: 'From documents<br>to a priced bid.',
-    lead: 'Read the documents, measure the drawings, price the work on your own cost database and draft the proposal, in one project.',
-    keywords: 'construction bid management, AI document analysis, takeoff, cost estimation, bid proposal',
+    imageAlt: 'Takeoff markup on a drawing in BidcoreAI Scale',
+    headline: 'Measure it.<br>Price it.<br>Scale your bids.',
+    lead: 'BidcoreAI Scale is takeoff and estimating in one workspace: read the documents, measure the drawings on screen, price the work on your own cost database and draft the proposal from the bid you priced.',
+    keywords: 'BidcoreAI Scale, construction takeoff software, construction estimating software, AI takeoff, cost estimation, CSI estimating, bid proposal',
     pillars: [
-      ['building', 'Project setup', 'Project details, team and the compliance profile, set once and used by every step.'],
-      ['file', 'Documents', 'Drawings, specifications, solicitation and addenda, filed in folders and attached to the project.'],
-      ['brain', 'AI Analysis', 'Scope by trade, risk at clause level, a Go/No-Go decision and alerts when a later amendment lands.'],
-      ['scan', 'Takeoff', 'Measure drawings on screen. AI symbol detection proposes counts for you to review and apply.'],
-      ['db', 'Cost Estimation', 'Price on your own cost database across the CSI divisions, with markup factors, overrides and a Final Estimate.'],
-      ['calc', 'Bid Cost and AI Bid Proposal', 'Build the bid from general conditions, equipment, subs, materials, labor, payroll, alternates and markups, then draft the proposal from it.'],
+      ['scan', 'Takeoff on screen', 'Measure counts, lengths and areas on PDF drawings. AI symbol detection proposes counts for you to review and apply, so nothing is accepted without a person.'],
+      ['brain', 'AI Analysis of the documents', 'Specs, SOWs and addenda read end to end: scope by trade, risk at clause level with the page cited, and a Go/No-Go decision before you spend estimating time.'],
+      ['db', 'Cost Estimation on your own database', 'Price quantities on a cost database you own across the CSI divisions, with markup factors, overrides and a Final Estimate. Start from benchmark data or build it from your historical costs.'],
+      ['calc', 'Bid Cost', 'Build the bid from general conditions, equipment, subcontractors, materials, labor, payroll, alternates and markups, on top of the estimate.'],
+      ['file', 'AI Bid Proposal', 'Cover letter through price schedule, drafted from the bid you priced. Your estimators edit it before it goes out.'],
+      ['users', 'Takeoff Services when you need hands', 'Our US estimators can measure the set for you and deliver the quantities straight into your project.'],
     ],
     steps: [
-      ['Set up and read', 'Upload the documents and let AI Analysis pull out scope and risk.'],
-      ['Measure and price', 'Takeoff quantities flow into the estimate on your own rates.'],
-      ['Build the bid', 'Bid Cost totals the job, and the proposal is drafted from it.'],
+      ['Set up and read', 'Upload the drawings and documents. AI Analysis pulls out scope, risk and the Go/No-Go view.'],
+      ['Measure and price', 'Takeoff quantities flow into the estimate on your own rates, with markups applied once.'],
+      ['Build the bid', 'Bid Cost totals the job and the proposal is drafted from the same numbers.'],
     ],
     faqs: [
+      ['What is BidcoreAI Scale?', 'The takeoff and estimating product of BidcoreAI: documents, takeoff, cost estimation, bid cost and proposal in one project. It is the part of the platform estimators and preconstruction teams use every day.'],
       ['Does the AI make the decisions?', 'No. The AI reads and measures. Your estimators review it and decide.'],
-      ['Can someone else do the takeoff?', 'Yes. Our US estimators can measure the set for you and deliver the quantities into your project. See Takeoff Services.'],
       ['Do I have to use my own cost data?', 'No. Build the database from your historical costs and keep it private to your organisation, or start from benchmark data.'],
+      ['Can someone else do the takeoff?', 'Yes. Our US estimators can measure the set for you and deliver the quantities into your project. See Takeoff Services.'],
+      ['How is Scale different from BidcoreAI Sync?', 'Scale stops at the priced bid. Sync includes everything in Scale and carries the numbers on into budgeting, scheduling, billing, procurement and the site.'],
     ],
-    related: ['ai-document-analysis', 'ai-quantity-takeoff', 'csi-cost-estimation', 'ai-bid-proposal', 'ai-risk-compliance-analyser', 'go-no-go'],
+    related: ['sync', 'bid-connect', 'ai-quantity-takeoff', 'csi-cost-estimation', 'ai-bid-proposal', 'go-no-go'],
   },
   {
-    slug: 'project-management',
-    name: 'Project Management',
+    slug: 'sync',
+    name: 'BidcoreAI Sync',
     image: 'Project_Documets.jpg',
     imageAlt: 'Project documents and records in a BidcoreAI project',
-    headline: 'Run the job<br>on the numbers<br>you bid with.',
-    lead: 'Budget, schedule, billing and site records for a project you have won, connected to the estimate it came from.',
-    keywords: 'construction project management, budgeting, schedule of values, pay application, daily log, RFI log',
+    headline: 'From bid to built,<br>on one set<br>of numbers.',
+    lead: 'BidcoreAI Sync is the end-to-end lifecycle: it includes everything in BidcoreAI Scale and Bid Connect, then carries the estimate you bid with into the budget, schedule, billing, procurement and the site.',
+    keywords: 'BidcoreAI Sync, end to end construction software, preconstruction to construction, construction project management, budgeting, pay application, procurement, site operations',
     pillars: [
-      ['calc', 'Budgeting', 'A line per cost code with original budget, approved changes, revised budget, committed and projected costs, forecast to complete and over or under. Sync it from the estimate.'],
-      ['chart', 'Budget changes and cash flow', 'Every modification and change order in one register, a change history, and a cash flow ledger with running totals.'],
-      ['cal', 'Scheduling', 'A Gantt with linked tasks, draggable bars, and dates that recalculate when a predecessor moves.'],
-      ['layout', 'Project Management Calendar', 'Milestones, activities, deliveries and work packages of all your projects.'],
+      ['calc', 'Budget from the estimate', 'A line per cost code with original budget, approved changes, revised budget, committed and projected costs and forecast to complete. Sync it from the estimate you bid with.'],
+      ['cal', 'Scheduling and calendar', 'A Gantt with linked tasks and dates that recalculate when a predecessor moves, plus a Project Management Calendar of milestones, deliveries and work packages across your projects.'],
       ['report', 'Schedule of Values and Pay App', 'An AIA G703-style Schedule of Values and a G702/G703-style pay application, with retainage, change orders and deductions.'],
-      ['file', 'Daily Log', 'The site diary: weather, manpower, equipment, notes, deliveries, visitors, inspections, safety, accidents and delays.'],
-      ['brain', 'Monthly Narrative', 'Drafted only from the month\'s records, with every number checked against the data. The PM edits and approves it.'],
-      ['check', 'Submittal, RFI and Transmittal Logs', 'Generate and track spec-section submittals, requests for information and document transmittals.'],
-      ['layers', 'Procurement Log', 'Track long-lead items beside the budget. See Procurement Management.'],
+      ['file', 'Daily Log, Submittals and RFIs', 'The site diary (weather, manpower, equipment, deliveries, inspections, safety, delays) with submittal, RFI and transmittal logs.'],
+      ['layers', 'Procurement', 'Long-lead items, purchase orders and change orders tracked beside the costs, loaded from the estimate instead of retyped.'],
+      ['tool', 'Site Operations', 'A cross-project crew and resource scheduler with conflict detection, a workforce directory, and work packages with their work orders. Contractors and subcontractors each get the workspace that fits them.'],
+      ['pkg', 'Bid Connect and Scale included', 'Invite subs, level bids, take off, estimate and draft the proposal first, in the same project that you later build.'],
+      ['brain', 'Monthly Narrative', 'Drafted only from the records of the month, with every number checked against the data. The project manager edits and approves it.'],
     ],
     steps: [
-      ['Budget from the estimate', 'Sync the budget lines from the estimate, then track changes against it.'],
-      ['Schedule and record', 'Plan the Gantt, then keep the Daily Log and logs up to date.'],
-      ['Bill and report', 'Bill from the Schedule of Values and write the month\'s narrative from the site records.'],
+      ['Bid', 'Read the documents, measure, estimate, invite subs and level their bids in the same project.'],
+      ['Win and budget', 'Sync the budget lines from the estimate, then plan the schedule and track changes against it.'],
+      ['Build and bill', 'Record the site, order the materials, release the work and bill from the Schedule of Values.'],
     ],
     faqs: [
-      ['Is it the same project as the bid?', 'Yes. The budget can be synced from the estimate, so the numbers you bid with carry into the job.'],
-      ['Is the monthly report written by AI?', 'It is drafted from the month\'s own records, and every number in the text is checked against them. A person edits and approves it before it locks.'],
+      ['What is BidcoreAI Sync?', 'The end-to-end product: preconstruction through construction on one platform, so the numbers you bid with are the numbers you build and bill against.'],
+      ['Does Sync include Scale?', 'Yes. Everything in BidcoreAI Scale and Bid Connect is part of Sync. Scale on its own is for teams that only need takeoff and estimating.'],
+      ['Is it the same project as the bid?', 'Yes. The budget can be synced from the estimate, so there is no re-entry between bidding and the job.'],
+      ['Is the monthly report written by AI?', 'It is drafted from the records of the month, and every number in the text is checked against them. A person edits and approves it before it locks.'],
       ['Which billing format does the pay app follow?', 'An AIA G702/G703-style application built on the Schedule of Values. An approved application is frozen and the next one carries its figures forward.'],
     ],
-    related: ['procurement-management', 'site-operations', 'bid-management'],
-  },
-  {
-    slug: 'procurement-management',
-    name: 'Procurement Management',
-    image: 'Pricing.jpg',
-    imageAlt: 'Costs and orders tracked in a BidcoreAI project',
-    headline: 'Know what is ordered,<br>what is late<br>and what changed.',
-    lead: 'Track long-lead items, purchase orders and change orders inside the project, next to its costs.',
-    keywords: 'construction procurement log, purchase orders, change orders, long lead items',
-    pillars: [
-      ['layers', 'Procurement Log', 'Long-lead items with description, quantity, units, contractor, supplier, lead time, quantity status and whether they are onsite.'],
-      ['db', 'Load from the estimate', 'Pull each estimate line into the log as a row, instead of retyping the list.'],
-      ['users', 'Linked to your Directory', 'Choose the contractor and the supplier from your own Directory.'],
-      ['pkg', 'Purchase Orders', 'Tracked once per project and shown in Bid Cost and the cost estimate.'],
-      ['report', 'Change Orders', 'Approved change orders feed their signed dollar impact into the totals.'],
-      ['check', 'Approval and versions', 'Submit the log for approval. Earlier versions are kept.'],
-    ],
-    steps: [
-      ['Load the items', 'Start the log from the estimate, then add suppliers and lead times.'],
-      ['Track orders', 'Raise purchase orders and watch the quantity status and onsite columns.'],
-      ['Record changes', 'Log change orders so their cost impact reaches the totals.'],
-    ],
-    faqs: [
-      ['Does it compare supplier quotes?', 'No. Procurement Management tracks orders, lead times and changes. Subcontractor bids are compared in Bid Connect.'],
-      ['Is it part of Project Management?', 'Yes. The Procurement Log sits in the Project Management section of the app, and purchase orders and change orders also appear in Bid Cost.'],
-    ],
-    related: ['project-management', 'bid-connect', 'site-operations'],
-  },
-  {
-    slug: 'site-operations',
-    name: 'Site Operations',
-    image: 'peopleonsite.jpg',
-    imageAlt: 'People on a construction site',
-    headline: 'Plan crews and equipment.<br>Release the work.',
-    lead: 'Schedule crews and resources across projects, keep the workforce directory, and issue work packages and orders, with a separate workspace for contractors and subcontractors.',
-    keywords: 'construction site operations, crew scheduling, resource planning, work packages, workforce directory',
-    pillars: [
-      ['layout', 'Operations Dashboard', 'Portfolio, resource, operations and financial figures, each from stored data. A figure with no data says so instead of showing zero.'],
-      ['cal', 'Crew and Resource Scheduler', 'A cross-project scheduler for crews and resources, with conflict detection.'],
-      ['users', 'Workforce Directory', 'People, crews, crew templates and equipment, with their availability.'],
-      ['building', 'Subcontractors', 'For general contractors: see your subcontractors and what is committed to them.'],
-      ['pkg', 'Work Packages and Orders', 'Jobs and work packages with their work-order status.'],
-      ['tool', 'Contractor and Subcontractor workspaces', 'The workspace follows the business type saved in your Company Information, so each company sees the view that fits it.'],
-    ],
-    steps: [
-      ['Set up your company', 'Choose your business type in Company Information.'],
-      ['Plan crews and equipment', 'Add people, crews and equipment, then schedule them across projects and resolve conflicts.'],
-      ['Release the work', 'Issue work packages and track their work orders on the dashboard.'],
-    ],
-    faqs: [
-      ['Is it for general contractors or subcontractors?', 'Both. Site Operations opens the General Contractor or the Subcontractor workspace from the business type in your Company Information.'],
-      ['Where do daily site records go?', 'The Daily Log is in Project Management, under Reports.'],
-    ],
-    related: ['project-management', 'procurement-management', 'bid-connect'],
+    related: ['scale', 'bid-connect', 'ai-bid-proposal', 'bid-packages-leveling'],
   },
 ];
 
@@ -171,6 +121,7 @@ const FEATURE_LINKS = {
   'csi-cost-estimation': ['Cost Estimation', 'Structured Estimating'],
   'ai-bid-proposal': ['AI Bid Proposal', 'Proposal Generation'],
   'ai-risk-compliance-analyser': ['AI Risk & Compliance Analyser', 'Risk and Compliance'],
+  'bid-packages-leveling': ['Bid Packages & Leveling', 'Subcontractor bids side by side'],
   'go-no-go': ['Go/No-Go Analyzer', 'Free'],
 };
 
@@ -187,7 +138,7 @@ function chrome() {
 }
 
 function head(top, p) {
-  const title = `${p.name} | BidcoreAI Products`;
+  const title = `${p.name.startsWith('BidcoreAI') ? p.name : 'BidcoreAI ' + p.name} | Products for US and Global Contractors`;
   const desc = p.lead;
   const url = `https://www.bidcoreai.com/products/${p.slug}`;
   return top
@@ -210,6 +161,7 @@ function relatedCard(slug) {
     return `      <a class="ft-rel-c" href="/${slug}">\n        <div class="ft-rel-t">${esc(t)}</div>\n        <div class="ft-rel-x">${esc(x)}</div>\n      </a>`;
   }
   const o = PRODUCTS.find((x) => x.slug === slug);
+  if (!o) throw new Error('unknown related slug ' + slug);
   return `      <a class="ft-rel-c" href="/products/${slug}">\n        <div class="ft-rel-t">${esc(o.name)}</div>\n        <div class="ft-rel-x">Product</div>\n      </a>`;
 }
 

@@ -302,7 +302,17 @@ page('/products', 'features.html', { priority: 0.8 });
 app.get('/features', (req, res) => res.redirect(301, '/products'));
 
 /* Product pages — one per section of the app's sidebar. Built by tools/build-products.js. */
-const PRODUCT_PAGES = ['bid-connect', 'bid-management', 'project-management', 'procurement-management', 'site-operations'];
+const PRODUCT_PAGES = ['scale', 'sync', 'bid-connect'];
+/* The earlier five product pages were folded into BidcoreAI Scale (takeoff and estimating) and BidcoreAI Sync (the whole lifecycle). */
+const PRODUCT_REDIRECTS = {
+  'bid-management': 'scale',
+  'project-management': 'sync',
+  'procurement-management': 'sync',
+  'site-operations': 'sync',
+};
+for (const [from, to] of Object.entries(PRODUCT_REDIRECTS)) {
+  app.get(`/products/${from}`, (req, res) => res.redirect(301, `/products/${to}`));
+}
 for (const slug of PRODUCT_PAGES) {
   page(`/products/${slug}`, `products/${slug}.html`, { priority: 0.8 });
 }
