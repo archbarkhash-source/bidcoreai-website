@@ -9,7 +9,7 @@ const fs = require('fs');
 const path = require('path');
 
 const VIEWS = path.join(__dirname, '..', 'views');
-const NEW_VER = '20261102a';
+const NEW_VER = '20261102b';
 
 const ITEMS = [
   ['/products/scale', 'ic-scan', 'BidcoreAI Scale', 'AI takeoff and cost estimating'],
