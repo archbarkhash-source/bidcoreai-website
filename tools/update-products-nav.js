@@ -1,6 +1,6 @@
 /**
  * Puts the three products (BidcoreAI Scale, BidcoreAI Sync, Bid Connect) into the Products menu of every page in /views,
- * adds the "US & Global" market tag beside the logo, and updates the footer. Every page carries its own copy of the nav,
+ * and updates the footer. Every page carries its own copy of the nav,
  * so this walks the files. Idempotent: running it again changes nothing.
  *
  *   node tools/update-products-nav.js
@@ -23,7 +23,6 @@ const desktopItems = ITEMS.map(([href, ic, t, d]) => `          <a class="nl-ite
           </a>`).join('\n');
 const mobileItems = ITEMS.map(([href, ic, t]) => `      <a class="mob-nl" href="${href}"><svg width="14" height="14"><use href="#${ic}"/></svg> ${t}</a>`).join('\n');
 
-const TAG = '<span class="mkt-tag" title="BidcoreAI serves contractors in the US and worldwide">US &amp; Global</span>';
 const FOOT_LI = `          <li><a href="/products/scale">BidcoreAI Scale</a></li>
           <li><a href="/products/sync">BidcoreAI Sync</a></li>
           <li><a href="/products/bid-connect">Bid Connect</a></li>
@@ -67,17 +66,8 @@ for (const file of walk(VIEWS)) {
     s = s.slice(0, sumEnd) + mobileItems + '\n' + s.slice(endTag);
   }
 
-  // Market tag beside the logo (desktop header).
-  // The first logo link in the file sits in the mobile drawer; the tag belongs to the one inside <nav class="nav">.
+  // The "US & Global" tag beside the logo was removed again at the owner's request: strip it wherever it is found.
   s = s.replace(/\n    <span class="mkt-tag"[^>]*>[^<]*<\/span>/g, '');
-  const navAt = s.indexOf('<nav class="nav">');
-  if (navAt >= 0) {
-    const m = /<a class="logo-wrap" href="\/">[\s\S]*?<\/a>/.exec(s.slice(navAt));
-    if (m) {
-      const end = navAt + m.index + m[0].length;
-      s = s.slice(0, end) + `\n    ${TAG}` + s.slice(end);
-    }
-  }
 
   // Footer.
   s = s.replace('Built exclusively for US contractors.', 'Built for US and global contractors.');
