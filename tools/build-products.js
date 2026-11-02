@@ -89,15 +89,42 @@ const PRODUCTS = [
     headline: 'From bid to built,<br>on one set<br>of numbers.',
     lead: 'BidcoreAI Sync is the end-to-end lifecycle: it includes everything in BidcoreAI Scale and Bid Connect, then carries the estimate you bid with into the budget, schedule, billing, procurement and the site.',
     keywords: 'BidcoreAI Sync, end to end construction software, preconstruction to construction, construction project management, budgeting, pay application, procurement, site operations',
-    pillars: [
-      ['calc', 'Budget from the estimate', 'A line per cost code with original budget, approved changes, revised budget, committed and projected costs and forecast to complete. Sync it from the estimate you bid with.'],
-      ['cal', 'Scheduling and calendar', 'A Gantt with linked tasks and dates that recalculate when a predecessor moves, plus a Project Management Calendar of milestones, deliveries and work packages across your projects.'],
-      ['report', 'Schedule of Values and Pay App', 'An AIA G703-style Schedule of Values and a G702/G703-style pay application, with retainage, change orders and deductions.'],
-      ['file', 'Daily Log, Submittals and RFIs', 'The site diary (weather, manpower, equipment, deliveries, inspections, safety, delays) with submittal, RFI and transmittal logs.'],
-      ['layers', 'Procurement', 'Long-lead items, purchase orders and change orders tracked beside the costs, loaded from the estimate instead of retyped.'],
-      ['tool', 'Site Operations', 'A cross-project crew and resource scheduler with conflict detection, a workforce directory, and work packages with their work orders. Contractors and subcontractors each get the workspace that fits them.'],
-      ['pkg', 'Bid Connect and Scale included', 'Invite subs, level bids, take off, estimate and draft the proposal first, in the same project that you later build.'],
-      ['brain', 'Monthly Narrative', 'Drafted only from the records of the month, with every number checked against the data. The project manager edits and approves it.'],
+    groups: [
+      {
+        title: 'Bid Management',
+        lead: 'Win the work: read the documents, measure, price the bid and bring your subcontractors in.',
+        items: [
+          ['brain', 'Documents and AI Analysis', 'Specs, SOWs and addenda read end to end: scope by trade, risk at clause level with the page cited, and a Go/No-Go decision.'],
+          ['scan', 'Takeoff', 'Measure counts, lengths and areas on screen. AI symbol detection proposes counts for you to review and apply.'],
+          ['db', 'Cost Estimation', 'Price on your own cost database across the CSI divisions, with markup factors, overrides and a Final Estimate.'],
+          ['calc', 'Bid Cost', 'General conditions, equipment, subs, materials, labor, payroll, alternates and markups, carried into the bid.'],
+          ['pkg', 'Bid Connect', 'Packages by trade, ITBs, the Sub Bid Log, bid leveling and federal opportunities.'],
+          ['file', 'AI Bid Proposal', 'Cover letter through price schedule, drafted from the bid you priced and edited by your team.'],
+        ],
+      },
+      {
+        title: 'Project Management',
+        lead: 'Win it and run it on the numbers you bid with. The budget syncs from the estimate.',
+        items: [
+          ['calc', 'Budgeting', 'A line per cost code: original budget, approved changes, committed and projected costs, forecast to complete and over or under.'],
+          ['cal', 'Scheduling and Calendar', 'A Gantt with linked tasks, dates that recalculate when a predecessor moves, and a calendar of milestones, deliveries and work packages.'],
+          ['report', 'Schedule of Values and Pay App', 'An AIA G703-style Schedule of Values and a G702/G703-style pay application, with retainage, change orders and deductions.'],
+          ['file', 'Daily Log, Submittals and RFIs', 'The site diary plus submittal, RFI and transmittal logs.'],
+          ['layers', 'Procurement', 'Long-lead items, purchase orders and change orders tracked beside the costs, loaded from the estimate.'],
+          ['brain', 'Monthly Narrative', 'Drafted only from the records of the month, with every number checked against the data. A person edits and approves it.'],
+        ],
+      },
+      {
+        title: 'Site Operations',
+        lead: 'Put the crews and equipment on the plan and release the work, with a workspace for contractors and for subcontractors.',
+        items: [
+          ['cal', 'Crew and Resource Scheduler', 'A cross-project scheduler for crews and resources, with conflict detection.'],
+          ['users', 'Workforce Directory', 'People, crews, crew templates and equipment, with their availability.'],
+          ['pkg', 'Work Packages and Orders', 'Jobs and work packages with their work-order status.'],
+          ['building', 'Subcontractors', 'See your subcontractors and what is committed to them.'],
+          ['layout', 'Operations Dashboard', 'Portfolio, resource, operations and financial figures, each from stored data. A figure with no data says so.'],
+        ],
+      },
     ],
     steps: [
       ['Bid', 'Read the documents, measure, estimate, invite subs and level their bids in the same project.'],
@@ -165,12 +192,31 @@ function relatedCard(slug) {
   return `      <a class="ft-rel-c" href="/products/${slug}">\n        <div class="ft-rel-t">${esc(o.name)}</div>\n        <div class="ft-rel-x">Product</div>\n      </a>`;
 }
 
-function body(p) {
-  const pillars = p.pillars.map(([ic, t, x], i) => `      <div class="ov-p c${(i % 3) + 1}">
+function groupSections(p) {
+  return p.groups.map((g, gi) => `    <div class="grp-h rv"${gi ? '' : ' style="margin-top:0"'}>
+      <span class="grp-n">${gi + 1}</span>
+      <div><h2 class="h2" style="font-size:clamp(20px,2.4vw,30px);text-align:left">${esc(g.title)}</h2><p class="grp-lead">${esc(g.lead)}</p></div>
+    </div>
+    <div class="ov-pillars rv" style="margin-top:20px">
+${pillarCardsOf(g.items)}
+    </div>`).join('\n');
+}
+
+function pillarCardsOf(list) {
+  return list.map(([ic, t, x], i) => `      <div class="ov-p c${(i % 3) + 1}">
         <div class="ov-ico ${['b', 'o', 't'][i % 3]}"><svg width="22" height="22"><use href="#${ICONS[ic]}"/></svg></div>
         <div class="ov-title">${esc(t)}</div>
         <div class="ov-text">${esc(x)}</div>
       </div>`).join('\n');
+}
+
+function body(p) {
+  const pillarCards = (list) => list.map(([ic, t, x], i) => `      <div class="ov-p c${(i % 3) + 1}">
+        <div class="ov-ico ${['b', 'o', 't'][i % 3]}"><svg width="22" height="22"><use href="#${ICONS[ic]}"/></svg></div>
+        <div class="ov-title">${esc(t)}</div>
+        <div class="ov-text">${esc(x)}</div>
+      </div>`).join('\n');
+  const pillars = p.pillars ? pillarCards(p.pillars) : '';
   const steps = p.steps.map(([t, x], i) => `      <div class="ft-step">
         <div class="ft-step-n">${i + 1}</div>
         <div><div class="ft-step-t">${esc(t)}</div><div class="ft-step-x">${esc(x)}</div></div>
@@ -201,10 +247,10 @@ function body(p) {
 
 <section class="overview">
   <div class="con">
-    <div class="rv" style="text-align:center"><h2 class="h2">What you can do</h2></div>
+${p.groups ? groupSections(p) : `    <div class="rv" style="text-align:center"><h2 class="h2">What you can do</h2></div>
     <div class="ov-pillars rv" style="margin-top:40px">
 ${pillars}
-    </div>
+    </div>`}
   </div>
 </section>
 

@@ -1661,3 +1661,12 @@ section p[style*="font-size:17"]{font-size:18px!important}
 .hero-prod-t strong{font-size:15px}
 .hero-prod-x{font-size:12.5px;line-height:1.45;color:var(--g600)}
 @media(max-width:640px){.hero-prods{grid-template-columns:1fr}}
+
+/* Product page: a named group (Bid Management, Project Management, Site Operations) with its key products under it. */
+.grp-h{display:flex;gap:14px;align-items:flex-start;margin:48px 0 0}
+.grp-n{flex-shrink:0;width:34px;height:34px;border-radius:50%;background:var(--orange);color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.grp-lead{margin:4px 0 0;font-size:15px;line-height:1.55;color:var(--g600)}
+/* Home: the same three groups as cards with their key products listed. */
+.e2e-list{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:7px}
+.e2e-list li{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;line-height:1.4;color:var(--g600)}
+.e2e-list li::before{content:"";flex-shrink:0;width:6px;height:6px;border-radius:50%;background:var(--orange);margin-top:7px}
